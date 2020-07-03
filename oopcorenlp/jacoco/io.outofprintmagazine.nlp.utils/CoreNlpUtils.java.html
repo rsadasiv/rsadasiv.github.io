@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CoreNlpUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OOP Core NLP</a> &gt; <a href="index.source.html" class="el_package">io.outofprintmagazine.nlp.utils</a> &gt; <span class="el_source">CoreNlpUtils.java</span></div><h1>CoreNlpUtils.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright (C) 2020 Ram Sadasiv
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ ******************************************************************************/
+package io.outofprintmagazine.nlp.utils;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import edu.stanford.nlp.coref.CorefCoreAnnotations;
+import edu.stanford.nlp.coref.data.CorefChain;
+import edu.stanford.nlp.coref.data.CorefChain.CorefMention;
+import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.ling.IndexedWord;
+import edu.stanford.nlp.pipeline.CoreDocument;
+import edu.stanford.nlp.pipeline.CoreEntityMention;
+import edu.stanford.nlp.pipeline.CoreSentence;
+import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+import edu.stanford.nlp.semgraph.SemanticGraph;
+import edu.stanford.nlp.trees.TypedDependency;
+import io.outofprintmagazine.util.ParameterStore;
+
+public class CoreNlpUtils {
+	
+	@SuppressWarnings(&quot;unused&quot;)
+<span class="fc" id="L48">	private static final Logger logger = LogManager.getLogger(CoreNlpUtils.class);</span>
+	
+    private ParameterStore parameterStore;
+
+	private CoreNlpUtils(ParameterStore parameterStore) {
+<span class="fc" id="L53">		super();</span>
+<span class="fc" id="L54">		this.parameterStore = parameterStore; </span>
+<span class="fc" id="L55">	}</span>
+	
+<span class="fc" id="L57">	private static Map&lt;ParameterStore, CoreNlpUtils&gt; instances = new HashMap&lt;ParameterStore, CoreNlpUtils&gt;();</span>
+	
+    public static CoreNlpUtils getInstance(ParameterStore parameterStore) throws IOException { 
+<span class="fc bfc" id="L60" title="All 2 branches covered.">        if (instances.get(parameterStore) == null) {</span>
+<span class="fc" id="L61">        	CoreNlpUtils instance = new CoreNlpUtils(parameterStore);</span>
+<span class="fc" id="L62">            instances.put(parameterStore, instance);</span>
+        }
+<span class="fc" id="L64">        return instances.get(parameterStore); </span>
+    }
+
+<span class="fc" id="L67">	private StanfordCoreNLP pipeline = null;</span>
+
+<span class="fc" id="L69">	public static List&lt;String&gt; coreNlpAnnotatorAliases = Arrays.asList(</span>
+			&quot;tokenize&quot;
+		    , &quot;ssplit&quot;
+		    , &quot;pos&quot;
+		    , &quot;lemma&quot;
+		    , &quot;ner&quot;
+		    , &quot;parse&quot;
+		    , &quot;sentiment&quot;
+		    , &quot;depparse&quot;
+		    , &quot;coref&quot;
+		    , &quot;quote&quot;	
+	);
+
+	public Properties getPipelineProps() {
+		// set up pipeline properties
+<span class="fc" id="L84">		Properties props = new Properties();</span>
+
+		//props.setProperty(&quot;dcoref.maxdist&quot;, &quot;2&quot;);
+<span class="fc" id="L87">		props.setProperty(&quot;coref.algorithm&quot;, &quot;statistical&quot;);</span>
+<span class="fc" id="L88">		props.setProperty(&quot;coref.maxMentionDistance&quot;, &quot;15&quot;);</span>
+<span class="fc" id="L89">		props.setProperty(&quot;coref.maxMentionDistanceWithStringMatch&quot;, &quot;50&quot;);</span>
+<span class="fc" id="L90">		props.setProperty(&quot;coref.statisical.pairwiseScoreThresholds&quot;, &quot;.15&quot;);</span>
+		//props.setProperty(&quot;openie.resolve_coref&quot;, &quot;true&quot;);
+
+<span class="fc" id="L93">		props.setProperty(&quot;pos.maxlen&quot;, &quot;70&quot;);</span>
+<span class="fc" id="L94">		props.setProperty(&quot;ner.maxlen&quot;, &quot;70&quot;);</span>
+<span class="fc" id="L95">		props.setProperty(&quot;ner.applyFineGrained&quot;, &quot;false&quot;);</span>
+<span class="fc" id="L96">		props.setProperty(&quot;ner.useSUTime&quot;, &quot;true&quot;);</span>
+<span class="fc" id="L97">		props.setProperty(&quot;ner.applyNumericClassifiers&quot;, &quot;true&quot;);</span>
+<span class="fc" id="L98">		props.setProperty(&quot;ner.combinationMode&quot;, &quot;NORMAL&quot;);</span>
+<span class="fc" id="L99">		props.setProperty(&quot;ner.additional.regexner.mapping&quot;, &quot;io/outofprintmagazine/nlp/models/NER/regexner.txt&quot;);</span>
+<span class="fc" id="L100">		props.setProperty(&quot;quote.maxLength&quot;, &quot;70&quot;);</span>
+<span class="fc" id="L101">		props.setProperty(&quot;quote.singleQuotes&quot;, &quot;true&quot;);</span>
+<span class="fc" id="L102">		props.setProperty(&quot;quote.asciiQuotes&quot;, &quot;true&quot;);</span>
+<span class="fc" id="L103">		props.setProperty(&quot;quote.attributeQuotes&quot;, &quot;true&quot;);</span>
+<span class="fc" id="L104">		props.setProperty(&quot;enforceRequirements&quot;, &quot;true&quot;);</span>
+<span class="fc" id="L105">	    props.setProperty(&quot;parse.model&quot;, &quot;edu/stanford/nlp/models/srparser/englishSR.ser.gz&quot;);</span>
+<span class="fc" id="L106">		props.setProperty(&quot;parse.maxlen&quot;, &quot;70&quot;);</span>
+		//props.setProperty(&quot;threads&quot;, &quot;3&quot;);
+		//props.setProperty(&quot;tokenize.options&quot;, &quot;asciiQuotes=true,americanize=true&quot;);
+		
+<span class="fc" id="L110">		StringBuffer annotators = new StringBuffer();</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">		for (String coreNlpAnnotatorAlias : coreNlpAnnotatorAliases) {</span>
+<span class="fc" id="L112">			annotators.append(coreNlpAnnotatorAlias);</span>
+<span class="fc" id="L113">			annotators.append(&quot;,&quot;);</span>
+<span class="fc" id="L114">		}</span>
+<span class="fc" id="L115">		props.setProperty(</span>
+				&quot;annotators&quot;,
+<span class="fc" id="L117">				annotators.substring(0, annotators.length()-1)</span>
+			);
+		
+<span class="fc" id="L120">		return props;</span>
+	}
+		
+	public StanfordCoreNLP getPipeline() {
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">		if (pipeline == null) {</span>
+<span class="fc" id="L125">			pipeline = new StanfordCoreNLP(getPipelineProps());</span>
+		}
+<span class="fc" id="L127">		return pipeline;</span>
+	}
+	
+	public List&lt;CoreEntityMention&gt; getCoreEntityMentionFromToken(CoreDocument document, CoreLabel token) {
+<span class="fc" id="L131">		List&lt;CoreEntityMention&gt; retval = new ArrayList&lt;CoreEntityMention&gt;();</span>
+<span class="fc" id="L132">		CoreSentence sentence = getSentenceFromToken(document, token);</span>
+<span class="fc" id="L133">		List&lt;CoreEntityMention&gt; entityMentions = sentence.entityMentions();</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">		for (CoreEntityMention entityMention : entityMentions) {</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">			for (CoreLabel t : getTokensFromCoreEntityMention(document, entityMention)) {</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">				if (t.equals(token)) {</span>
+<span class="fc" id="L137">					retval.add(entityMention);</span>
+				}
+<span class="fc" id="L139">			}</span>
+<span class="fc" id="L140">		}</span>
+<span class="fc" id="L141">		return retval;</span>
+	}
+	
+	
+	public List&lt;CoreEntityMention&gt; getCoreEntityMentionFromCorefMention(CoreDocument document, CorefMention corefMention) {
+<span class="fc" id="L146">		List&lt;CoreEntityMention&gt; retval = new ArrayList&lt;CoreEntityMention&gt;();</span>
+<span class="fc" id="L147">		List&lt;CoreLabel&gt; tokens = getTokensFromCorefMention(document, corefMention);</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">		for (CoreLabel token : tokens) {</span>
+<span class="fc" id="L149">			retval.addAll(getCoreEntityMentionFromToken(document, token));</span>
+<span class="fc" id="L150">		}</span>
+<span class="fc" id="L151">		return retval;</span>
+	}
+	
+	public boolean isCoreEntityMentionInAnyCorefChain(CoreDocument document, CoreEntityMention entityMention) {
+<span class="nc bnc" id="L155" title="All 2 branches missed.">		if (getCorefChainFromCoreEntityMention(document, entityMention) == null) {</span>
+<span class="nc" id="L156">			return false;</span>
+		}
+		else {
+<span class="nc" id="L159">			return true;</span>
+		}
+	}
+	
+	public CorefChain getCorefChainFromCoreEntityMention(CoreDocument document, CoreEntityMention entityMention) {
+<span class="nc bnc" id="L164" title="All 2 branches missed.">	    for (CorefChain corefChain : document.annotation().get(CorefCoreAnnotations.CorefChainAnnotation.class).values()) {</span>
+<span class="nc bnc" id="L165" title="All 2 branches missed.">		    for (CorefMention corefMention : corefChain.getMentionsInTextualOrder() ) {</span>
+		    	//indexes hosed up?
+		    	try {
+<span class="nc" id="L168">		    		boolean afterStart = false;</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">		    		if (corefMention.sentNum-1 &lt; document.sentences().size()) {</span>
+<span class="nc bnc" id="L170" title="All 2 branches missed.">		    			if (corefMention.startIndex &lt; document.sentences().get(corefMention.sentNum-1).tokens().size()) {</span>
+<span class="nc bnc" id="L171" title="All 2 branches missed.">		    				afterStart = (entityMention.charOffsets().first.intValue() &gt;= document.sentences().get(corefMention.sentNum-1).tokens().get(corefMention.startIndex).beginPosition());</span>
+		    			}
+		    		}
+<span class="nc" id="L174">		    		boolean beforeEnd = false;</span>
+<span class="nc bnc" id="L175" title="All 2 branches missed.">		    		if (corefMention.sentNum-1 &lt; document.sentences().size()) {</span>
+<span class="nc bnc" id="L176" title="All 2 branches missed.">		    			if (corefMention.endIndex &lt; document.sentences().get(corefMention.sentNum-1).tokens().size()) {</span>
+<span class="nc bnc" id="L177" title="All 2 branches missed.">		    				beforeEnd = (entityMention.charOffsets().second.intValue() &lt;= document.sentences().get(corefMention.sentNum-1).tokens().get(corefMention.endIndex).endPosition());</span>
+		    			}
+		    		}
+		    				
+<span class="nc bnc" id="L181" title="All 4 branches missed.">		    		if (afterStart &amp;&amp; beforeEnd) {</span>
+<span class="nc" id="L182">		    			return corefChain;</span>
+		    		}
+		    	}
+<span class="nc" id="L185">		    	catch (Throwable t) {</span>
+<span class="nc" id="L186">		    		logger.debug(&quot;coref sentNum: &quot; + corefMention.sentNum);</span>
+<span class="nc" id="L187">		    		logger.debug(&quot;coref start: &quot; + corefMention.startIndex);</span>
+<span class="nc" id="L188">		    		logger.debug(&quot;mention start: &quot; + entityMention.charOffsets().first.intValue());</span>
+<span class="nc" id="L189">		    		logger.debug(&quot;mention end: &quot; + entityMention.charOffsets().second.intValue());</span>
+<span class="nc" id="L190">		    		logger.debug(&quot;sentence: &quot; + document.sentences().get(corefMention.sentNum-1));</span>
+<span class="nc" id="L191">		    		logger.error(&quot;wtf&quot;, t);</span>
+<span class="nc" id="L192">		    		throw (t);</span>
+<span class="nc" id="L193">		    	}</span>
+<span class="nc" id="L194">	    	}</span>
+<span class="nc" id="L195">	    }</span>
+<span class="nc" id="L196">	    return null;</span>
+	}
+			
+	public CoreLabel getTokenFromIndexedWord(CoreDocument document, IndexedWord word) {
+<span class="nc" id="L200">		return word.backingLabel();</span>
+	}
+	
+	public List&lt;TypedDependency&gt; getTypedDependencyDepFromToken(CoreDocument document, CoreLabel token) {
+<span class="nc" id="L204">		List&lt;TypedDependency&gt; retval = new ArrayList&lt;TypedDependency&gt;();</span>
+<span class="nc" id="L205">		CoreSentence sentence = getSentenceFromToken(document, token);</span>
+<span class="nc" id="L206">		SemanticGraph dependencyParse = sentence.dependencyParse();</span>
+<span class="nc" id="L207">		Collection&lt;TypedDependency&gt; deps = dependencyParse.typedDependencies();</span>
+<span class="nc bnc" id="L208" title="All 2 branches missed.">		for (TypedDependency dependency : deps) {</span>
+<span class="nc bnc" id="L209" title="All 2 branches missed.">			if (getTokenFromIndexedWord(document, dependency.dep()).equals(token)) {</span>
+<span class="nc" id="L210">				retval.add(dependency);</span>
+			}
+<span class="nc" id="L212">		}</span>
+<span class="nc" id="L213">		return retval;</span>
+	}
+	
+	public List&lt;TypedDependency&gt; getTypedDependencyGovFromToken(CoreDocument document, CoreLabel token) {
+<span class="nc" id="L217">		List&lt;TypedDependency&gt; retval = new ArrayList&lt;TypedDependency&gt;();</span>
+<span class="nc" id="L218">		CoreSentence sentence = getSentenceFromToken(document, token);</span>
+<span class="nc" id="L219">		SemanticGraph dependencyParse = sentence.dependencyParse();</span>
+<span class="nc" id="L220">		Collection&lt;TypedDependency&gt; deps = dependencyParse.typedDependencies();</span>
+<span class="nc bnc" id="L221" title="All 2 branches missed.">		for (TypedDependency dependency : deps) {</span>
+<span class="nc bnc" id="L222" title="All 2 branches missed.">			if (getTokenFromIndexedWord(document, dependency.gov()).equals(token)) {</span>
+<span class="nc" id="L223">				retval.add(dependency);</span>
+			}
+<span class="nc" id="L225">		}</span>
+<span class="nc" id="L226">		return retval;</span>
+	}
+	
+	public CorefChain getCorefChainFromCorefMention(CoreDocument document, CorefMention corefMention) {
+<span class="nc" id="L230">		return document.corefChains().get(corefMention.corefClusterID);</span>
+	}
+	
+	
+	public boolean isCorefChainForCanonicalEntityName(CoreDocument document, CorefChain corefChain, String canonicalEntityName)  {
+<span class="nc" id="L235">		return canonicalEntityName.equals(getCanonicalEntityNameFromCorefChain(document, corefChain));</span>
+	}
+	
+	public boolean isCoreEntityMentionForCanonicalEntityName(CoreDocument document, CoreEntityMention entityMention, String canonicalEntityName)  {
+<span class="nc" id="L239">		String canonicalName = &quot;&quot;;</span>
+<span class="nc bnc" id="L240" title="All 2 branches missed.">		if (entityMention.canonicalEntityMention().isPresent()) {</span>
+			//fer fucks sake
+<span class="nc" id="L242">			canonicalName = entityMention.canonicalEntityMention().get().toString();</span>
+<span class="nc bnc" id="L243" title="All 4 branches missed.">			if (canonicalName.equalsIgnoreCase(&quot;he&quot;) || canonicalName.equalsIgnoreCase(&quot;she&quot;)) {</span>
+<span class="nc" id="L244">				canonicalName = entityMention.toString();</span>
+			}
+		}
+		else {
+<span class="nc" id="L248">			canonicalName = entityMention.text();</span>
+		}
+<span class="nc" id="L250">		return canonicalEntityName.equals(canonicalName);</span>
+	}
+	
+	public List&lt;CoreLabel&gt; getTokensFromCorefChain(CoreDocument document, CorefChain corefChain) {
+<span class="nc" id="L254">		List&lt;CoreLabel&gt; retval = new ArrayList&lt;CoreLabel&gt;();</span>
+<span class="nc bnc" id="L255" title="All 2 branches missed.">	    for (CorefMention corefMention : corefChain.getMentionsInTextualOrder() ) {</span>
+<span class="nc" id="L256">	    	retval.addAll(getTokensFromCorefMention(document, corefMention));</span>
+<span class="nc" id="L257">	    }</span>
+<span class="nc" id="L258">	    return retval;</span>
+	}
+	
+	public List&lt;CoreLabel&gt; getTokensFromCorefMention(CoreDocument document, CorefMention corefMention) {
+<span class="fc" id="L262">		List&lt;CoreLabel&gt; retval = new ArrayList&lt;CoreLabel&gt;();</span>
+<span class="fc" id="L263">    	CoreSentence sentence = getSentenceFromCorefMention(document, corefMention);</span>
+<span class="pc bpc" id="L264" title="1 of 4 branches missed.">    	for (int i=corefMention.startIndex-1;i&lt;corefMention.endIndex-1&amp;&amp;i&lt;sentence.tokens().size();i++) {</span>
+<span class="fc" id="L265">    		retval.add(sentence.tokens().get(i));</span>
+    	}
+<span class="fc" id="L267">    	return retval;</span>
+	}
+	
+	public int getSentenceIdFromSentence(CoreDocument document, CoreSentence sentence) {
+<span class="nc bnc" id="L271" title="All 2 branches missed.">		for (int i=0;i&lt;document.sentences().size();i++) {</span>
+<span class="nc bnc" id="L272" title="All 2 branches missed.">			if (document.sentences().get(i).equals(sentence)) {</span>
+<span class="nc" id="L273">				return i;</span>
+			}
+		}
+<span class="nc" id="L276">		return -1;</span>
+	}
+	
+	
+	public CoreSentence getSentenceFromToken(CoreDocument document, CoreLabel token) {
+<span class="fc" id="L281">		return document.sentences().get(token.sentIndex());</span>
+	}
+	
+	public CoreSentence getSentenceFromCoreEntityMention(CoreDocument document, CoreEntityMention entityMention) {
+<span class="nc" id="L285">		return entityMention.sentence();</span>
+	}
+	
+	public List&lt;CoreLabel&gt; getTokensFromCoreEntityMention(CoreDocument document, CoreEntityMention entityMention) {
+<span class="fc" id="L289">		return entityMention.tokens();</span>
+	}
+	
+	public CoreSentence getSentenceFromCorefMention(CoreDocument document,  CorefMention corefMention) {
+<span class="fc" id="L293">		return document.sentences().get(corefMention.sentNum-1);</span>
+	}
+	
+	
+	//There can be multiple (different) canonical entities in the same coref mention
+	//should differentiate on number of matches?
+	//corefchain: CHAIN7-[&quot;Venkat 's wife Uma&quot; in sentence 1, &quot;She&quot; in sentence 2, &quot;her&quot; in sentence 2, &quot;Uma&quot; in sentence 5]
+	//should return Uma, not Venkat
+	//corefchain: CHAIN29-[&quot;Venkat 's&quot; in sentence 1, &quot;his&quot; in sentence 2, &quot;his&quot; in sentence 2, &quot;Venkat 's&quot; in sentence 5, &quot;his&quot; in sentence 5]
+	//should return Venkat
+	public String getCanonicalEntityNameFromCorefChain(CoreDocument document, CorefChain corefChain) {
+<span class="nc" id="L304">		String canonicalName = &quot;&quot;;</span>
+<span class="nc bnc" id="L305" title="All 2 branches missed.">		for (CorefMention corefMention : corefChain.getMentionsInTextualOrder() ) {</span>
+<span class="nc" id="L306">    		List&lt;CoreEntityMention&gt; entityMentions = getCoreEntityMentionFromCorefMention(document, corefMention);</span>
+<span class="nc bnc" id="L307" title="All 2 branches missed.">    		if (entityMentions.size() &gt; 0) {</span>
+<span class="nc bnc" id="L308" title="All 2 branches missed.">	    		for (CoreEntityMention entityMention : entityMentions) {</span>
+<span class="nc bnc" id="L309" title="All 2 branches missed.">					if (entityMention.canonicalEntityMention().isPresent()) {</span>
+						//fer fucks sake
+<span class="nc" id="L311">						String personName = entityMention.canonicalEntityMention().get().toString();</span>
+<span class="nc bnc" id="L312" title="All 4 branches missed.">						if (personName.equalsIgnoreCase(&quot;he&quot;) || personName.equalsIgnoreCase(&quot;she&quot;)) {</span>
+<span class="nc" id="L313">							personName = entityMention.toString();</span>
+						}
+<span class="nc bnc" id="L315" title="All 2 branches missed.">						if (personName.length() &gt; canonicalName.length()) {</span>
+<span class="nc" id="L316">							canonicalName = personName;</span>
+						}
+
+<span class="nc" id="L319">					}</span>
+<span class="nc bnc" id="L320" title="All 2 branches missed.">					else if (entityMention.text().length() &gt; canonicalName.length()) {</span>
+<span class="nc" id="L321">						canonicalName = entityMention.text();</span>
+					}
+<span class="nc" id="L323">	    		}</span>
+    		}
+    		else {
+<span class="nc" id="L326">    			 List&lt;CoreLabel&gt; corefMentionTokens = getTokensFromCorefMention(document, corefMention);</span>
+<span class="nc" id="L327">				 StringBuffer buf = new StringBuffer();</span>
+<span class="nc bnc" id="L328" title="All 2 branches missed.">    			 for (CoreLabel token : corefMentionTokens) {</span>
+<span class="nc" id="L329">    				 buf.append(token.originalText());</span>
+<span class="nc" id="L330">    				 buf.append(token.after());</span>
+<span class="nc" id="L331">    			 }</span>
+<span class="nc bnc" id="L332" title="All 2 branches missed.">    			 if (buf.toString().trim().length() &gt; canonicalName.length()) {</span>
+<span class="nc" id="L333">    				 canonicalName = buf.toString();</span>
+    			 }
+    		}
+<span class="nc" id="L336">    	}</span>
+<span class="nc" id="L337">		return canonicalName;</span>
+	}
+	
+	public String getGenderNameFromCorefChain(CoreDocument document, CorefChain corefChain) {
+<span class="nc" id="L341">		Map&lt;String,BigDecimal&gt; scoreMap = new HashMap&lt;String,BigDecimal&gt;();</span>
+<span class="nc bnc" id="L342" title="All 2 branches missed.">		for (CorefMention corefMention : corefChain.getMentionsInTextualOrder() ) {</span>
+<span class="nc" id="L343">    		BigDecimal existingScore = scoreMap.get(corefMention.gender.toString());</span>
+<span class="nc bnc" id="L344" title="All 2 branches missed.">    		if (existingScore == null) {</span>
+<span class="nc" id="L345">    			existingScore = new BigDecimal(0);</span>
+    		}
+<span class="nc" id="L347">    		scoreMap.put(corefMention.gender.toString(), existingScore.add(new BigDecimal(1)));</span>
+<span class="nc" id="L348">		}</span>
+<span class="nc" id="L349">    	String maxEntryKey = null;</span>
+<span class="nc" id="L350">    	BigDecimal maxEntryCount = new BigDecimal(0);</span>
+<span class="nc bnc" id="L351" title="All 2 branches missed.">    	for (String key : scoreMap.keySet()) {</span>
+<span class="nc bnc" id="L352" title="All 2 branches missed.">    		if (scoreMap.get(key).compareTo(maxEntryCount) &gt; 0) {</span>
+<span class="nc" id="L353">    			maxEntryKey = key;</span>
+<span class="nc" id="L354">    			maxEntryCount = scoreMap.get(key);</span>
+    		}
+<span class="nc" id="L356">    	}</span>
+<span class="nc" id="L357">    	return maxEntryKey;</span>
+	}
+	
+	public String getCoreNlpGenderNameFromCoreEntityMention(CoreDocument document, CoreEntityMention entityMention) {
+<span class="nc" id="L361">		Map&lt;String,BigDecimal&gt; scoreMap = new HashMap&lt;String,BigDecimal&gt;();</span>
+<span class="nc bnc" id="L362" title="All 2 branches missed.">		for (CoreLabel token : entityMention.tokens()) {</span>
+<span class="nc" id="L363">			Map&lt;String,BigDecimal&gt; annotatorScore = token.get(io.outofprintmagazine.nlp.pipeline.OOPAnnotations.CoreNlpGenderAnnotation.class);</span>
+<span class="nc bnc" id="L364" title="All 2 branches missed.">			if (annotatorScore != null) {</span>
+<span class="nc bnc" id="L365" title="All 2 branches missed.">				for (String annotatorKey : annotatorScore.keySet()) {</span>
+<span class="nc" id="L366">					BigDecimal existingScore = scoreMap.get(annotatorKey);</span>
+<span class="nc bnc" id="L367" title="All 2 branches missed.">					if (existingScore == null) {</span>
+<span class="nc" id="L368">						existingScore = new BigDecimal(0);</span>
+					}
+<span class="nc" id="L370">					scoreMap.put(annotatorKey, existingScore.add(new BigDecimal(1)));</span>
+<span class="nc" id="L371">				}</span>
+			}
+<span class="nc" id="L373">		}</span>
+<span class="nc" id="L374">    	String maxEntryKey = null;</span>
+<span class="nc" id="L375">    	BigDecimal maxEntryCount = new BigDecimal(0);</span>
+<span class="nc bnc" id="L376" title="All 2 branches missed.">    	for (String key : scoreMap.keySet()) {</span>
+<span class="nc bnc" id="L377" title="All 2 branches missed.">    		if (scoreMap.get(key).compareTo(maxEntryCount) &gt; 0) {</span>
+<span class="nc" id="L378">    			maxEntryKey = key;</span>
+<span class="nc" id="L379">    			maxEntryCount = scoreMap.get(key);</span>
+    		}
+<span class="nc" id="L381">    	}</span>
+<span class="nc" id="L382">    	return maxEntryKey;</span>
+	}
+	
+	public String getOOPGenderNameFromCoreEntityMention(CoreDocument document, CoreEntityMention entityMention) {
+<span class="nc" id="L386">		Map&lt;String,BigDecimal&gt; scoreMap = new HashMap&lt;String,BigDecimal&gt;();</span>
+<span class="nc bnc" id="L387" title="All 2 branches missed.">		for (CoreLabel token : entityMention.tokens()) {</span>
+<span class="nc" id="L388">			Map&lt;String,BigDecimal&gt; annotatorScore = token.get(io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPGenderAnnotation.class);</span>
+<span class="nc bnc" id="L389" title="All 2 branches missed.">			if (annotatorScore != null) {</span>
+<span class="nc bnc" id="L390" title="All 2 branches missed.">				for (String annotatorKey : annotatorScore.keySet()) {</span>
+<span class="nc" id="L391">					BigDecimal existingScore = scoreMap.get(annotatorKey);</span>
+<span class="nc bnc" id="L392" title="All 2 branches missed.">					if (existingScore == null) {</span>
+<span class="nc" id="L393">						existingScore = new BigDecimal(0);</span>
+					}
+<span class="nc" id="L395">					scoreMap.put(annotatorKey, existingScore.add(new BigDecimal(1)));</span>
+<span class="nc" id="L396">				}</span>
+			}
+<span class="nc" id="L398">		}</span>
+<span class="nc" id="L399">    	String maxEntryKey = null;</span>
+<span class="nc" id="L400">    	BigDecimal maxEntryCount = new BigDecimal(0);</span>
+<span class="nc bnc" id="L401" title="All 2 branches missed.">    	for (String key : scoreMap.keySet()) {</span>
+<span class="nc bnc" id="L402" title="All 2 branches missed.">    		if (scoreMap.get(key).compareTo(maxEntryCount) &gt; 0) {</span>
+<span class="nc" id="L403">    			maxEntryKey = key;</span>
+<span class="nc" id="L404">    			maxEntryCount = scoreMap.get(key);</span>
+    		}
+<span class="nc" id="L406">    	}</span>
+<span class="nc" id="L407">    	return maxEntryKey;</span>
+	}
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

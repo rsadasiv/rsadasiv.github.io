@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AbstractTreeAnnotator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OOP Core NLP</a> &gt; <a href="index.source.html" class="el_package">io.outofprintmagazine.nlp.pipeline.annotators</a> &gt; <span class="el_source">AbstractTreeAnnotator.java</span></div><h1>AbstractTreeAnnotator.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright (C) 2020 Ram Sadasiv
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ ******************************************************************************/
+package io.outofprintmagazine.nlp.pipeline.annotators;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import edu.stanford.nlp.ling.Label;
+import edu.stanford.nlp.pipeline.Annotator;
+import edu.stanford.nlp.trees.Tree;
+import io.outofprintmagazine.nlp.pipeline.PhraseAnnotation;
+import io.outofprintmagazine.nlp.pipeline.scorers.PhraseScorer;
+import io.outofprintmagazine.nlp.pipeline.scorers.Scorer;
+import io.outofprintmagazine.nlp.pipeline.serializers.PhraseSerializer;
+import io.outofprintmagazine.nlp.pipeline.serializers.Serializer;
+
+/**
+ * &lt;p&gt;Base class for custom annotators that work with constituency trees (Core Nlp parse).&lt;/p&gt;
+ * &lt;p&gt;Subclasses are encouraged to override the scoreTree method and invoke the superclass traverseTree method.&lt;/p&gt;
+ * @author Ram Sadasiv
+ *
+ */
+public abstract class AbstractTreeAnnotator extends AbstractPosAnnotator implements Annotator, OOPAnnotator {
+	
+	@SuppressWarnings(&quot;unused&quot;)
+<span class="fc" id="L46">	private static final Logger logger = LogManager.getLogger(AbstractTreeAnnotator.class);</span>
+	
+	@Override
+	protected Logger getLogger() {
+<span class="nc" id="L50">		return logger;</span>
+	}
+
+	protected Scorer listScorer;
+	protected Serializer listSerializer;
+	
+<span class="fc" id="L56">	protected List&lt;String&gt; omitPunctuationMarks = Arrays.asList(&quot;``&quot;, &quot;''&quot;, &quot;?&quot;, &quot;??&quot;, &quot;!&quot;, &quot;.&quot;, &quot;\&quot;&quot;, &quot;`&quot;, &quot;‘&quot;, &quot;’&quot;, &quot;“&quot;, &quot;”&quot;, &quot;.&quot;, &quot;*&quot;);</span>
+<span class="fc" id="L57">	protected List&lt;String&gt; removeLeadingSpace = Arrays.asList(&quot;n\'t&quot;, &quot;\'s&quot;, &quot;,&quot;, &quot;:&quot;, &quot;;&quot;);</span>
+	
+	public AbstractTreeAnnotator() {
+<span class="fc" id="L60">		super();</span>
+<span class="fc" id="L61">		this.setScorer((Scorer) new PhraseScorer(this.getAnnotationClass()));</span>
+<span class="fc" id="L62">		this.setSerializer((Serializer) new PhraseSerializer(this.getAnnotationClass()));</span>
+<span class="fc" id="L63">	}</span>
+	
+	protected void traverseTree(Tree tree, Map&lt;String,BigDecimal&gt; scoreMap) throws IOException {
+<span class="nc bnc" id="L66" title="All 2 branches missed.">		if (!tree.label().toString().equals(&quot;ROOT&quot;)) {</span>
+<span class="nc" id="L67">			scoreTree(tree, scoreMap);</span>
+		}
+<span class="nc bnc" id="L69" title="All 2 branches missed.">		if (!tree.isLeaf()) {</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">			for (Tree child : tree.children()) {</span>
+<span class="nc" id="L71">				traverseTree(child, scoreMap);</span>
+			}
+		}
+<span class="nc" id="L74">	}</span>
+	
+	protected void traverseTree(Tree tree, List&lt;String&gt; tags, Map&lt;String,BigDecimal&gt; scoreMap) throws IOException {
+<span class="nc bnc" id="L77" title="All 2 branches missed.">		if (!tree.label().toString().equals(&quot;ROOT&quot;)) {</span>
+<span class="nc" id="L78">			scoreTree(tree, tags, scoreMap);</span>
+		}
+<span class="nc bnc" id="L80" title="All 2 branches missed.">		if (!tree.isLeaf()) {</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">			for (Tree child : tree.children()) {</span>
+<span class="nc" id="L82">				traverseTree(child, tags, scoreMap);</span>
+			}
+		}
+<span class="nc" id="L85">	}</span>
+	
+	protected void scoreTree(Tree pTree, Map&lt;String, BigDecimal&gt; scoreMap) throws IOException {
+<span class="nc" id="L88">		String phrase = getOwnText(pTree, getTags());</span>
+<span class="nc" id="L89">		addToScoreMap(scoreMap, phrase, new BigDecimal(1));</span>
+<span class="nc" id="L90">	}</span>
+	
+	protected void scoreTree(Tree pTree, List&lt;String&gt; tags, Map&lt;String, BigDecimal&gt; scoreMap) throws IOException {
+<span class="nc" id="L93">		String phrase = getOwnText(pTree, getTags());</span>
+<span class="nc" id="L94">		addToScoreMap(scoreMap, phrase, new BigDecimal(1));</span>
+<span class="nc" id="L95">	}</span>
+	
+	protected void traverseTree(Tree tree, List&lt;PhraseAnnotation&gt; scoreMap) throws IOException {
+<span class="nc bnc" id="L98" title="All 2 branches missed.">		if (!tree.label().toString().equals(&quot;ROOT&quot;)) {</span>
+<span class="nc" id="L99">			scoreTree(tree, scoreMap);</span>
+		}
+<span class="nc bnc" id="L101" title="All 2 branches missed.">		if (!tree.isLeaf()) {</span>
+<span class="nc bnc" id="L102" title="All 2 branches missed.">			for (Tree child : tree.children()) {</span>
+<span class="nc" id="L103">				traverseTree(child, scoreMap);</span>
+			}
+		}
+<span class="nc" id="L106">	}</span>
+	
+	protected void traverseTree(Tree tree, List&lt;String&gt; tags, List&lt;PhraseAnnotation&gt; scoreMap) throws IOException {
+<span class="fc bfc" id="L109" title="All 2 branches covered.">		if (!tree.label().toString().equals(&quot;ROOT&quot;)) {</span>
+<span class="fc" id="L110">			scoreTree(tree, tags, scoreMap);</span>
+		}
+<span class="fc bfc" id="L112" title="All 2 branches covered.">		if (!tree.isLeaf()) {</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">			for (Tree child : tree.children()) {</span>
+<span class="fc" id="L114">				traverseTree(child, tags, scoreMap);</span>
+			}
+		}
+<span class="fc" id="L117">	}</span>
+	
+	protected void scoreTree(Tree pTree, List&lt;PhraseAnnotation&gt; scoreMap) throws IOException {
+<span class="nc" id="L120">		String phrase = getOwnText(pTree, getTags());</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">		if (phrase.length() &gt; 0) {</span>
+<span class="nc" id="L122">			addToScoreList(scoreMap, new PhraseAnnotation(phrase.toLowerCase(), new BigDecimal(1)));</span>
+		}
+<span class="nc" id="L124">	}</span>
+	
+	protected void scoreTree(Tree pTree, List&lt;String&gt; tags, List&lt;PhraseAnnotation&gt; scoreMap) throws IOException {
+<span class="fc" id="L127">		String phrase = getOwnText(pTree, getTags());</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">		if (phrase.length() &gt; 0) {</span>
+<span class="fc" id="L129">			addToScoreList(scoreMap, new PhraseAnnotation(phrase, new BigDecimal(1)));</span>
+		}
+<span class="fc" id="L131">	}</span>
+	
+	protected String getOwnText(Tree tree) {
+<span class="nc" id="L134">		StringBuffer buf = new StringBuffer();</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">		for (Label label : tree.yield()) {</span>
+<span class="nc bnc" id="L136" title="All 2 branches missed.">			if (!omitPunctuationMarks.contains(label.value())) {</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">				if (removeLeadingSpace.contains(label.value())) {</span>
+<span class="nc bnc" id="L138" title="All 4 branches missed.">					if (buf.length() &gt; 0 &amp;&amp; Character.isWhitespace(buf.charAt(buf.length()-1))) {</span>
+<span class="nc" id="L139">						buf.deleteCharAt(buf.length()-1);</span>
+					}
+				}
+<span class="nc bnc" id="L142" title="All 2 branches missed.">				if (buf.length() == 0) {</span>
+<span class="nc" id="L143">					buf.append(label.value().toLowerCase());</span>
+				}
+				else {
+<span class="nc" id="L146">					buf.append(label.value());</span>
+				}
+<span class="nc" id="L148">				buf.append(&quot; &quot;);</span>
+			}
+<span class="nc" id="L150">		}</span>
+<span class="nc" id="L151">		return buf.toString().trim();</span>
+	}
+	
+	protected String getOwnText(Tree tree, List&lt;String&gt; tags) {
+<span class="fc" id="L155">		StringBuffer buf = new StringBuffer();</span>
+<span class="fc" id="L156">		boolean startPrinting = false;</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">		for (Label label : tree.yield()) {</span>
+<span class="fc bfc" id="L158" title="All 4 branches covered.">			if (!startPrinting &amp;&amp; tags.contains(label.value().toLowerCase())) {</span>
+<span class="fc" id="L159">				startPrinting = true;</span>
+			}
+<span class="fc bfc" id="L161" title="All 2 branches covered.">			if (startPrinting) {</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">				if (!omitPunctuationMarks.contains(label.value())) {</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">					if (removeLeadingSpace.contains(label.value())) {</span>
+<span class="pc bpc" id="L164" title="2 of 4 branches missed.">						if (buf.length() &gt; 0 &amp;&amp; Character.isWhitespace(buf.charAt(buf.length()-1))) {</span>
+<span class="fc" id="L165">							buf.deleteCharAt(buf.length()-1);</span>
+						}
+					}
+<span class="fc bfc" id="L168" title="All 2 branches covered.">					if (buf.length() == 0) {</span>
+<span class="fc" id="L169">						buf.append(label.value().toLowerCase());</span>
+					}
+					else {
+<span class="fc" id="L172">						buf.append(label.value());</span>
+					}
+<span class="fc" id="L174">					buf.append(&quot; &quot;);</span>
+				}
+			}
+<span class="fc" id="L177">		}</span>
+<span class="fc" id="L178">		return buf.toString().trim();</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TfidfScorer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OOP Core NLP</a> &gt; <a href="index.source.html" class="el_package">io.outofprintmagazine.nlp.pipeline.scorers</a> &gt; <span class="el_source">TfidfScorer.java</span></div><h1>TfidfScorer.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright (C) 2020 Ram Sadasiv
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ ******************************************************************************/
+package io.outofprintmagazine.nlp.pipeline.scorers;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import edu.stanford.nlp.ling.CoreAnnotations;
+
+public class TfidfScorer {
+
+	public TfidfScorer() {
+<span class="nc" id="L33">		super();</span>
+<span class="nc" id="L34">	}</span>
+	
+	public TfidfScorer(Map&lt;String, JsonNode&gt; corpusAggregates) {
+<span class="nc" id="L37">		this();</span>
+<span class="nc" id="L38">		this.setCorpusAggregates(corpusAggregates);</span>
+<span class="nc" id="L39">	}</span>
+	
+<span class="nc" id="L41">	private Map&lt;String, JsonNode&gt; corpusAggregates = new HashMap&lt;String, JsonNode&gt;();</span>
+	
+	public Map&lt;String, JsonNode&gt; getCorpusAggregates() {
+<span class="nc" id="L44">		return corpusAggregates;</span>
+	}
+
+	public void setCorpusAggregates(Map&lt;String, JsonNode&gt; corpusAggregates) {
+<span class="nc" id="L48">		this.corpusAggregates = corpusAggregates;</span>
+<span class="nc" id="L49">	}</span>
+	
+	public String makeDisplayName(String aggregateName) {
+<span class="nc" id="L52">		return aggregateName.substring(0, aggregateName.lastIndexOf(&quot;Aggregate&quot;))+&quot;Tfidf&quot;;</span>
+	}
+
+	//for a given corpus
+	//for each document
+	//for each document aggregate score in 
+	//	OOPNounsAnnotationAggregate
+	//	OOPWordsAnnotationAggregate
+	//	OOPWikipediaCategoriesAnnotationAggregate
+	//	OOPVerbsAnnotationAggregate
+	//for each score in aggregatedScores
+	//get score.name
+	//tf = get score.raw
+	//for the document_aggregate_score_name in corpus scores
+	//idf_n = get aggregatedScores.size()
+	//where detailScores.name == score.name
+	//idf_d = get raw.scoreStats.score.count
+	//tfidf = tf * (ln((idf_n/(1+idf_d))))
+	//write document.tfidf file &lt;- document_aggregate_score_name.score_name = tfidf
+	
+	//https://en.wikipedia.org/wiki/Tf%E2%80%93idf
+	
+	public ObjectNode scoreDocument(ObjectNode documentAggregate) {
+<span class="nc" id="L75">		ObjectMapper mapper = new ObjectMapper();</span>
+<span class="nc" id="L76">		ObjectNode tfidf = mapper.createObjectNode();</span>
+<span class="nc" id="L77">		tfidf.put(CoreAnnotations.DocIDAnnotation.class.getName(), documentAggregate.get(CoreAnnotations.DocIDAnnotation.class.getName()).asText());</span>
+<span class="nc" id="L78">		tfidf.put(CoreAnnotations.DocTitleAnnotation.class.getName(), documentAggregate.get(CoreAnnotations.DocTitleAnnotation.class.getName()).asText());</span>
+<span class="nc" id="L79">		tfidf.put(CoreAnnotations.DocSourceTypeAnnotation.class.getName(), documentAggregate.get(CoreAnnotations.DocSourceTypeAnnotation.class.getName()).asText());</span>
+<span class="nc" id="L80">		tfidf.put(CoreAnnotations.DocTypeAnnotation.class.getName(), documentAggregate.get(CoreAnnotations.DocTypeAnnotation.class.getName()).asText());</span>
+<span class="nc" id="L81">		tfidf.put(CoreAnnotations.AuthorAnnotation.class.getName(), documentAggregate.get(CoreAnnotations.AuthorAnnotation.class.getName()).asText());</span>
+<span class="nc" id="L82">		tfidf.put(CoreAnnotations.DocDateAnnotation.class.getName(), documentAggregate.get(CoreAnnotations.DocDateAnnotation.class.getName()).asText());		</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">		for (String scoreName : corpusAggregates.keySet()) {</span>
+<span class="nc" id="L84">			ObjectNode tfidfScore = tfidf.putObject(makeDisplayName(scoreName));</span>
+<span class="nc" id="L85">			ObjectNode documentAggregateScore = (ObjectNode) documentAggregate.get(scoreName);</span>
+<span class="nc" id="L86">			ArrayNode aggregatedScores = (ArrayNode)documentAggregateScore.get(&quot;aggregatedScores&quot;);</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">			for (JsonNode aggregatedScore : aggregatedScores) {</span>
+<span class="nc" id="L88">				String subScoreName = aggregatedScore.get(&quot;name&quot;).asText();</span>
+<span class="nc" id="L89">				int subScoreRaw = aggregatedScore.get(&quot;score&quot;).get(&quot;raw&quot;).asInt();</span>
+<span class="nc" id="L90">				JsonNode corpusAggregateScore = corpusAggregates.get(scoreName);</span>
+<span class="nc" id="L91">				int corpusDocumentsCount = corpusAggregateScore.get(&quot;aggregatedScores&quot;).size();</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">				for (JsonNode corpusAggregatedScore : corpusAggregateScore.get(&quot;detailScores&quot;)) {</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">					if (corpusAggregatedScore.get(&quot;name&quot;).asText().equals(subScoreName)) {</span>
+<span class="nc" id="L94">						int corpusDocumentsMatchedCount = corpusAggregatedScore.get(&quot;aggregatedScores&quot;).size();</span>
+<span class="nc" id="L95">						BigDecimal tfidfValue = new BigDecimal(subScoreRaw * (java.lang.Math.log((corpusDocumentsCount/(1+corpusDocumentsMatchedCount)))));</span>
+<span class="nc" id="L96">						tfidfScore.put(subScoreName, tfidfValue);</span>
+<span class="nc" id="L97">						break;</span>
+					}
+<span class="nc" id="L99">				}</span>
+<span class="nc" id="L100">			}</span>
+<span class="nc" id="L101">		}</span>
+<span class="nc" id="L102">		return tfidf;</span>
+	}
+	
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

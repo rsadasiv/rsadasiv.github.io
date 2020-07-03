@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ActorsAnnotator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OOP Core NLP</a> &gt; <a href="index.source.html" class="el_package">io.outofprintmagazine.nlp.pipeline.annotators</a> &gt; <span class="el_source">ActorsAnnotator.java</span></div><h1>ActorsAnnotator.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright (C) 2020 Ram Sadasiv
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ ******************************************************************************/
+package io.outofprintmagazine.nlp.pipeline.annotators;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import edu.stanford.nlp.coref.CorefCoreAnnotations;
+import edu.stanford.nlp.ling.CoreAnnotation;
+import edu.stanford.nlp.ling.CoreAnnotations;
+import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.pipeline.Annotation;
+import edu.stanford.nlp.pipeline.Annotator;
+import edu.stanford.nlp.pipeline.CoreDocument;
+import edu.stanford.nlp.pipeline.CoreQuote;
+import edu.stanford.nlp.pipeline.CoreSentence;
+import edu.stanford.nlp.semgraph.SemanticGraphCoreAnnotations;
+import edu.stanford.nlp.util.ArraySet;
+import io.outofprintmagazine.nlp.pipeline.ActorAnnotation;
+import io.outofprintmagazine.nlp.pipeline.ContextualAnnotation;
+import io.outofprintmagazine.nlp.utils.BingUtils;
+
+public class ActorsAnnotator extends AbstractContextualAnnotator implements Annotator, OOPAnnotator {
+	
+	@SuppressWarnings(&quot;unused&quot;)
+<span class="nc" id="L52">	private static final Logger logger = LogManager.getLogger(ActorsAnnotator.class);</span>
+	
+	@Override
+	public Logger getLogger() {
+<span class="nc" id="L56">		return logger;</span>
+	}
+
+	@Override
+	protected ContextualAnnotation getConcreteAnnotation() {
+<span class="nc" id="L61">		return new ActorAnnotation();</span>
+	}
+	
+	public ActorsAnnotator() {
+<span class="nc" id="L65">		super();</span>
+<span class="nc" id="L66">	}</span>
+	
+	@SuppressWarnings(&quot;rawtypes&quot;)
+	@Override
+	public Set&lt;Class&lt;? extends CoreAnnotation&gt;&gt; requires() {
+<span class="nc" id="L71">		return Collections.unmodifiableSet(</span>
+			new ArraySet&lt;&gt;(
+<span class="nc" id="L73">				Arrays.asList(</span>
+					CoreAnnotations.TextAnnotation.class, 
+					CoreAnnotations.TokensAnnotation.class,
+					CoreAnnotations.LemmaAnnotation.class,
+					CoreAnnotations.SentencesAnnotation.class,
+					CoreAnnotations.NamedEntityTagAnnotation.class,
+					CoreAnnotations.NormalizedNamedEntityTagAnnotation.class,
+					CoreAnnotations.CanonicalEntityMentionIndexAnnotation.class,
+					CorefCoreAnnotations.CorefChainAnnotation.class,
+					SemanticGraphCoreAnnotations.BasicDependenciesAnnotation.class,
+					CoreAnnotations.QuotationsAnnotation.class,
+					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPPeopleAnnotation.class,
+					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.VaderSentimentAnnotation.class,
+					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.CoreNlpSentimentAnnotation.class,
+					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.CoreNlpGenderAnnotation.class,
+					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPGenderAnnotation.class,
+					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPVerbGroupsAnnotation.class,
+					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPVerbsAnnotation.class,
+					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPNounsAnnotation.class,
+					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPAdjectivesAnnotation.class,
+					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPAdverbsAnnotation.class,
+					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPMyersBriggsAnnotation.class
+					
+				)
+			)
+		);
+	}
+	
+	@SuppressWarnings(&quot;rawtypes&quot;)
+	@Override
+	public Class getAnnotationClass() {
+<span class="nc" id="L104">		return io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPActorsAnnotation.class;</span>
+	}
+	
+	@Override
+	public Class getEntityAnnotationClass() {
+<span class="nc" id="L109">		return io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPPeopleAnnotation.class;</span>
+	}
+
+	
+	@SuppressWarnings(&quot;unchecked&quot;)
+	@Override
+	public void annotate(Annotation annotation) {
+<span class="nc" id="L116">		CoreDocument document = new CoreDocument(annotation);</span>
+<span class="nc" id="L117">		Map&lt;String,ActorAnnotation&gt; scoreMap = new HashMap&lt;String,ActorAnnotation&gt;();</span>
+<span class="nc" id="L118">		Map&lt;String,BigDecimal&gt; entities = (Map&lt;String, BigDecimal&gt;) document.annotation().get(getEntityAnnotationClass());</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">	    for (String canonicalEntityName : entities.keySet()) {</span>
+<span class="nc" id="L120">	    	ActorAnnotation characterAnnotation = new ActorAnnotation();</span>
+<span class="nc" id="L121">	    	characterAnnotation.setCanonicalName(canonicalEntityName);</span>
+	    	try {
+<span class="nc bnc" id="L123" title="All 2 branches missed.">	    		for (CoreSentence sentence: document.sentences()) {</span>
+<span class="nc" id="L124">	    			Map&lt;String,BigDecimal&gt; sentencePeople = (Map&lt;String, BigDecimal&gt;) sentence.coreMap().get(getEntityAnnotationClass());</span>
+<span class="nc bnc" id="L125" title="All 4 branches missed.">	    			if (sentencePeople != null &amp;&amp; sentencePeople.get(canonicalEntityName) != null) {</span>
+<span class="nc" id="L126">	    				scoreSentence(document, sentence, characterAnnotation);</span>
+	    			}
+<span class="nc bnc" id="L128" title="All 2 branches missed.">	    			for (CoreLabel token : sentence.tokens()) {</span>
+<span class="nc" id="L129">		    			Map&lt;String,BigDecimal&gt; tokenPeople = (Map&lt;String, BigDecimal&gt;) token.get(getEntityAnnotationClass());</span>
+<span class="nc bnc" id="L130" title="All 4 branches missed.">		    			if (tokenPeople != null &amp;&amp; tokenPeople.get(canonicalEntityName) != null) {</span>
+<span class="nc" id="L131">		    				scoreToken(document, token, characterAnnotation);</span>
+<span class="nc" id="L132">		    				scoreOOPGender(token, characterAnnotation);</span>
+<span class="nc" id="L133">		    				scoreCoreGender(token, characterAnnotation);</span>
+		    			}
+<span class="nc" id="L135">	    			}</span>
+<span class="nc" id="L136">	    		}</span>
+<span class="nc" id="L137">		    	scoreQuotes(document, canonicalEntityName, characterAnnotation);</span>
+<span class="nc" id="L138">		    	scoreThumbnails(characterAnnotation);</span>
+
+	    	}
+<span class="nc" id="L141">	    	catch (Exception e) {</span>
+<span class="nc" id="L142">	    		ByteArrayOutputStream os = new ByteArrayOutputStream();</span>
+<span class="nc" id="L143">	    		PrintStream ps = new PrintStream(os);</span>
+<span class="nc" id="L144">	    		e.printStackTrace(ps);</span>
+	    		try {
+<span class="nc" id="L146">					logger.error(os.toString(&quot;UTF8&quot;));</span>
+<span class="nc" id="L147">				} catch (UnsupportedEncodingException e1) {</span>
+<span class="nc" id="L148">					e1.printStackTrace();</span>
+<span class="nc" id="L149">				}</span>
+<span class="nc" id="L150">	    	}</span>
+<span class="nc bnc" id="L151" title="All 2 branches missed.">	    	if (characterAnnotation.getImportance().compareTo(new BigDecimal(1)) &gt; 0) {</span>
+<span class="nc" id="L152">	    		characterAnnotation.setVaderSentimentAvg();</span>
+<span class="nc" id="L153">	    		characterAnnotation.setCoreNlpSentimentAvg();</span>
+<span class="nc" id="L154">	    		scoreMap.put(toAlphaNumeric(canonicalEntityName), characterAnnotation);</span>
+	    	}
+<span class="nc" id="L156">	    }</span>
+<span class="nc" id="L157">	    document.annotation().set(getAnnotationClass(), scoreMap);</span>
+<span class="nc" id="L158">	}</span>
+	
+
+	
+	protected void scoreQuotes(CoreDocument document, String canonicalEntityName, ActorAnnotation characterAnnotation) throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException {
+<span class="nc bnc" id="L163" title="All 2 branches missed.">		for (CoreQuote quote : document.quotes()) {</span>
+<span class="nc bnc" id="L164" title="All 2 branches missed.">			if (quote.hasCanonicalSpeaker) {</span>
+<span class="nc bnc" id="L165" title="All 2 branches missed.">				if (quote.canonicalSpeaker().get().equals(canonicalEntityName)) {</span>
+<span class="nc" id="L166">					characterAnnotation.getQuotes().add(quote.text());</span>
+				}
+			}
+<span class="nc" id="L169">		}</span>
+<span class="nc" id="L170">	}</span>
+	
+	protected void scoreCoreGender(CoreLabel token, ActorAnnotation characterAnnotation) {
+<span class="nc bnc" id="L173" title="All 2 branches missed.">		if (token.containsKey(io.outofprintmagazine.nlp.pipeline.OOPAnnotations.CoreNlpGenderAnnotation.class)) {</span>
+<span class="nc bnc" id="L174" title="All 2 branches missed.">			for (String gender : token.get(io.outofprintmagazine.nlp.pipeline.OOPAnnotations.CoreNlpGenderAnnotation.class).keySet())</span>
+<span class="nc" id="L175">				characterAnnotation.setCoreNlpGender(gender);</span>
+		}		
+<span class="nc" id="L177">	}</span>
+	
+	protected void scoreOOPGender(CoreLabel token, ActorAnnotation characterAnnotation) {
+<span class="nc bnc" id="L180" title="All 2 branches missed.">		if (token.containsKey(io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPGenderAnnotation.class)) {</span>
+<span class="nc bnc" id="L181" title="All 2 branches missed.">			for (String gender : token.get(io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPGenderAnnotation.class).keySet())</span>
+<span class="nc" id="L182">				characterAnnotation.setOOPGender(gender);</span>
+		}		
+<span class="nc" id="L184">	}</span>
+	
+	@Override
+	protected void scoreThumbnails(ContextualAnnotation actor) throws IOException, URISyntaxException {
+<span class="nc" id="L188">		String tmpCharacterName = actor.getCanonicalName();</span>
+<span class="nc bnc" id="L189" title="All 2 branches missed.">		if (!tmpCharacterName.equalsIgnoreCase(&quot;I&quot;)) {</span>
+
+<span class="nc" id="L191">			String[] names = tmpCharacterName.split(&quot; &quot;);</span>
+<span class="nc bnc" id="L192" title="All 2 branches missed.">			if (names.length &gt; 1) {</span>
+<span class="nc bnc" id="L193" title="All 6 branches missed.">				if (names[0].startsWith(&quot;Mr&quot;) || names[0].startsWith(&quot;Mrs&quot;) || names[0].startsWith(&quot;Dr&quot;)) {</span>
+<span class="nc" id="L194">					tmpCharacterName = names[1];</span>
+				}
+				else {
+<span class="nc" id="L197">					tmpCharacterName = names[0];</span>
+				}
+			}
+<span class="nc" id="L200">			actor.getThumbnails().addAll(BingUtils.getInstance(getParameterStore()).getImagesByText(tmpCharacterName));</span>
+		}		
+<span class="nc" id="L202">	}</span>
+	
+	
+	protected void scoreSentence(CoreDocument document, CoreSentence sentence, ActorAnnotation characterAnnotation) throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException {
+<span class="nc" id="L206">		super.scoreSentence(document, sentence, (ContextualAnnotation) characterAnnotation);</span>
+<span class="nc" id="L207">		scoreMyersBriggs(sentence, characterAnnotation);</span>
+<span class="nc" id="L208">	}</span>
+	
+	
+	protected void scoreMyersBriggs(CoreSentence sentence, ActorAnnotation characterAnnotation ) {
+<span class="nc bnc" id="L212" title="All 2 branches missed.">		if (sentence.coreMap().containsKey(io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPMyersBriggsAnnotation.class)) {</span>
+<span class="nc" id="L213">			Map&lt;String,BigDecimal&gt; annotationScore = sentence.coreMap().get(io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPMyersBriggsAnnotation.class);</span>
+<span class="nc bnc" id="L214" title="All 2 branches missed.">			if (annotationScore.containsKey(&quot;extrovert&quot;)) {</span>
+<span class="nc" id="L215">				BigDecimal existingScore = new BigDecimal(0);</span>
+<span class="nc bnc" id="L216" title="All 2 branches missed.">				if (characterAnnotation.getOOPMyersBriggs().containsKey(&quot;extrovert&quot;)) {</span>
+<span class="nc" id="L217">					existingScore = characterAnnotation.getOOPMyersBriggs().get(&quot;extrovert&quot;);</span>
+				}
+<span class="nc" id="L219">				characterAnnotation.getOOPMyersBriggs().put(&quot;extrovert&quot;, existingScore.add(annotationScore.get(&quot;extrovert&quot;)));</span>
+			}
+<span class="nc bnc" id="L221" title="All 2 branches missed.">			if (annotationScore.containsKey(&quot;introvert&quot;)) {</span>
+<span class="nc" id="L222">				BigDecimal existingScore = new BigDecimal(0);</span>
+<span class="nc bnc" id="L223" title="All 2 branches missed.">				if (characterAnnotation.getOOPMyersBriggs().containsKey(&quot;introvert&quot;)) {</span>
+<span class="nc" id="L224">					existingScore = characterAnnotation.getOOPMyersBriggs().get(&quot;introvert&quot;);</span>
+				}
+<span class="nc" id="L226">				characterAnnotation.getOOPMyersBriggs().put(&quot;introvert&quot;, existingScore.add(annotationScore.get(&quot;introvert&quot;)));</span>
+			}
+<span class="nc bnc" id="L228" title="All 2 branches missed.">			if (annotationScore.containsKey(&quot;sensing&quot;)) {</span>
+<span class="nc" id="L229">				BigDecimal existingScore = new BigDecimal(0);</span>
+<span class="nc bnc" id="L230" title="All 2 branches missed.">				if (characterAnnotation.getOOPMyersBriggs().containsKey(&quot;sensing&quot;)) {</span>
+<span class="nc" id="L231">					existingScore = characterAnnotation.getOOPMyersBriggs().get(&quot;sensing&quot;);</span>
+				}
+<span class="nc" id="L233">				characterAnnotation.getOOPMyersBriggs().put(&quot;sensing&quot;, existingScore.add(annotationScore.get(&quot;sensing&quot;)));</span>
+			}
+<span class="nc bnc" id="L235" title="All 2 branches missed.">			if (annotationScore.containsKey(&quot;intuitive&quot;)) {</span>
+<span class="nc" id="L236">				BigDecimal existingScore = new BigDecimal(0);</span>
+<span class="nc bnc" id="L237" title="All 2 branches missed.">				if (characterAnnotation.getOOPMyersBriggs().containsKey(&quot;intuitive&quot;)) {</span>
+<span class="nc" id="L238">					existingScore = characterAnnotation.getOOPMyersBriggs().get(&quot;intuitive&quot;);</span>
+				}
+<span class="nc" id="L240">				characterAnnotation.getOOPMyersBriggs().put(&quot;intuitive&quot;, existingScore.add(annotationScore.get(&quot;intuitive&quot;)));</span>
+			}
+<span class="nc bnc" id="L242" title="All 2 branches missed.">			if (annotationScore.containsKey(&quot;thinking&quot;)) {</span>
+<span class="nc" id="L243">				BigDecimal existingScore = new BigDecimal(0);</span>
+<span class="nc bnc" id="L244" title="All 2 branches missed.">				if (characterAnnotation.getOOPMyersBriggs().containsKey(&quot;thinking&quot;)) {</span>
+<span class="nc" id="L245">					existingScore = characterAnnotation.getOOPMyersBriggs().get(&quot;thinking&quot;);</span>
+				}
+<span class="nc" id="L247">				characterAnnotation.getOOPMyersBriggs().put(&quot;thinking&quot;, existingScore.add(annotationScore.get(&quot;thinking&quot;)));</span>
+			}
+<span class="nc bnc" id="L249" title="All 2 branches missed.">			if (annotationScore.containsKey(&quot;feeling&quot;)) {</span>
+<span class="nc" id="L250">				BigDecimal existingScore = new BigDecimal(0);</span>
+<span class="nc bnc" id="L251" title="All 2 branches missed.">				if (characterAnnotation.getOOPMyersBriggs().containsKey(&quot;feeling&quot;)) {</span>
+<span class="nc" id="L252">					existingScore = characterAnnotation.getOOPMyersBriggs().get(&quot;feeling&quot;);</span>
+				}
+<span class="nc" id="L254">				characterAnnotation.getOOPMyersBriggs().put(&quot;feeling&quot;, existingScore.add(annotationScore.get(&quot;feeling&quot;)));</span>
+			}
+<span class="nc bnc" id="L256" title="All 2 branches missed.">			if (annotationScore.containsKey(&quot;judging&quot;)) {</span>
+<span class="nc" id="L257">				BigDecimal existingScore = new BigDecimal(0);</span>
+<span class="nc bnc" id="L258" title="All 2 branches missed.">				if (characterAnnotation.getOOPMyersBriggs().containsKey(&quot;judging&quot;)) {</span>
+<span class="nc" id="L259">					existingScore = characterAnnotation.getOOPMyersBriggs().get(&quot;judging&quot;);</span>
+				}
+<span class="nc" id="L261">				characterAnnotation.getOOPMyersBriggs().put(&quot;judging&quot;, existingScore.add(annotationScore.get(&quot;judging&quot;)));</span>
+			}
+<span class="nc bnc" id="L263" title="All 2 branches missed.">			if (annotationScore.containsKey(&quot;perceiving&quot;)) {</span>
+<span class="nc" id="L264">				BigDecimal existingScore = new BigDecimal(0);</span>
+<span class="nc bnc" id="L265" title="All 2 branches missed.">				if (characterAnnotation.getOOPMyersBriggs().containsKey(&quot;perceiving&quot;)) {</span>
+<span class="nc" id="L266">					existingScore = characterAnnotation.getOOPMyersBriggs().get(&quot;perceiving&quot;);</span>
+				}
+<span class="nc" id="L268">				characterAnnotation.getOOPMyersBriggs().put(&quot;perceiving&quot;, existingScore.add(annotationScore.get(&quot;perceiving&quot;)));</span>
+			}
+		}
+<span class="nc" id="L271">	}</span>
+	
+
+	@Override
+	public String getDescription() {
+<span class="nc" id="L276">		return &quot;OOPPeopleAnnotation with sentiment, quotes, coref, and universal dependencies nsubj, nmod:poss, advmod, amod (http://universaldependencies.org/docsv1/en/dep/index.html).&quot; ;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

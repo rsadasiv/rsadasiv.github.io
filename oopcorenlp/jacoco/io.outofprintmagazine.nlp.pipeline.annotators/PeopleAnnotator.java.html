@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PeopleAnnotator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OOP Core NLP</a> &gt; <a href="index.source.html" class="el_package">io.outofprintmagazine.nlp.pipeline.annotators</a> &gt; <span class="el_source">PeopleAnnotator.java</span></div><h1>PeopleAnnotator.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright (C) 2020 Ram Sadasiv
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ ******************************************************************************/
+package io.outofprintmagazine.nlp.pipeline.annotators;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import edu.stanford.nlp.coref.CorefCoreAnnotations;
+import edu.stanford.nlp.coref.data.CorefChain;
+import edu.stanford.nlp.coref.data.CorefChain.CorefMention;
+import edu.stanford.nlp.ling.CoreAnnotation;
+import edu.stanford.nlp.ling.CoreAnnotations;
+import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.pipeline.Annotation;
+import edu.stanford.nlp.pipeline.Annotator;
+import edu.stanford.nlp.pipeline.CoreDocument;
+import edu.stanford.nlp.pipeline.CoreEntityMention;
+import edu.stanford.nlp.pipeline.CoreQuote;
+import edu.stanford.nlp.pipeline.CoreSentence;
+import edu.stanford.nlp.util.ArraySet;
+import io.outofprintmagazine.nlp.pipeline.PhraseAnnotation;
+import io.outofprintmagazine.nlp.pipeline.scorers.MapSum;
+import io.outofprintmagazine.nlp.pipeline.scorers.PhraseScorer;
+import io.outofprintmagazine.nlp.pipeline.scorers.Scorer;
+import io.outofprintmagazine.nlp.pipeline.serializers.MapSerializer;
+import io.outofprintmagazine.nlp.pipeline.serializers.PhraseSerializer;
+import io.outofprintmagazine.nlp.pipeline.serializers.Serializer;
+import io.outofprintmagazine.nlp.utils.CoreNlpUtils;
+
+public class PeopleAnnotator extends AbstractPosAnnotator implements OOPAnnotator {
+	
+	@SuppressWarnings(&quot;unused&quot;)
+<span class="fc" id="L59">	private static final Logger logger = LogManager.getLogger(PeopleAnnotator.class);</span>
+	
+	@Override
+	protected Logger getLogger() {
+<span class="nc" id="L63">		return logger;</span>
+	}
+	
+	
+<span class="fc" id="L67">	private List&lt;String&gt; properNouns = Arrays.asList(&quot;NNP&quot;,&quot;NNPS&quot;);</span>
+
+	public PeopleAnnotator() {
+<span class="fc" id="L70">		super();</span>
+<span class="fc" id="L71">		this.setScorer((Scorer) new PhraseScorer(this.getAnnotationClass()));</span>
+<span class="fc" id="L72">		this.setSerializer((Serializer) new PhraseSerializer(this.getAnnotationClass()));</span>
+<span class="fc" id="L73">		this.setTags(Arrays.asList(&quot;NNP&quot;, &quot;NNPS&quot;, &quot;NN&quot;, &quot;NNS&quot;));</span>
+<span class="fc" id="L74">	}</span>
+	
+	@Override
+	public Class getAnnotationClass() {
+<span class="fc" id="L78">		return io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPPeopleAnnotation.class;</span>
+	}
+	
+	@Override
+	public Set&lt;Class&lt;? extends CoreAnnotation&gt;&gt; requires() {
+<span class="nc" id="L83">		return Collections.unmodifiableSet(</span>
+			new ArraySet&lt;&gt;(
+<span class="nc" id="L85">				Arrays.asList(</span>
+					CoreAnnotations.TextAnnotation.class, 
+					CoreAnnotations.TokensAnnotation.class,
+					CoreAnnotations.SentencesAnnotation.class,
+					CoreAnnotations.PartOfSpeechAnnotation.class,
+					CoreAnnotations.LemmaAnnotation.class,
+					CoreAnnotations.NamedEntityTagAnnotation.class, 
+					CoreAnnotations.NormalizedNamedEntityTagAnnotation.class,
+					CoreAnnotations.CanonicalEntityMentionIndexAnnotation.class,
+					CorefCoreAnnotations.CorefChainAnnotation.class
+				)
+			)
+		);
+	}
+	
+	//Do Person entities first
+	//Then do coref
+
+	@Override
+	public void annotate(Annotation annotation) {
+<span class="fc" id="L105">		CoreDocument document = new CoreDocument(annotation);</span>
+<span class="fc" id="L106">		annotateNNP(document);</span>
+<span class="fc" id="L107">		annotatePerson(document);</span>
+		try {
+<span class="fc" id="L109">			annotateCoref(document);</span>
+		}
+<span class="nc" id="L111">		catch (Exception e) {</span>
+<span class="nc" id="L112">			logger.error(e);</span>
+<span class="fc" id="L113">		}</span>
+<span class="fc" id="L114">		annotateNarrator(document);</span>
+<span class="fc" id="L115">	}</span>
+	
+	private List&lt;CoreEntityMention&gt; getAllPersonEntityMentions(CoreDocument document) {
+<span class="fc" id="L118">		List&lt;CoreEntityMention&gt; retval = new ArrayList&lt;CoreEntityMention&gt;();</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">		for (CoreSentence sentence : document.sentences()) {</span>
+<span class="fc" id="L120">			List&lt;CoreEntityMention&gt; entityMentions = sentence.entityMentions();</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">			for (CoreEntityMention mention : entityMentions) {</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">				if (mention.entityType().equals(&quot;PERSON&quot;)) {</span>
+<span class="fc" id="L123">					boolean isPronoun = false;</span>
+					try {
+<span class="fc bfc" id="L125" title="All 2 branches covered.">						for (CoreLabel t : CoreNlpUtils.getInstance(getParameterStore()).getTokensFromCoreEntityMention(document, mention)) {</span>
+<span class="pc bpc" id="L126" title="1 of 4 branches missed.">							if (t.tag().equals(&quot;PRP&quot;) || t.tag().equals(&quot;PRP$&quot;)) {</span>
+<span class="fc" id="L127">								isPronoun = true;</span>
+<span class="fc" id="L128">								break;</span>
+							}
+<span class="fc" id="L130">						}</span>
+					} 
+<span class="nc" id="L132">					catch (Exception e) {</span>
+<span class="nc" id="L133">						logger.error(e);</span>
+<span class="fc" id="L134">					}</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">					if (!isPronoun) {</span>
+<span class="pc bpc" id="L136" title="1 of 2 branches missed.">						if (mention.entityType().equals(&quot;PERSON&quot;)) {</span>
+<span class="fc" id="L137">							retval.add(mention);</span>
+						}
+					}
+				}
+<span class="fc" id="L141">			}</span>
+<span class="fc" id="L142">		}</span>
+<span class="fc" id="L143">		return retval;</span>
+	}
+	
+	private String getEntityNameFromEntityMention(CoreEntityMention entityMention) {
+<span class="fc" id="L147">		String personName = &quot;Kirby&quot;;</span>
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">		if (entityMention.canonicalEntityMention().isPresent()) {</span>
+<span class="fc" id="L149">			personName = entityMention.canonicalEntityMention().get().toString();</span>
+		}
+		else {
+<span class="nc" id="L152">			personName = entityMention.entity().toString();</span>
+		}
+<span class="fc" id="L154">		return personName;</span>
+	}
+		
+	
+	private Map&lt;String, String&gt; getEntityNameAliases(List&lt;CoreEntityMention&gt; allEntityMentions) {
+<span class="fc" id="L159">		Map&lt;String, String&gt; entityAliases = new HashMap&lt;String,String&gt;();</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">		for (CoreEntityMention entityMention : allEntityMentions) {</span>
+<span class="fc" id="L161">			String personName = getEntityNameFromEntityMention(entityMention);</span>
+<span class="fc" id="L162">			if (</span>
+<span class="pc bpc" id="L163" title="1 of 2 branches missed.">					!personName.equalsIgnoreCase(&quot;he&quot;) </span>
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">					&amp;&amp; !personName.equalsIgnoreCase(&quot;his&quot;) </span>
+<span class="pc bpc" id="L165" title="1 of 2 branches missed.">					&amp;&amp; !personName.equalsIgnoreCase(&quot;she&quot;) </span>
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">					&amp;&amp; !personName.equalsIgnoreCase(&quot;her&quot;)</span>
+			) {
+<span class="fc" id="L168">				entityAliases.put(personName.toLowerCase(), personName);</span>
+			}			
+			
+<span class="fc" id="L171">		}</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">		for (String entityName : entityAliases.keySet()) {</span>
+<span class="pc bpc" id="L173" title="1 of 2 branches missed.">			if (entityName.contains(&quot; &quot;)) {</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">				for (String shortEntityName : entityAliases.keySet()) {</span>
+<span class="pc bpc" id="L175" title="1 of 2 branches missed.">					if (entityName.contains(shortEntityName)) {</span>
+<span class="fc" id="L176">						entityAliases.put(shortEntityName, entityAliases.get(entityName));</span>
+					}
+<span class="fc" id="L178">				}</span>
+			}
+<span class="fc" id="L180">		}</span>
+
+<span class="fc" id="L182">		return entityAliases;</span>
+		
+	}
+	
+	private String getNNPNameAlias(String nnpName, Map&lt;String, String&gt; entityAliases) {
+<span class="fc" id="L187">		String retval = nnpName;</span>
+<span class="pc bpc" id="L188" title="1 of 2 branches missed.">		for (String entityName : entityAliases.keySet()) {</span>
+<span class="nc bnc" id="L189" title="All 2 branches missed.">			if (entityName.contains(nnpName.toLowerCase())) {</span>
+<span class="nc" id="L190">				retval = entityAliases.get(entityName);</span>
+			}
+<span class="nc" id="L192">		}</span>
+<span class="fc" id="L193">		return retval;</span>
+	}
+	
+	private void annotatePerson(CoreDocument document) {
+<span class="fc" id="L197">		List&lt;CoreEntityMention&gt; allEntityMentions = getAllPersonEntityMentions(document);</span>
+<span class="fc" id="L198">		Map&lt;String, String&gt; allEntityAliases = getEntityNameAliases(allEntityMentions);</span>
+<span class="fc bfc" id="L199" title="All 2 branches covered.">		for (CoreEntityMention entityMention : allEntityMentions) {</span>
+<span class="fc" id="L200">			String personName = getEntityNameFromEntityMention(entityMention);</span>
+<span class="fc" id="L201">			if (</span>
+<span class="pc bpc" id="L202" title="1 of 2 branches missed.">					!personName.equalsIgnoreCase(&quot;he&quot;) </span>
+<span class="pc bpc" id="L203" title="1 of 2 branches missed.">					&amp;&amp; !personName.equalsIgnoreCase(&quot;his&quot;) </span>
+<span class="pc bpc" id="L204" title="1 of 2 branches missed.">					&amp;&amp; !personName.equalsIgnoreCase(&quot;she&quot;) </span>
+<span class="pc bpc" id="L205" title="1 of 2 branches missed.">					&amp;&amp; !personName.equalsIgnoreCase(&quot;her&quot;)</span>
+			) {
+<span class="fc" id="L207">				String entityName = allEntityAliases.get(personName.toLowerCase());</span>
+
+<span class="fc bfc" id="L209" title="All 2 branches covered.">				for (CoreLabel token : entityMention.tokens()) {</span>
+//					logger.debug(&quot;Person&quot;);
+//					logger.debug(&quot;token.sentIndex: &quot; + token.sentIndex());
+//					logger.debug(&quot;token.index: &quot; + token.index());
+//					logger.debug(&quot;token.lemma: &quot; + token.lemma());
+//					logger.debug(&quot;personName: &quot; + personName); 
+//					logger.debug(&quot;entityName: &quot; + entityName); 
+//					logger.debug(&quot;entityType: &quot; + entityMention.entityType());
+//					logger.debug(&quot;------------&quot;);
+<span class="pc bpc" id="L218" title="1 of 2 branches missed.">					if (!token.containsKey(getAnnotationClass())) {</span>
+<span class="fc" id="L219">						List&lt;PhraseAnnotation&gt; scoreList = new ArrayList&lt;PhraseAnnotation&gt;();</span>
+<span class="fc" id="L220">						addToScoreList(scoreList, new PhraseAnnotation(entityName, new BigDecimal(1)));</span>
+<span class="fc" id="L221">						token.set(getAnnotationClass(), scoreList);</span>
+					}
+<span class="fc" id="L223">				}</span>
+			}
+<span class="fc" id="L225">		}</span>
+<span class="fc" id="L226">	}</span>
+	
+	private void annotateNNP(CoreDocument document) {
+<span class="fc" id="L229">		List&lt;CoreEntityMention&gt; allEntityMentions = getAllPersonEntityMentions(document);</span>
+<span class="fc" id="L230">		Map&lt;String, String&gt; allEntityAliases = getEntityNameAliases(allEntityMentions);</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">		for (CoreSentence sentence : document.sentences()) {</span>
+<span class="fc bfc" id="L232" title="All 2 branches covered.">			for (CoreLabel token : sentence.tokens()) {</span>
+<span class="fc bfc" id="L233" title="All 2 branches covered.">				if (scoreTag(token) != null) {</span>
+<span class="fc" id="L234">					String personName = null;</span>
+<span class="pc bpc" id="L235" title="2 of 6 branches missed.">					if (token.ner() == null || &quot;O&quot;.equals(token.ner()) || &quot;MISC&quot;.equals(token.ner())) {</span>
+<span class="fc" id="L236">						personName = allEntityAliases.get(token.lemma().toLowerCase());</span>
+<span class="pc bpc" id="L237" title="1 of 4 branches missed.">						if (personName == null &amp;&amp; properNouns.contains(token.tag())) {</span>
+<span class="fc" id="L238">							personName = getNNPNameAlias(token.lemma(), allEntityAliases);</span>
+						}
+					}
+<span class="fc bfc" id="L241" title="All 2 branches covered.">					if (personName != null) {</span>
+//						logger.debug(&quot;NNP&quot;);
+//						logger.debug(&quot;token.sentIndex: &quot; + token.sentIndex());
+//						logger.debug(&quot;token.index: &quot; + token.index());
+//						logger.debug(&quot;token.lemma: &quot; + token.lemma());
+//						logger.debug(&quot;personName: &quot; + personName); 
+//						logger.debug(&quot;------------&quot;);
+<span class="pc bpc" id="L248" title="1 of 2 branches missed.">						if (!token.containsKey(getAnnotationClass())) {</span>
+<span class="fc" id="L249">							List&lt;PhraseAnnotation&gt; scoreList = new ArrayList&lt;PhraseAnnotation&gt;();</span>
+<span class="fc" id="L250">							addToScoreList(scoreList, new PhraseAnnotation(personName, new BigDecimal(1)));</span>
+<span class="fc" id="L251">							token.set(getAnnotationClass(), scoreList);</span>
+						}
+					}
+
+				}
+<span class="fc" id="L256">			}</span>
+<span class="fc" id="L257">		}</span>
+<span class="fc" id="L258">	}</span>
+	
+	//I must have this method somewhere already
+	public List&lt;Map.Entry&lt;String, BigDecimal&gt;&gt; sortMapByValueDescending(Map&lt;String,BigDecimal&gt; hm) {
+<span class="fc" id="L262">        List&lt;Map.Entry&lt;String, BigDecimal&gt;&gt; list = new java.util.LinkedList&lt;Map.Entry&lt;String, BigDecimal&gt;&gt;(hm.entrySet()); </span>
+<span class="fc" id="L263">         Collections.sort(list, new Comparator&lt;Map.Entry&lt;String, BigDecimal&gt;&gt;() { </span>
+             @Override
+			public int compare(Map.Entry&lt;String, BigDecimal&gt; o1,  
+                                Map.Entry&lt;String, BigDecimal&gt; o2) 
+             { 
+<span class="nc" id="L268">                 return (o2.getValue()).compareTo(o1.getValue()); </span>
+             } 
+         });
+<span class="fc" id="L271">         return list;</span>
+	}
+	
+	
+	private void annotateCoref(CoreDocument document) throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException {
+<span class="fc bfc" id="L276" title="All 2 branches covered.">		for (Map.Entry&lt;Integer, CorefChain&gt; corefChainEntry : document.corefChains().entrySet()) {</span>
+<span class="fc" id="L277">			CorefChain corefChain = corefChainEntry.getValue();</span>
+			
+<span class="fc" id="L279">			Map&lt;String, BigDecimal&gt; corefPeople = new HashMap&lt;String,BigDecimal&gt;();</span>
+			
+<span class="fc bfc" id="L281" title="All 2 branches covered.">			for (CorefMention corefMention : corefChain.getMentionsInTextualOrder()) {</span>
+<span class="fc bfc" id="L282" title="All 2 branches covered.">				for (CoreEntityMention entityMention : CoreNlpUtils.getInstance(getParameterStore()).getCoreEntityMentionFromCorefMention(document, corefMention)) {</span>
+<span class="fc bfc" id="L283" title="All 2 branches covered.">					for (CoreLabel token : entityMention.tokens()) {	</span>
+<span class="fc bfc" id="L284" title="All 2 branches covered.">						if (token.containsKey(getAnnotationClass())) {</span>
+<span class="fc" id="L285">							List&lt;PhraseAnnotation&gt; existingScores = (List&lt;PhraseAnnotation&gt;) token.get(getAnnotationClass());</span>
+							//Map&lt;String,BigDecimal&gt; personMap = (Map&lt;String, BigDecimal&gt;) token.get(getAnnotationClass());
+							//for (Map.Entry&lt;String, BigDecimal&gt; personEntry : personMap.entrySet()) {
+<span class="fc bfc" id="L288" title="All 2 branches covered.">							for (PhraseAnnotation personScore : existingScores) {</span>
+<span class="fc" id="L289">								BigDecimal existingScore = corefPeople.get(personScore.getName());</span>
+<span class="fc bfc" id="L290" title="All 2 branches covered.">								if (existingScore == null) {</span>
+<span class="fc" id="L291">									existingScore = new BigDecimal(0);</span>
+								}
+<span class="fc" id="L293">								corefPeople.put(personScore.getName(), existingScore.add(personScore.getValue()));</span>
+<span class="fc" id="L294">							}</span>
+						}
+						
+<span class="fc" id="L297">					}</span>
+<span class="fc" id="L298">				}</span>
+<span class="fc" id="L299">			}</span>
+<span class="fc bfc" id="L300" title="All 2 branches covered.">			if (corefPeople.size() &gt; 0) {</span>
+				
+<span class="fc" id="L302">				String corefPersonName = sortMapByValueDescending(corefPeople).get(0).getKey();</span>
+				
+<span class="fc" id="L304">				boolean haveSeenProper = false;</span>
+<span class="fc bfc" id="L305" title="All 2 branches covered.">				for (CorefMention corefMention : corefChain.getMentionsInTextualOrder()) {</span>
+//					if (corefMention.mentionType.compareTo(Dictionaries.MentionType.PROPER) == 0) {
+//						if (haveSeenProper) {
+//							break;
+//						}
+//						else {
+//							haveSeenProper = true;
+//						}
+//					}
+					//if (corefMention.mentionType.compareTo(Dictionaries.MentionType.PRONOMINAL) == 0) {
+<span class="fc bfc" id="L315" title="All 2 branches covered.">						for (CoreEntityMention entityMention : CoreNlpUtils.getInstance(getParameterStore()).getCoreEntityMentionFromCorefMention(document, corefMention)) {</span>
+<span class="fc bfc" id="L316" title="All 2 branches covered.">							for (CoreLabel token : entityMention.tokens()) {</span>
+<span class="fc bfc" id="L317" title="All 2 branches covered.">								if (!token.containsKey(getAnnotationClass())) {</span>
+<span class="fc" id="L318">									List&lt;PhraseAnnotation&gt; scoreList = new ArrayList&lt;PhraseAnnotation&gt;();</span>
+<span class="fc" id="L319">									addToScoreList(scoreList, new PhraseAnnotation(corefPersonName, new BigDecimal(1)));</span>
+<span class="fc" id="L320">									token.set(getAnnotationClass(), scoreList);</span>
+								}
+<span class="fc" id="L322">							}</span>
+<span class="fc" id="L323">						}</span>
+					//}
+<span class="fc" id="L325">				}</span>
+			}
+<span class="fc" id="L327">		}</span>
+<span class="fc" id="L328">	}</span>
+	
+	public void annotateNarrator(CoreDocument document) {
+<span class="fc bfc" id="L331" title="All 2 branches covered.">		for (int sentenceIdx = 0; sentenceIdx &lt; document.sentences().size(); sentenceIdx++) {</span>
+<span class="fc" id="L332">			CoreSentence sentence = document.sentences().get(sentenceIdx);</span>
+<span class="fc" id="L333">			List&lt;CoreLabel&gt; tokens = sentence.tokens();</span>
+<span class="fc bfc" id="L334" title="All 2 branches covered.">			for (int i = 0; i &lt; tokens.size(); i++) {</span>
+<span class="fc" id="L335">				CoreLabel token = tokens.get(i);</span>
+<span class="pc bpc" id="L336" title="1 of 2 branches missed.">				if (token.lemma().equals(&quot;I&quot;)) {</span>
+<span class="nc" id="L337">					boolean shouldScore = true;</span>
+<span class="nc bnc" id="L338" title="All 2 branches missed.">					for (CoreQuote quote : document.quotes()) {</span>
+<span class="nc" id="L339">						if (</span>
+<span class="nc bnc" id="L340" title="All 2 branches missed.">							token.beginPosition() &gt;= quote.quoteCharOffsets().first.intValue() </span>
+<span class="nc bnc" id="L341" title="All 2 branches missed.">							&amp;&amp; token.endPosition() &lt;= quote.quoteCharOffsets().second.intValue() </span>
+						) {
+<span class="nc" id="L343">							shouldScore = false;</span>
+<span class="nc" id="L344">							break;</span>
+						}
+<span class="nc" id="L346">					}</span>
+<span class="nc bnc" id="L347" title="All 2 branches missed.">					if (shouldScore) {</span>
+<span class="nc" id="L348">						List&lt;PhraseAnnotation&gt; scoreList = new ArrayList&lt;PhraseAnnotation&gt;();</span>
+<span class="nc" id="L349">						addToScoreList(scoreList, new PhraseAnnotation(token.lemma(), new BigDecimal(1)));</span>
+<span class="nc" id="L350">						token.set(getAnnotationClass(), scoreList);</span>
+					}
+				}
+			}
+		}
+<span class="fc" id="L355">	}</span>
+
+	@Override
+	public String getDescription() {
+<span class="fc" id="L359">		return &quot;CoreNLP NER mentions: I, PERSON minus PRP, PRP$, stray NNP/NNPS; coref&quot;;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

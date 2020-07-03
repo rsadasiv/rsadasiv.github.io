@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FlickrUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OOP Core NLP</a> &gt; <a href="index.source.html" class="el_package">io.outofprintmagazine.nlp.utils</a> &gt; <span class="el_source">FlickrUtils.java</span></div><h1>FlickrUtils.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright (C) 2020 Ram Sadasiv
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ ******************************************************************************/
+package io.outofprintmagazine.nlp.utils;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.flickr4java.flickr.Flickr;
+import com.flickr4java.flickr.FlickrException;
+import com.flickr4java.flickr.REST;
+import com.flickr4java.flickr.photos.Photo;
+import com.flickr4java.flickr.photos.PhotoList;
+import com.flickr4java.flickr.photos.SearchParameters;
+
+import io.outofprintmagazine.util.ParameterStore;
+
+public class FlickrUtils {
+	
+<span class="nc" id="L46">	private static final Logger logger = LogManager.getLogger(FlickrUtils.class);</span>
+<span class="nc" id="L47">	private Flickr flickr = null;</span>
+<span class="nc" id="L48">	private ParameterStore parameterStore = null;</span>
+	
+<span class="nc" id="L50">	private FlickrUtils(ParameterStore parameterStore) throws IOException {</span>
+<span class="nc" id="L51">		this.parameterStore = parameterStore;</span>
+<span class="nc" id="L52">		flickr = new Flickr(</span>
+<span class="nc" id="L53">				parameterStore.getProperty(&quot;flickr_apiKey&quot;),</span>
+<span class="nc" id="L54">				parameterStore.getProperty(&quot;flickr_secret&quot;),</span>
+				new REST()
+		);
+<span class="nc" id="L57">	}</span>
+	
+<span class="nc" id="L59">	private static Map&lt;ParameterStore, FlickrUtils&gt; instances = new HashMap&lt;ParameterStore, FlickrUtils&gt;();</span>
+	
+    public static FlickrUtils getInstance(ParameterStore parameterStore) throws IOException { 
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        if (instances.get(parameterStore) == null) {</span>
+<span class="nc" id="L63">        	FlickrUtils instance = new FlickrUtils(parameterStore);</span>
+<span class="nc" id="L64">            instances.put(parameterStore, instance);</span>
+        }
+<span class="nc" id="L66">        return instances.get(parameterStore); </span>
+    }
+    
+    public List&lt;String&gt; getImagesByText(String text) throws FlickrException {
+<span class="nc" id="L70">    	SearchParameters searchParameters = new SearchParameters();</span>
+<span class="nc" id="L71">	    searchParameters.setText(text);</span>
+<span class="nc" id="L72">	    searchParameters.setSort(SearchParameters.RELEVANCE);</span>
+<span class="nc" id="L73">    	searchParameters.setSafeSearch(com.flickr4java.flickr.Flickr.SAFETYLEVEL_SAFE);</span>
+	    //searchParameters.setSort(SearchParameters.INTERESTINGNESS_DESC);
+<span class="nc" id="L75">    	return getImages(searchParameters);</span>
+    }
+    
+    public List&lt;String&gt; getImagesByTag(String tag) throws FlickrException {
+<span class="nc" id="L79">    	SearchParameters searchParameters = new SearchParameters();</span>
+<span class="nc" id="L80">	    String[] tags = {tag};</span>
+<span class="nc" id="L81">	    searchParameters.setTags(tags);</span>
+<span class="nc" id="L82">	    searchParameters.setSort(SearchParameters.RELEVANCE);</span>
+<span class="nc" id="L83">    	searchParameters.setSafeSearch(com.flickr4java.flickr.Flickr.SAFETYLEVEL_SAFE);</span>
+
+<span class="nc" id="L85">    	return getImages(searchParameters);</span>
+
+    }
+    
+    public List&lt;String&gt; getImages(SearchParameters searchParameters) throws FlickrException {
+<span class="nc" id="L90">    	List&lt;String&gt; retval = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L91">    	Set&lt;String&gt; extras = new HashSet&lt;String&gt;();</span>
+<span class="nc" id="L92">    	extras.add(&quot;count_faves&quot;);</span>
+<span class="nc" id="L93">    	extras.add(&quot;count_comments&quot;);</span>
+<span class="nc" id="L94">    	extras.add(&quot;count_views&quot;);</span>
+<span class="nc" id="L95">    	searchParameters.setExtras(extras);</span>
+<span class="nc" id="L96">	    PhotoList&lt;Photo&gt; list = flickr.getPhotosInterface().search(searchParameters, 25, 1);</span>
+<span class="nc" id="L97">	    Collections.sort(list, new Comparator&lt;Photo&gt;() {</span>
+	        @Override
+	        public int compare(Photo a, Photo b) {
+<span class="nc" id="L100">	            return new Integer(b.getStats().getViews()).compareTo(new Integer(a.getStats().getViews()));</span>
+	        }
+	    });
+<span class="nc bnc" id="L103" title="All 2 branches missed.">	    for (Photo p : list) {</span>
+<span class="nc" id="L104">	        Photo nfo = flickr.getPhotosInterface().getInfo(p.getId(), null);</span>
+	        try {
+<span class="nc bnc" id="L106" title="All 2 branches missed.">		        if (nfo.getOriginalSecret().isEmpty()) {</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">		        	if (FacePlusPlusUtils.getInstance(parameterStore).imageHasOneFace(p.getSmallUrl()) != null) {</span>
+<span class="nc" id="L108">		        		retval.add(p.getSmallUrl());</span>
+		        	}
+		        } 
+		        else {
+<span class="nc" id="L112">	                p.setOriginalSecret(nfo.getOriginalSecret());</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">		        	if (FacePlusPlusUtils.getInstance(parameterStore).imageHasOneFace(p.getSmallUrl()) != null) {</span>
+<span class="nc" id="L114">		        		retval.add(p.getSmallUrl());</span>
+		        	}
+		        }
+	        }
+<span class="nc" id="L118">	    	catch (Exception e) {</span>
+<span class="nc" id="L119">	    		logger.error(e);</span>
+<span class="nc" id="L120">	    		logger.error(searchParameters);</span>
+<span class="nc" id="L121">	    	}</span>
+<span class="nc" id="L122">		}</span>
+<span class="nc" id="L123">	    return retval;</span>
+    }
+
+	public static void main(String[] args) throws FlickrException, FileNotFoundException, IOException {
+<span class="nc" id="L127">		Properties api_props = new Properties();</span>
+		//api_props.load(new FileReader(&quot;C:\\Users\\rsada\\git\\oop_nlp\\similarity\\src\\main\\resources\\flickr_api_key.txt&quot;));
+<span class="nc" id="L129">		api_props.load(new FileReader(&quot;data\\flickr_api_key.txt&quot;));</span>
+<span class="nc" id="L130">		Flickr flickr = new Flickr(api_props.getProperty(&quot;apiKey&quot;), api_props.getProperty(&quot;secret&quot;), new REST());</span>
+//		Properties token_props = new Properties();
+//		token_props.load(new FileReader(&quot;C:\\Users\\rsada\\git\\oop_nlp\\similarity\\src\\main\\resources\\flickr_credentials.txt&quot;));
+//		RequestContext requestContext = RequestContext.getRequestContext();
+//        Auth auth = new Auth();
+//        auth.setPermission(Permission.READ);
+//        auth.setToken(token_props.getProperty(&quot;Token&quot;));
+//        auth.setTokenSecret(token_props.getProperty(&quot;Secret&quot;));
+//        requestContext.setAuth(auth);
+<span class="nc" id="L139">        Flickr.debugRequest = false;</span>
+<span class="nc" id="L140">        Flickr.debugStream = false;</span>
+		
+<span class="nc" id="L142">	    SearchParameters searchParameters = new SearchParameters();</span>
+<span class="nc" id="L143">    	searchParameters.setSafeSearch(com.flickr4java.flickr.Flickr.SAFETYLEVEL_SAFE);</span>
+<span class="nc" id="L144">    	String tag = &quot;Risa&quot;;</span>
+<span class="nc" id="L145">	    String[] tags = {tag};</span>
+<span class="nc" id="L146">	    searchParameters.setTags(tags);</span>
+	    //searchParameters.setText(&quot;Kumar&quot;);
+	    //searchParameters.setTags(tags);
+<span class="nc" id="L149">	    searchParameters.setSort(SearchParameters.RELEVANCE);</span>
+<span class="nc" id="L150">    	Set&lt;String&gt; extras = new HashSet&lt;String&gt;();</span>
+<span class="nc" id="L151">    	extras.add(&quot;count_faves&quot;);</span>
+<span class="nc" id="L152">    	extras.add(&quot;count_comments&quot;);</span>
+<span class="nc" id="L153">    	extras.add(&quot;count_views&quot;);</span>
+<span class="nc" id="L154">    	searchParameters.setExtras(extras);</span>
+    	
+<span class="nc" id="L156">	    PhotoList&lt;Photo&gt; list = flickr.getPhotosInterface().search(searchParameters, 25, 1);</span>
+<span class="nc" id="L157">	    Collections.sort(list, new Comparator&lt;Photo&gt;() {</span>
+	        @Override
+	        public int compare(Photo a, Photo b) {
+<span class="nc" id="L160">	            return new Integer(b.getStats().getViews()).compareTo(new Integer(a.getStats().getViews()));</span>
+	        }
+	    });
+
+<span class="nc bnc" id="L164" title="All 2 branches missed.">	    for (Photo p : list) {</span>
+<span class="nc" id="L165">	    	System.out.println(p.getStats().getFavorites());</span>
+<span class="nc" id="L166">	    	System.out.println(p.getStats().getComments());</span>
+<span class="nc" id="L167">	    	System.out.println(p.getStats().getViews());</span>
+	        try {
+<span class="nc" id="L169">	            Photo nfo = flickr.getPhotosInterface().getInfo(p.getId(), null);</span>
+<span class="nc" id="L170">	            System.out.println(p.getStats());</span>
+<span class="nc" id="L171">	            System.out.println(nfo.getStats());</span>
+<span class="nc bnc" id="L172" title="All 2 branches missed.">	            if (nfo.getOriginalSecret().isEmpty()) {</span>
+<span class="nc" id="L173">	                System.out.println(p.getTitle() + &quot;\t&quot; + p.getSmallUrl());</span>
+	            } else {
+<span class="nc" id="L175">	                p.setOriginalSecret(nfo.getOriginalSecret());</span>
+<span class="nc" id="L176">	                System.out.println(p.getTitle() + &quot;\t&quot; + p.getSmallUrl());</span>
+	            }
+	        } 
+<span class="nc" id="L179">	        catch (FlickrException e) {</span>
+<span class="nc" id="L180">	            e.printStackTrace();</span>
+<span class="nc" id="L181">	        }</span>
+<span class="nc" id="L182">	    	System.out.println(&quot;-----------------------------------&quot;);</span>
+<span class="nc" id="L183">		}</span>
+<span class="nc" id="L184">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

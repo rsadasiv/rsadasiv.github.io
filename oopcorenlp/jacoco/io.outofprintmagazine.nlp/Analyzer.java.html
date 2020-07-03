@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Analyzer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OOP Core NLP</a> &gt; <a href="index.source.html" class="el_package">io.outofprintmagazine.nlp</a> &gt; <span class="el_source">Analyzer.java</span></div><h1>Analyzer.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright (C) 2020 Ram Sadasiv
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ ******************************************************************************/
+package io.outofprintmagazine.nlp;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import edu.stanford.nlp.ling.CoreAnnotations;
+import edu.stanford.nlp.pipeline.CoreDocument;
+import edu.stanford.nlp.pipeline.JSONOutputter;
+import io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPThumbnailAnnotation;
+import io.outofprintmagazine.nlp.pipeline.annotators.OOPAnnotator;
+import io.outofprintmagazine.nlp.pipeline.serializers.CoreNlpSerializer;
+import io.outofprintmagazine.nlp.utils.CoreNlpUtils;
+import io.outofprintmagazine.util.ParameterStore;
+
+
+/**
+ * &lt;p&gt;The main library execution entry point for oopcorenlp.&lt;/p&gt;
+ * &lt;p&gt;analyze runs the coreNLP annotators, runs the custom annotators, serializes the annotation tree, and returns four JsonDocuments: STANFORD, OOP, AGGREGATES, PIPELINE&lt;/p&gt;
+ * @see CoreNlpUtils
+ * @see OOPAnnotator
+ * @see CoreNlpSerializer
+ * @see io.outofprintmagazine.nlp.pipeline.serializers.Serializer
+ * @author Ram Sadasiv
+ */
+public class Analyzer {
+
+	@SuppressWarnings(&quot;unused&quot;)
+<span class="fc" id="L59">	private static final Logger logger = LogManager.getLogger(Analyzer.class);</span>
+	
+<span class="fc" id="L61">	private ArrayList&lt;OOPAnnotator&gt; customAnnotators = new ArrayList&lt;OOPAnnotator&gt;();</span>
+	private ParameterStore parameterStore;
+	
+	public Analyzer(ParameterStore parameterStore, List&lt;String&gt; annotatorClassNames) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+<span class="fc" id="L65">		super();</span>
+<span class="fc" id="L66">		this.parameterStore = parameterStore;</span>
+		//order is important
+<span class="fc bfc" id="L68" title="All 2 branches covered.">		for (String customAnnotatorClassName : customAnnotatorClassNames) {</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">			for (String annotatorClassName : annotatorClassNames) {</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">				if (annotatorClassName.equals(customAnnotatorClassName)) {</span>
+<span class="fc" id="L71">					logger.debug(&quot;Adding CustomAnnotator: &quot; + annotatorClassName);</span>
+<span class="fc" id="L72">					Object annotator = Class.forName(annotatorClassName).newInstance();</span>
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">					if (annotator instanceof OOPAnnotator) {</span>
+<span class="fc" id="L74">						OOPAnnotator oopAnnotator = (OOPAnnotator) annotator;</span>
+<span class="fc" id="L75">						oopAnnotator.init(parameterStore);</span>
+<span class="fc" id="L76">						customAnnotators.add(oopAnnotator);</span>
+					}
+<span class="fc" id="L78">				}</span>
+				continue;
+			}
+<span class="fc" id="L81">		}</span>
+<span class="fc" id="L82">	}</span>
+	
+	public ArrayList&lt;OOPAnnotator&gt; getCustomAnnotators() {
+<span class="nc" id="L85">		return customAnnotators;</span>
+	}
+	
+	/**
+	 * 
+	 */
+<span class="fc" id="L91">	public static List&lt;String&gt; customAnnotatorClassNames = Arrays.asList(</span>
+			&quot;io.outofprintmagazine.nlp.pipeline.annotators.BiberAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.CoreNlpParagraphAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.CoreNlpGenderAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.GenderAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.PronounAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.count.CharCountAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.count.ParagraphCountAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.count.SentenceCountAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.count.SyllableCountAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.count.TokenCountAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.count.WordCountAnnotator&quot;	    		
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.CoreNlpSentimentAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.VaderSentimentAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.VerbTenseAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.PunctuationMarkAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.AdjectivesAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.PointlessAdjectivesAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.AdjectiveCategoriesAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.AdverbsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.PointlessAdverbsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.AdverbCategoriesAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.PossessivesAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.PrepositionCategoriesAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.PrepositionsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.VerbsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.ActionlessVerbsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.NounsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.TopicsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.SVOAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.NonAffirmativeAnnotator&quot;	    		
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.simile.LikeAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.simile.AsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.ColorsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.FlavorsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.VerblessSentencesAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.WordlessWordsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.WordnetGlossAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.PerfecttenseAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.UncommonWordsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.CommonWordsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.FunctionWordsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.AngliciseAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.AmericanizeAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.VerbGroupsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.VerbnetGroupsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.NounGroupsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.TemporalNGramsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.interrogative.WhoAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.interrogative.WhatAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.interrogative.WhenAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.interrogative.WhereAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.interrogative.WhyAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.interrogative.HowAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.LocationsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.PeopleAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.MyersBriggsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.DatesAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.conditional.IfAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.conditional.BecauseAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.QuotesAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.WordsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.FleschKincaidAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.VerbHypernymsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.NounHypernymsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.WikipediaGlossAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.WikipediaPageviewTopicsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.WikipediaCategoriesAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.BiberDimensionsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.ActorsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.SettingsAnnotator&quot;
+	);
+		
+	private CoreDocument prepareDocument(Properties metadata, String text) {
+<span class="fc" id="L165">		CoreDocument document = new CoreDocument(text);</span>
+<span class="fc" id="L166">		document.annotation().set(</span>
+				CoreAnnotations.DocIDAnnotation.class, 
+<span class="fc" id="L168">				metadata.getProperty(</span>
+<span class="fc" id="L169">						CoreAnnotations.DocIDAnnotation.class.getSimpleName(), </span>
+						&quot;LittleNaomi&quot;
+						)
+				);
+<span class="fc" id="L173">		document.annotation().set(</span>
+				CoreAnnotations.DocTitleAnnotation.class, 
+<span class="fc" id="L175">				metadata.getProperty(</span>
+<span class="fc" id="L176">						CoreAnnotations.DocTitleAnnotation.class.getSimpleName(), </span>
+						&quot;story title&quot;
+						)
+				);
+<span class="fc" id="L180">		document.annotation().set(</span>
+				CoreAnnotations.DocTypeAnnotation.class, 
+<span class="fc" id="L182">				metadata.getProperty(</span>
+<span class="fc" id="L183">						CoreAnnotations.DocTypeAnnotation.class.getSimpleName(), </span>
+						&quot;Submissions&quot;
+						)
+				);
+<span class="fc" id="L187">		document.annotation().set(</span>
+				CoreAnnotations.DocSourceTypeAnnotation.class, 
+<span class="fc" id="L189">				metadata.getProperty(</span>
+<span class="fc" id="L190">						CoreAnnotations.DocSourceTypeAnnotation.class.getSimpleName(), </span>
+						&quot;outofprintmagazine@gmail.com&quot;
+						)
+				);		
+<span class="fc" id="L194">		document.annotation().set(</span>
+				CoreAnnotations.AuthorAnnotation.class, 
+<span class="fc" id="L196">				metadata.getProperty(</span>
+<span class="fc" id="L197">						CoreAnnotations.AuthorAnnotation.class.getSimpleName(), </span>
+						&quot;Author&quot;
+						)
+				);
+<span class="fc" id="L201">		document.annotation().set(</span>
+				CoreAnnotations.DocDateAnnotation.class, 
+<span class="fc" id="L203">				metadata.getProperty(</span>
+<span class="fc" id="L204">						CoreAnnotations.DocDateAnnotation.class.getSimpleName(), </span>
+						&quot;9 January 2014 21:05&quot;
+						)
+				);
+<span class="fc" id="L208">		document.annotation().set(</span>
+				OOPThumbnailAnnotation.class, 
+<span class="fc" id="L210">				metadata.getProperty(</span>
+<span class="fc" id="L211">						OOPThumbnailAnnotation.class.getSimpleName(), </span>
+						&quot;blank.png&quot;
+						)
+				);
+<span class="fc" id="L215">		return document;</span>
+	}
+		
+	private void runCoreNLP(CoreDocument document) throws IOException  {
+<span class="fc" id="L219">		CoreNlpUtils.getInstance(parameterStore).getPipeline().annotate(document);</span>
+<span class="fc" id="L220">	}</span>
+	
+	private void annotate(CoreDocument document) {
+<span class="fc bfc" id="L223" title="All 2 branches covered.">		for (OOPAnnotator annotator : customAnnotators) {</span>
+<span class="fc" id="L224">			annotator.annotate(document.annotation());</span>
+<span class="fc" id="L225">			annotator.score(document);</span>
+<span class="fc" id="L226">		}</span>
+<span class="fc" id="L227">	}</span>
+	
+	private void serialize(CoreDocument document, ObjectNode json)  {
+<span class="fc bfc" id="L230" title="All 2 branches covered.">		for (OOPAnnotator annotator : customAnnotators) {</span>
+<span class="fc" id="L231">			annotator.serialize(document, json);</span>
+<span class="fc" id="L232">		}	</span>
+<span class="fc" id="L233">	}</span>
+	
+	private void serializeAggregates(CoreDocument document, ObjectNode json) {
+<span class="fc bfc" id="L236" title="All 2 branches covered.">		for (OOPAnnotator annotator : customAnnotators) {</span>
+<span class="fc" id="L237">			annotator.serializeAggregateDocument(document, json);</span>
+<span class="fc" id="L238">		}	</span>
+<span class="fc" id="L239">	}</span>
+		
+	private void serializePipeline(ObjectNode json, long startTime) throws IOException {
+<span class="fc" id="L242">		ArrayNode annotatorList = json.putArray(&quot;annotations&quot;);</span>
+<span class="fc bfc" id="L243" title="All 2 branches covered.">		for (OOPAnnotator annotator : customAnnotators) {</span>
+<span class="fc" id="L244">			annotatorList.addObject().put(annotator.getAnnotationClass().getSimpleName(), annotator.getDescription());</span>
+<span class="fc" id="L245">		}	</span>
+
+<span class="fc" id="L247">		ArrayNode coreNlpProperties = json.putArray(&quot;coreNlpProperties&quot;);</span>
+<span class="fc" id="L248">		Properties defaultProps = CoreNlpUtils.getInstance(parameterStore).getPipelineProps();</span>
+<span class="fc bfc" id="L249" title="All 2 branches covered.">		for (String propertyName : defaultProps.stringPropertyNames()) {</span>
+<span class="fc" id="L250">			ObjectNode property = coreNlpProperties.addObject();</span>
+<span class="fc" id="L251">			property.put(&quot;name&quot;, propertyName);</span>
+<span class="fc" id="L252">			property.put(&quot;value&quot;, defaultProps.getProperty(propertyName));</span>
+<span class="fc" id="L253">		}</span>
+
+<span class="fc" id="L255">		ArrayNode analysisList = json.putArray(&quot;analysis&quot;);</span>
+<span class="fc" id="L256">		SimpleDateFormat fmt = new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm:ss.SSSZ&quot;);</span>
+<span class="fc" id="L257">		analysisList.addObject().put(&quot;startTime&quot;, fmt.format(new java.util.Date(startTime)));</span>
+<span class="fc" id="L258">		long endTime = System.currentTimeMillis();</span>
+<span class="fc" id="L259">		analysisList.addObject().put(&quot;endTime&quot;, fmt.format(new java.util.Date(endTime)));</span>
+<span class="fc" id="L260">		analysisList.addObject().put(&quot;elapsedMS&quot;, Long.toString(endTime-startTime));</span>
+<span class="fc" id="L261">		String ipAddr = &quot;localhost.localdomain/127.0.0.1&quot;;</span>
+		try {
+<span class="fc" id="L263">			ipAddr = InetAddress.getLocalHost().toString();</span>
+		}
+<span class="nc" id="L265">		catch (UnknownHostException e) {</span>
+<span class="fc" id="L266">		}</span>
+<span class="fc" id="L267">		analysisList.addObject().put(&quot;host&quot;, ipAddr);</span>
+<span class="fc" id="L268">	}</span>
+	
+	public Map&lt;String, ObjectNode&gt; analyze(Properties metadata, String text) throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException {
+
+<span class="fc" id="L272">		ObjectMapper mapper = new ObjectMapper();</span>
+<span class="fc" id="L273">		long startTime = System.currentTimeMillis();</span>
+<span class="fc" id="L274">		CoreDocument document = prepareDocument(metadata, text);</span>
+<span class="fc" id="L275">		Map&lt;String,ObjectNode&gt; retval = new HashMap&lt;String, ObjectNode&gt;();</span>
+		
+		try {
+<span class="fc" id="L278">			logger.debug(&quot;analyzing &quot; + metadata.getProperty(CoreAnnotations.DocIDAnnotation.class.getSimpleName()));</span>
+			
+<span class="fc" id="L280">			runCoreNLP(document);</span>
+<span class="fc" id="L281">			retval.put(&quot;STANFORD&quot;, (ObjectNode) mapper.readTree(JSONOutputter.jsonPrint(document.annotation())));</span>
+			
+<span class="fc" id="L283">			annotate(document);</span>
+
+<span class="fc" id="L285">			CoreNlpSerializer documentSerializer = new CoreNlpSerializer();</span>
+			
+<span class="fc" id="L287">			ObjectNode json = mapper.createObjectNode();</span>
+<span class="fc" id="L288">			documentSerializer.serialize(document, json);</span>
+<span class="fc" id="L289">			serialize(document, json);</span>
+<span class="fc" id="L290">			retval.put(&quot;OOP&quot;, json);</span>
+			
+<span class="fc" id="L292">			ObjectNode aggregates = mapper.createObjectNode();</span>
+<span class="fc" id="L293">			documentSerializer.serializeAggregate(document, aggregates);</span>
+<span class="fc" id="L294">			serializeAggregates(document, aggregates);</span>
+<span class="fc" id="L295">			retval.put(&quot;AGGREGATES&quot;, aggregates);</span>
+
+<span class="fc" id="L297">			ObjectNode pipeline = mapper.createObjectNode();</span>
+<span class="fc" id="L298">			serializePipeline(pipeline, startTime);</span>
+<span class="fc" id="L299">			retval.put(&quot;PIPELINE&quot;, pipeline);</span>
+			
+		}
+<span class="nc" id="L302">		catch (Exception e) {</span>
+<span class="nc" id="L303">			logger.error(e);</span>
+<span class="nc" id="L304">			e.printStackTrace();</span>
+<span class="fc" id="L305">		}</span>
+<span class="fc" id="L306">		return retval;</span>
+	}
+	
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

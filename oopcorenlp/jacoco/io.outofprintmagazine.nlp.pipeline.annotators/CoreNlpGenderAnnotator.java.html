@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CoreNlpGenderAnnotator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OOP Core NLP</a> &gt; <a href="index.source.html" class="el_package">io.outofprintmagazine.nlp.pipeline.annotators</a> &gt; <span class="el_source">CoreNlpGenderAnnotator.java</span></div><h1>CoreNlpGenderAnnotator.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright (C) 2020 Ram Sadasiv
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ ******************************************************************************/
+package io.outofprintmagazine.nlp.pipeline.annotators;
+
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import edu.stanford.nlp.ling.CoreAnnotation;
+import edu.stanford.nlp.ling.CoreAnnotations;
+import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.pipeline.Annotation;
+import edu.stanford.nlp.pipeline.Annotator;
+import edu.stanford.nlp.pipeline.CoreDocument;
+import edu.stanford.nlp.util.CoreMap;
+import io.outofprintmagazine.nlp.pipeline.scorers.MapSum;
+import io.outofprintmagazine.nlp.pipeline.scorers.Scorer;
+import io.outofprintmagazine.nlp.pipeline.serializers.MapSerializer;
+import io.outofprintmagazine.nlp.pipeline.serializers.Serializer;
+import io.outofprintmagazine.util.ParameterStore;
+
+public class CoreNlpGenderAnnotator extends edu.stanford.nlp.pipeline.GenderAnnotator implements Annotator, OOPAnnotator {
+
+	@SuppressWarnings(&quot;unused&quot;)
+<span class="fc" id="L47">	private static final Logger logger = LogManager.getLogger(CoreNlpGenderAnnotator.class);</span>
+	
+	protected Scorer scorer;
+	protected Serializer serializer;
+	protected ParameterStore properties;
+	
+	@Override
+	public void init(ParameterStore properties) {
+<span class="fc" id="L55">		this.properties = properties;</span>
+<span class="fc" id="L56">	}</span>
+		
+	private static Properties getDefaultProperties() {
+<span class="fc" id="L59">		Properties props = new Properties();</span>
+<span class="fc" id="L60">		props.setProperty(&quot;gender.maleNamesFile&quot;, &quot;edu/stanford/nlp/models/gender/male_first_names.txt&quot;);</span>
+<span class="fc" id="L61">		props.setProperty(&quot;gender.femaleNamesFile&quot;, &quot;edu/stanford/nlp/models/gender/female_first_names.txt&quot;);</span>
+<span class="fc" id="L62">		return props;</span>
+	}
+	
+	public CoreNlpGenderAnnotator() {
+<span class="fc" id="L66">		super(&quot;gender&quot;, CoreNlpGenderAnnotator.getDefaultProperties());</span>
+<span class="fc" id="L67">		this.setScorer((Scorer)new MapSum(this.getAnnotationClass()));</span>
+<span class="fc" id="L68">		this.setSerializer((Serializer)new MapSerializer(this.getAnnotationClass()));		</span>
+<span class="fc" id="L69">	}</span>
+	
+	public CoreNlpGenderAnnotator(String annotatorName, Properties props) {
+<span class="nc" id="L72">		super(annotatorName, props);</span>
+<span class="nc" id="L73">		this.setScorer((Scorer)new MapSum(this.getAnnotationClass()));</span>
+<span class="nc" id="L74">		this.setSerializer((Serializer)new MapSerializer(this.getAnnotationClass()));	</span>
+<span class="nc" id="L75">	}</span>
+	
+	protected Serializer getSerializer() {
+<span class="fc" id="L78">		return serializer;</span>
+	}
+
+	protected void setSerializer(Serializer serializer) {
+<span class="fc" id="L82">		this.serializer = serializer;</span>
+<span class="fc" id="L83">	}</span>
+	
+	protected Scorer getScorer() {
+<span class="fc" id="L86">		return scorer;</span>
+	}
+
+	protected void setScorer(Scorer scorer) {
+<span class="fc" id="L90">		this.scorer = scorer;</span>
+<span class="fc" id="L91">	}</span>
+
+	@Override
+	public void annotate(Annotation annotation) {
+<span class="fc" id="L95">		super.annotate(annotation);</span>
+<span class="fc" id="L96">	}</span>
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	@Override
+	public void annotateEntityMention(CoreMap entityMention, String gender) {
+<span class="fc" id="L101">		entityMention.set(CoreAnnotations.GenderAnnotation.class, gender);</span>
+		// annotate each token of the entity mention
+<span class="fc bfc" id="L103" title="All 2 branches covered.">		for (CoreLabel token : entityMention.get(CoreAnnotations.TokensAnnotation.class)) {</span>
+<span class="fc" id="L104">			Map&lt;String, BigDecimal&gt; scoreMap = new HashMap&lt;String, BigDecimal&gt;();</span>
+<span class="fc" id="L105">			scoreMap.put(gender, new BigDecimal(1));</span>
+<span class="fc" id="L106">			token.set(getAnnotationClass(), scoreMap);</span>
+<span class="fc" id="L107">		}</span>
+<span class="fc" id="L108">	}</span>
+	
+	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
+	@Override
+	public Set&lt;Class&lt;? extends CoreAnnotation&gt;&gt; requirementsSatisfied() {
+<span class="nc" id="L113">		return Collections.singleton(getAnnotationClass());</span>
+	}
+
+	@SuppressWarnings(&quot;rawtypes&quot;)
+	@Override
+	public Class getAnnotationClass() {
+<span class="fc" id="L119">		return io.outofprintmagazine.nlp.pipeline.OOPAnnotations.CoreNlpGenderAnnotation.class;</span>
+	}
+	
+	@Override
+	public void score(CoreDocument document) {
+<span class="fc" id="L124">		getScorer().score(document);</span>
+<span class="fc" id="L125">	}</span>
+	
+	@Override
+	public void serialize(CoreDocument document, ObjectNode json) {
+<span class="fc" id="L129">		getSerializer().serialize(document, json);</span>
+<span class="fc" id="L130">	}</span>
+
+	@Override
+	public String getDescription() {
+<span class="fc" id="L134">		return &quot;edu/stanford/nlp/models/gender/male_first_names.txt edu/stanford/nlp/models/gender/female_first_names.txt&quot;;</span>
+	}
+
+	@Override
+	public void serializeAggregateDocument(CoreDocument document, ObjectNode json) {
+<span class="fc" id="L139">		getSerializer().serializeAggregate(getScorer().aggregateDocument(document), json);</span>
+<span class="fc" id="L140">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

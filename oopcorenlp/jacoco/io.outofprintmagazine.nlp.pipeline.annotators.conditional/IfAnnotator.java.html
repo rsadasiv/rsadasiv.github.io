@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IfAnnotator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OOP Core NLP</a> &gt; <a href="index.source.html" class="el_package">io.outofprintmagazine.nlp.pipeline.annotators.conditional</a> &gt; <span class="el_source">IfAnnotator.java</span></div><h1>IfAnnotator.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright (C) 2020 Ram Sadasiv
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ ******************************************************************************/
+package io.outofprintmagazine.nlp.pipeline.annotators.conditional;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import edu.stanford.nlp.ling.CoreAnnotation;
+import edu.stanford.nlp.ling.CoreAnnotations;
+import edu.stanford.nlp.pipeline.Annotation;
+import edu.stanford.nlp.pipeline.Annotator;
+import edu.stanford.nlp.pipeline.CoreDocument;
+import edu.stanford.nlp.pipeline.CoreSentence;
+import edu.stanford.nlp.semgraph.SemanticGraphCoreAnnotations;
+import edu.stanford.nlp.trees.Tree;
+import edu.stanford.nlp.trees.TreeCoreAnnotations;
+import edu.stanford.nlp.util.ArraySet;
+import io.outofprintmagazine.nlp.pipeline.PhraseAnnotation;
+import io.outofprintmagazine.nlp.pipeline.annotators.AbstractTreeAnnotator;
+import io.outofprintmagazine.nlp.pipeline.annotators.OOPAnnotator;
+
+public class IfAnnotator extends AbstractTreeAnnotator implements Annotator, OOPAnnotator {
+	
+	@SuppressWarnings(&quot;unused&quot;)
+<span class="fc" id="L46">	private static final Logger logger = LogManager.getLogger(IfAnnotator.class);</span>
+	
+	@Override
+	protected Logger getLogger() {
+<span class="nc" id="L50">		return logger;</span>
+	}
+
+	public IfAnnotator() {
+<span class="fc" id="L54">		super();</span>
+<span class="fc" id="L55">		this.setTags(Arrays.asList(&quot;if&quot;));</span>
+<span class="fc" id="L56">	}</span>
+	
+	@Override
+	public Set&lt;Class&lt;? extends CoreAnnotation&gt;&gt; requires() {
+<span class="nc" id="L60">		return Collections.unmodifiableSet(</span>
+			new ArraySet&lt;&gt;(
+<span class="nc" id="L62">				Arrays.asList(</span>
+					CoreAnnotations.TextAnnotation.class, 
+					CoreAnnotations.TokensAnnotation.class,
+					CoreAnnotations.SentencesAnnotation.class,
+					TreeCoreAnnotations.TreeAnnotation.class,
+					SemanticGraphCoreAnnotations.BasicDependenciesAnnotation.class
+				)
+			)
+		);
+	}	
+	
+	@Override
+	public Class getAnnotationClass() {
+<span class="fc" id="L75">		return io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPIfAnnotation.class;</span>
+	}
+
+	@Override
+	protected void scoreTree(Tree tree, List&lt;String&gt; tags, List&lt;PhraseAnnotation&gt; scoreMap) throws IOException {
+<span class="fc bfc" id="L80" title="All 2 branches covered.">		if (tree.label().toString().equals(&quot;SBAR&quot;)) {</span>
+<span class="fc" id="L81">			super.scoreTree(tree, tags, scoreMap);</span>
+		}
+<span class="fc" id="L83">	}</span>
+
+	@Override
+	public void annotate(Annotation annotation) {
+<span class="fc" id="L87">		CoreDocument document = new CoreDocument(annotation);</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">		for (CoreSentence sentence : document.sentences()) {</span>
+<span class="fc" id="L89">			List&lt;PhraseAnnotation&gt; scoreMap = new ArrayList&lt;PhraseAnnotation&gt;();</span>
+<span class="fc" id="L90">			Tree docTree = sentence.constituencyParse();</span>
+			try {
+<span class="fc" id="L92">				traverseTree(docTree, getTags(), scoreMap);</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">				if (scoreMap.size() &gt; 0) {</span>
+<span class="fc" id="L94">					sentence.coreMap().set(getAnnotationClass(), scoreMap);</span>
+				}
+			}
+<span class="nc" id="L97">			catch (Exception e) {</span>
+<span class="nc" id="L98">				logger.error(e);</span>
+<span class="fc" id="L99">			}</span>
+<span class="fc" id="L100">		}</span>
+<span class="fc" id="L101">	}</span>
+	
+	@Override
+	public String getDescription() {
+<span class="fc" id="L105">		return &quot;Constituency Parse: SBAR, if. https://gist.github.com/nlothian/9240750&quot;; </span>
+	}
+	
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MapSerializer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OOP Core NLP</a> &gt; <a href="index.source.html" class="el_package">io.outofprintmagazine.nlp.pipeline.serializers</a> &gt; <span class="el_source">MapSerializer.java</span></div><h1>MapSerializer.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright (C) 2020 Ram Sadasiv
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ ******************************************************************************/
+package io.outofprintmagazine.nlp.pipeline.serializers;
+
+import java.math.BigDecimal;
+import java.util.Iterator;
+import java.util.Map;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.pipeline.CoreDocument;
+import edu.stanford.nlp.pipeline.CoreSentence;
+
+public class MapSerializer implements Serializer {
+
+	@SuppressWarnings(&quot;unused&quot;)
+<span class="fc" id="L38">	private static final Logger logger = LogManager.getLogger(MapSerializer.class);</span>
+
+<span class="pc" id="L40">	@SuppressWarnings(&quot;rawtypes&quot;)</span>
+	protected Class annotationClass = null;
+
+	public MapSerializer() {
+<span class="nc" id="L44">		super();</span>
+<span class="nc" id="L45">	}</span>
+
+	@SuppressWarnings(&quot;rawtypes&quot;)
+	public MapSerializer(Class annotationClass) {
+<span class="fc" id="L49">		super();</span>
+<span class="fc" id="L50">		this.setAnnotationClass(annotationClass);</span>
+<span class="fc" id="L51">	}</span>
+
+
+	@SuppressWarnings(&quot;rawtypes&quot;)
+	public void setAnnotationClass(Class annotationClass) {
+<span class="fc" id="L56">		this.annotationClass = annotationClass;</span>
+<span class="fc" id="L57">	}</span>
+
+	@SuppressWarnings(&quot;rawtypes&quot;)
+	public Class getAnnotationClass() {
+<span class="fc" id="L61">		return this.annotationClass;</span>
+	}
+
+	@Override
+	public void serialize(CoreDocument document, ObjectNode json) {
+<span class="fc" id="L66">		serializeTokens(document, json);</span>
+<span class="fc" id="L67">		serializeSentences(document, json);</span>
+<span class="fc" id="L68">		serializeDocument(document, json);</span>
+<span class="fc" id="L69">	}</span>
+	
+	@Override
+	public void serializeAggregate(Object aggregate, ObjectNode jsonDocument) {
+<span class="fc" id="L73">		ObjectMapper mapper = new ObjectMapper();</span>
+<span class="fc" id="L74">		jsonDocument.set(getAnnotationClass().getSimpleName(), mapper.valueToTree(aggregate));</span>
+<span class="fc" id="L75">	}</span>
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	protected void serializeDocument(CoreDocument coreNlpDocument, ObjectNode jsonDocument) {
+<span class="fc" id="L79">		ObjectMapper mapper = new ObjectMapper();</span>
+
+<span class="pc bpc" id="L81" title="1 of 2 branches missed.">		if (coreNlpDocument.annotation().containsKey(getAnnotationClass())) {</span>
+<span class="fc" id="L82">			ObjectNode score = mapper.createObjectNode();</span>
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">			if (jsonDocument.has(getAnnotationClass().getName())) {</span>
+<span class="nc" id="L84">				score = (ObjectNode) jsonDocument.get(getAnnotationClass().getName());</span>
+			}
+<span class="fc" id="L86">			Map&lt;String, BigDecimal&gt; rawScores = (Map&lt;String, BigDecimal&gt;) coreNlpDocument.annotation().get(getAnnotationClass());</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">			for (String key : rawScores.keySet()) {</span>
+<span class="fc" id="L88">				score.put(key, rawScores.get(key).toPlainString());</span>
+<span class="fc" id="L89">			}</span>
+<span class="fc" id="L90">			jsonDocument.set(getAnnotationClass().getSimpleName(), score);</span>
+		}
+<span class="fc" id="L92">	}</span>
+	
+	@SuppressWarnings(&quot;unchecked&quot;)
+	protected void serializeSentences(CoreDocument coreNlpDocument, ObjectNode jsonDocument) {
+<span class="fc" id="L96">		ObjectMapper mapper = new ObjectMapper();</span>
+
+<span class="fc" id="L98">		Iterator&lt;CoreSentence&gt; coreNlpSentencesIter = coreNlpDocument.sentences().iterator();</span>
+<span class="fc" id="L99">		Iterator&lt;JsonNode&gt; jsonSentencesIter = ((ArrayNode) jsonDocument.get(&quot;sentences&quot;)).iterator();</span>
+<span class="pc bpc" id="L100" title="1 of 4 branches missed.">		while (coreNlpSentencesIter.hasNext() &amp;&amp; jsonSentencesIter.hasNext()) {</span>
+<span class="fc" id="L101">			CoreSentence sentence = coreNlpSentencesIter.next();</span>
+<span class="fc" id="L102">			ObjectNode sentenceNode = (ObjectNode) jsonSentencesIter.next();</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">			if (sentence.coreMap().containsKey(getAnnotationClass())) {</span>
+<span class="fc" id="L104">				ObjectNode score = mapper.createObjectNode();</span>
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">				if (sentenceNode.has(getAnnotationClass().getName())) {</span>
+<span class="nc" id="L106">					score = (ObjectNode) sentenceNode.get(getAnnotationClass().getName());</span>
+				}
+<span class="fc" id="L108">				Map&lt;String, BigDecimal&gt; rawScores = (Map&lt;String, BigDecimal&gt;) sentence.coreMap().get(getAnnotationClass());</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">				for (String key : rawScores.keySet()) {</span>
+					try {
+<span class="fc" id="L111">						score.put(key, rawScores.get(key).toPlainString());</span>
+					}
+<span class="nc" id="L113">					catch (Throwable t) {</span>
+<span class="nc" id="L114">						logger.error(getAnnotationClass());</span>
+<span class="nc" id="L115">						logger.error(key, t);</span>
+<span class="fc" id="L116">					}</span>
+<span class="fc" id="L117">				}</span>
+<span class="fc" id="L118">				sentenceNode.set(getAnnotationClass().getSimpleName(), score);</span>
+			}
+<span class="fc" id="L120">		}</span>
+
+<span class="fc" id="L122">	}</span>
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	protected void serializeTokens(CoreDocument coreNlpDocument, ObjectNode jsonDocument) {
+<span class="fc" id="L126">		ObjectMapper mapper = new ObjectMapper();</span>
+
+<span class="fc" id="L128">		Iterator&lt;CoreSentence&gt; coreNlpSentencesIter = coreNlpDocument.sentences().iterator();</span>
+<span class="fc" id="L129">		Iterator&lt;JsonNode&gt; jsonSentencesIter = ((ArrayNode) jsonDocument.get(&quot;sentences&quot;)).iterator();</span>
+<span class="pc bpc" id="L130" title="1 of 4 branches missed.">		while (coreNlpSentencesIter.hasNext() &amp;&amp; jsonSentencesIter.hasNext()) {</span>
+<span class="fc" id="L131">			Iterator&lt;CoreLabel&gt; coreNlpTokensIter = coreNlpSentencesIter.next().tokens().iterator();</span>
+<span class="fc" id="L132">			Iterator&lt;JsonNode&gt; jsonTokensIter = ((ArrayNode) jsonSentencesIter.next().get(&quot;tokens&quot;)).iterator();</span>
+<span class="pc bpc" id="L133" title="1 of 4 branches missed.">			while (coreNlpTokensIter.hasNext() &amp;&amp; jsonTokensIter.hasNext()) {</span>
+<span class="fc" id="L134">				CoreLabel token = coreNlpTokensIter.next();</span>
+<span class="fc" id="L135">				ObjectNode tokenNode = (ObjectNode) jsonTokensIter.next();</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">				if (token.containsKey(getAnnotationClass())) {</span>
+<span class="fc" id="L137">					ObjectNode score = mapper.createObjectNode();</span>
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">					if (tokenNode.has(getAnnotationClass().getName())) {</span>
+<span class="nc" id="L139">						score = (ObjectNode) tokenNode.get(getAnnotationClass().getName());</span>
+					}
+<span class="fc" id="L141">					Map&lt;String, BigDecimal&gt; rawScores = (Map&lt;String, BigDecimal&gt;) token.get(getAnnotationClass());</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">					for (String key : rawScores.keySet()) {</span>
+						//someone has MapSerializer where they should have ListSerializer
+						//Exception in thread &quot;main&quot; java.lang.ClassCastException: java.util.Arrays$ArrayList cannot be cast to java.math.BigDecimal
+						try {
+<span class="fc" id="L146">							score.put(key, rawScores.get(key).toPlainString());</span>
+						}
+<span class="nc" id="L148">						catch (Throwable t) {</span>
+<span class="nc" id="L149">							logger.error(getAnnotationClass());</span>
+<span class="nc" id="L150">							logger.error(key, t);</span>
+<span class="fc" id="L151">						}</span>
+<span class="fc" id="L152">					}</span>
+<span class="fc" id="L153">					tokenNode.set(getAnnotationClass().getSimpleName(), score);</span>
+				}
+<span class="fc" id="L155">			}</span>
+<span class="fc" id="L156">		}</span>
+
+<span class="fc" id="L158">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

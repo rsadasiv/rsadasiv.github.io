@@ -1,0 +1,562 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OOPAnnotations.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OOP Core NLP</a> &gt; <a href="index.source.html" class="el_package">io.outofprintmagazine.nlp.pipeline</a> &gt; <span class="el_source">OOPAnnotations.java</span></div><h1>OOPAnnotations.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright (C) 2020 Ram Sadasiv
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ ******************************************************************************/
+package io.outofprintmagazine.nlp.pipeline;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+
+import edu.stanford.nlp.ling.CoreAnnotation;
+import edu.stanford.nlp.util.ErasureUtils;
+
+/**
+ * &lt;p&gt;Defines OOP custom annotations.&lt;/p&gt;
+ * &lt;p&gt;Conventionally, custom annotators return ONLY ONE annotation type.&lt;/p&gt;
+ * &lt;p&gt;OOP annotations adopt the annotation conventions from Core Nlp: &lt;code&gt;getType()&lt;/code&gt;&lt;/p&gt;
+ * @author Ram Sadasiv
+ *
+ */
+public class OOPAnnotations {
+
+	private OOPAnnotations() {} // only static members
+
+	// Problematic
+<span class="nc" id="L38">	public static class OOPActorsAnnotation implements CoreAnnotation&lt;Map&lt;String, ActorAnnotation&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, ActorAnnotation&gt;&gt; getType() {
+<span class="nc" id="L41">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+	
+<span class="nc" id="L45">	public static class OOPSettingsAnnotation implements CoreAnnotation&lt;Map&lt;String, SettingAnnotation&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, SettingAnnotation&gt;&gt; getType() {
+<span class="nc" id="L48">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+	
+	
+	// per document
+	// metadata
+<span class="nc" id="L55">	public static class OOPThumbnailAnnotation implements CoreAnnotation&lt;String&gt; {</span>
+		@Override
+		public Class&lt;String&gt; getType() {
+<span class="nc" id="L58">			return ErasureUtils.uncheckedCast(String.class);</span>
+		}
+	}
+	
+	// per token
+	// Informative
+<span class="nc" id="L64">	public static class OOPWordnetGlossAnnotation implements CoreAnnotation&lt;String&gt; {</span>
+		@Override
+		public Class&lt;String&gt; getType() {
+<span class="nc" id="L67">			return ErasureUtils.uncheckedCast(String.class);</span>
+		}
+	}
+
+<span class="nc" id="L71">	public static class OOPWikipediaGlossAnnotation implements CoreAnnotation&lt;String&gt; {</span>
+		@Override
+		public Class&lt;String&gt; getType() {
+<span class="nc" id="L74">			return ErasureUtils.uncheckedCast(String.class);</span>
+		}
+	}
+
+<span class="nc" id="L78">	public static class PerfecttenseGlossAnnotation implements CoreAnnotation&lt;String&gt; {</span>
+		@Override
+		public Class&lt;String&gt; getType() {
+<span class="nc" id="L81">			return ErasureUtils.uncheckedCast(String.class);</span>
+		}
+	}
+
+	//per token/sentence/document
+	// Scalar	
+<span class="nc" id="L87">	public static class OOPCharCountAnnotation implements CoreAnnotation&lt;BigDecimal&gt; {</span>
+		@Override
+		public Class&lt;BigDecimal&gt; getType() {
+<span class="nc" id="L90">			return ErasureUtils.uncheckedCast(BigDecimal.class);</span>
+		}
+	}
+	
+<span class="nc" id="L94">	public static class OOPSyllableCountAnnotation implements CoreAnnotation&lt;BigDecimal&gt; {</span>
+		@Override
+		public Class&lt;BigDecimal&gt; getType() {
+<span class="nc" id="L97">			return ErasureUtils.uncheckedCast(BigDecimal.class);</span>
+		}
+	}
+	
+<span class="nc" id="L101">	public static class OOPTokenCountAnnotation implements CoreAnnotation&lt;BigDecimal&gt; {</span>
+		@Override
+		public Class&lt;BigDecimal&gt; getType() {
+<span class="nc" id="L104">			return ErasureUtils.uncheckedCast(BigDecimal.class);</span>
+		}
+	}
+	
+<span class="nc" id="L108">	public static class OOPWordCountAnnotation implements CoreAnnotation&lt;BigDecimal&gt; {</span>
+		@Override
+		public Class&lt;BigDecimal&gt; getType() {
+<span class="nc" id="L111">			return ErasureUtils.uncheckedCast(BigDecimal.class);</span>
+		}
+	}
+	
+<span class="nc" id="L115">	public static class OOPSentenceCountAnnotation implements CoreAnnotation&lt;BigDecimal&gt; {</span>
+		@Override
+		public Class&lt;BigDecimal&gt; getType() {
+<span class="nc" id="L118">			return ErasureUtils.uncheckedCast(BigDecimal.class);</span>
+		}
+	}
+	
+<span class="nc" id="L122">	public static class OOPParagraphCountAnnotation implements CoreAnnotation&lt;BigDecimal&gt; {</span>
+		@Override
+		public Class&lt;BigDecimal&gt; getType() {
+<span class="nc" id="L125">			return ErasureUtils.uncheckedCast(BigDecimal.class);</span>
+		}
+	}
+
+<span class="nc" id="L129">	public static class OOPFleschKincaidAnnotation implements CoreAnnotation&lt;BigDecimal&gt; {</span>
+		@Override
+		public Class&lt;BigDecimal&gt; getType() {
+<span class="nc" id="L132">			return ErasureUtils.uncheckedCast(BigDecimal.class);</span>
+		}
+	}
+
+<span class="nc" id="L136">	public static class CoreNlpSentimentAnnotation implements CoreAnnotation&lt;BigDecimal&gt; {</span>
+		@Override
+		public Class&lt;BigDecimal&gt; getType() {
+<span class="nc" id="L139">			return ErasureUtils.uncheckedCast(BigDecimal.class);</span>
+		}
+	}
+
+<span class="nc" id="L143">	public static class VaderSentimentAnnotation implements CoreAnnotation&lt;BigDecimal&gt; {</span>
+		@Override
+		public Class&lt;BigDecimal&gt; getType() {
+<span class="nc" id="L146">			return ErasureUtils.uncheckedCast(BigDecimal.class);</span>
+		}
+	}
+	
+<span class="nc" id="L150">	public static class OOPVerblessSentencesAnnotation implements CoreAnnotation&lt;BigDecimal&gt; {</span>
+		@Override
+		public Class&lt;BigDecimal&gt; getType() {
+<span class="nc" id="L153">			return ErasureUtils.uncheckedCast(BigDecimal.class);</span>
+		}
+	}
+
+	// Categorical by sentence/document
+	// List of PhraseScore
+<span class="nc" id="L159">	public static class OOPQuotesAnnotation implements CoreAnnotation&lt;List&lt;PhraseAnnotation&gt;&gt; {</span>
+		@Override
+		public Class&lt;List&lt;PhraseAnnotation&gt;&gt; getType() {
+<span class="nc" id="L162">			return ErasureUtils.uncheckedCast(List.class);</span>
+		}
+	}
+
+<span class="nc" id="L166">	public static class OOPLikeAnnotation implements CoreAnnotation&lt;List&lt;PhraseAnnotation&gt;&gt; {</span>
+		@Override
+		public Class&lt;List&lt;PhraseAnnotation&gt;&gt; getType() {
+<span class="nc" id="L169">			return ErasureUtils.uncheckedCast(List.class);</span>
+		}
+	}
+
+<span class="nc" id="L173">	public static class OOPAsAnnotation implements CoreAnnotation&lt;List&lt;PhraseAnnotation&gt;&gt; {</span>
+		@Override
+		public Class&lt;List&lt;PhraseAnnotation&gt;&gt; getType() {
+<span class="nc" id="L176">			return ErasureUtils.uncheckedCast(List.class);</span>
+		}
+	}
+
+<span class="nc" id="L180">	public static class OOPWhoAnnotation implements CoreAnnotation&lt;List&lt;PhraseAnnotation&gt;&gt; {</span>
+		@Override
+		public Class&lt;List&lt;PhraseAnnotation&gt;&gt; getType() {
+<span class="nc" id="L183">			return ErasureUtils.uncheckedCast(List.class);</span>
+		}
+	}
+
+<span class="nc" id="L187">	public static class OOPWhatAnnotation implements CoreAnnotation&lt;List&lt;PhraseAnnotation&gt;&gt; {</span>
+		@Override
+		public Class&lt;List&lt;PhraseAnnotation&gt;&gt; getType() {
+<span class="nc" id="L190">			return ErasureUtils.uncheckedCast(List.class);</span>
+		}
+	}
+
+<span class="nc" id="L194">	public static class OOPWhenAnnotation implements CoreAnnotation&lt;List&lt;PhraseAnnotation&gt;&gt; {</span>
+		@Override
+		public Class&lt;List&lt;PhraseAnnotation&gt;&gt; getType() {
+<span class="nc" id="L197">			return ErasureUtils.uncheckedCast(List.class);</span>
+		}
+	}
+
+<span class="nc" id="L201">	public static class OOPWhereAnnotation implements CoreAnnotation&lt;List&lt;PhraseAnnotation&gt;&gt; {</span>
+		@Override
+		public Class&lt;List&lt;PhraseAnnotation&gt;&gt; getType() {
+<span class="nc" id="L204">			return ErasureUtils.uncheckedCast(List.class);</span>
+		}
+	}
+
+<span class="nc" id="L208">	public static class OOPWhyAnnotation implements CoreAnnotation&lt;List&lt;PhraseAnnotation&gt;&gt; {</span>
+		@Override
+		public Class&lt;List&lt;PhraseAnnotation&gt;&gt; getType() {
+<span class="nc" id="L211">			return ErasureUtils.uncheckedCast(List.class);</span>
+		}
+	}
+
+<span class="nc" id="L215">	public static class OOPHowAnnotation implements CoreAnnotation&lt;List&lt;PhraseAnnotation&gt;&gt; {</span>
+		@Override
+		public Class&lt;List&lt;PhraseAnnotation&gt;&gt; getType() {
+<span class="nc" id="L218">			return ErasureUtils.uncheckedCast(List.class);</span>
+		}
+	}
+
+<span class="nc" id="L222">	public static class OOPIfAnnotation implements CoreAnnotation&lt;List&lt;PhraseAnnotation&gt;&gt; {</span>
+		@Override
+		public Class&lt;List&lt;PhraseAnnotation&gt;&gt; getType() {
+<span class="nc" id="L225">			return ErasureUtils.uncheckedCast(List.class);</span>
+		}
+	}
+
+<span class="nc" id="L229">	public static class OOPBecauseAnnotation implements CoreAnnotation&lt;List&lt;PhraseAnnotation&gt;&gt; {</span>
+		@Override
+		public Class&lt;List&lt;PhraseAnnotation&gt;&gt; getType() {
+<span class="nc" id="L232">			return ErasureUtils.uncheckedCast(List.class);</span>
+		}
+	}
+
+<span class="nc" id="L236">	public static class OOPDatesAnnotation implements CoreAnnotation&lt;List&lt;PhraseAnnotation&gt;&gt; {</span>
+		@Override
+		public Class&lt;List&lt;PhraseAnnotation&gt;&gt; getType() {
+<span class="nc" id="L239">			return ErasureUtils.uncheckedCast(List.class);</span>
+		}
+	}
+
+	// Categorical by token/sentence/document
+	// Map&lt;String,BigDecimal&gt;
+<span class="nc" id="L245">	public static class PerfecttenseAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L248">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+
+<span class="nc" id="L253">	public static class OOPSVOAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L256">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L260">	public static class OOPAmericanizeAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L263">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L267">	public static class OOPAngliciseAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L270">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L274">	public static class OOPCommonWordsAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L277">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L281">	public static class OOPFunctionWordsAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L284">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+
+<span class="nc" id="L289">	public static class OOPWordlessWordsAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L292">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L296">	public static class OOPUncommonWordsAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L299">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L303">	public static class OOPGenderAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L306">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L310">	public static class CoreNlpGenderAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L313">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L317">	public static class OOPPronounAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L320">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L324">	public static class OOPVerbTenseAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L327">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+	
+<span class="nc" id="L331">	public static class OOPPunctuationMarkAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L334">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L338">	public static class OOPAdjectivesAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L341">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L345">	public static class OOPPointlessAdjectivesAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L348">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L352">	public static class OOPAdjectiveCategoriesAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L355">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L359">	public static class OOPAdverbsAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L362">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L366">	public static class OOPPointlessAdverbsAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L369">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L373">	public static class OOPAdverbCategoriesAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L376">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L380">	public static class OOPPrepositionsAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L383">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L387">	public static class OOPPrepositionCategoriesAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L390">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L394">	public static class OOPColorsAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L397">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L401">	public static class OOPFlavorsAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L404">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L408">	public static class OOPVerbsAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L411">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L415">	public static class OOPActionlessVerbsAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L418">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L422">	public static class OOPNounsAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L425">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L429">	public static class OOPTopicsAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L432">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+//	  public static class OOPWikipediaRelatedNounsAnnotation implements CoreAnnotation&lt;Map&lt;String,BigDecimal&gt;&gt; {
+//		    @Override
+//		    public Class&lt;Map&lt;String,BigDecimal&gt;&gt; getType() {
+//		      return ErasureUtils.uncheckedCast(Map.class);
+//		    }
+//	  }
+//	  
+//	  public static class OOPWikipediaRelatedNounsAnnotationAggregate implements CoreAnnotation&lt;DocumentAggregateScore&gt; {
+//		    @Override
+//		    public Class&lt;DocumentAggregateScore&gt; getType() {
+//		      return DocumentAggregateScore.class;
+//		    }
+//	  }
+
+<span class="nc" id="L450">	public static class OOPWikipediaPageviewTopicsAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L453">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L457">	public static class OOPWikipediaCategoriesAnnotation implements CoreAnnotation&lt;List&lt;PhraseAnnotation&gt;&gt; {</span>
+		@Override
+		public Class&lt;List&lt;PhraseAnnotation&gt;&gt; getType() {
+<span class="nc" id="L460">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L464">	public static class OOPVerbHypernymsAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L467">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L471">	public static class OOPVerbGroupsAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L474">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L478">	public static class OOPNounGroupsAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L481">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L485">	public static class OOPVerbnetGroupsAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L488">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L492">	public static class OOPNounHypernymsAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L495">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L499">	public static class OOPTemporalNGramsAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L502">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L506">	public static class OOPLocationsAnnotation implements CoreAnnotation&lt;List&lt;PhraseAnnotation&gt;&gt; {</span>
+		@Override
+		public Class&lt;List&lt;PhraseAnnotation&gt;&gt; getType() {
+<span class="nc" id="L509">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L513">	public static class OOPPeopleAnnotation implements CoreAnnotation&lt;List&lt;PhraseAnnotation&gt;&gt; {</span>
+		@Override
+		public Class&lt;List&lt;PhraseAnnotation&gt;&gt; getType() {
+<span class="nc" id="L516">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L520">	public static class OOPNonAffirmativeAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L523">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L527">	public static class OOPWordsAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L530">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L534">	public static class OOPPossessivesAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L537">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L541">	public static class OOPBiberAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L544">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L548">	public static class OOPMyersBriggsAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L551">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+
+<span class="nc" id="L555">	public static class OOPBiberDimensionsAnnotation implements CoreAnnotation&lt;Map&lt;String, BigDecimal&gt;&gt; {</span>
+		@Override
+		public Class&lt;Map&lt;String, BigDecimal&gt;&gt; getType() {
+<span class="nc" id="L558">			return ErasureUtils.uncheckedCast(Map.class);</span>
+		}
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

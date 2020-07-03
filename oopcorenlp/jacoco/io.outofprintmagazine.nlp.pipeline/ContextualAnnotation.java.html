@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ContextualAnnotation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OOP Core NLP</a> &gt; <a href="index.source.html" class="el_package">io.outofprintmagazine.nlp.pipeline</a> &gt; <span class="el_source">ContextualAnnotation.java</span></div><h1>ContextualAnnotation.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright (C) 2020 Ram Sadasiv
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ ******************************************************************************/
+package io.outofprintmagazine.nlp.pipeline;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public abstract class ContextualAnnotation {
+	
+<span class="nc" id="L31">	protected String CanonicalName = &quot;&quot;;</span>
+<span class="nc" id="L32">	protected int FirstAppearance = -1;</span>
+<span class="nc" id="L33">	protected int LastAppearance = -1;</span>
+<span class="nc" id="L34">	protected BigDecimal Importance = new BigDecimal(0);</span>
+<span class="nc" id="L35">	protected List&lt;BigDecimal&gt; VaderSentiment = new ArrayList&lt;BigDecimal&gt;();</span>
+<span class="nc" id="L36">	protected List&lt;BigDecimal&gt; CoreNlpSentiment = new ArrayList&lt;BigDecimal&gt;();</span>
+<span class="nc" id="L37">	protected Map&lt;String, Map&lt;String,BigDecimal&gt;&gt; Attributes = new HashMap&lt;String, Map&lt;String,BigDecimal&gt;&gt;();</span>
+<span class="nc" id="L38">	protected List&lt;String&gt; Thumbnails = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L39">	protected BigDecimal VaderSentimentAvg = new BigDecimal(.5);</span>
+<span class="nc" id="L40">	protected BigDecimal CoreNlpSentimentAvg = new BigDecimal(.5);</span>
+
+	public String getCanonicalName() {
+<span class="nc" id="L43">		return CanonicalName;</span>
+	}
+
+	public void setCanonicalName(String canonicalName) {
+<span class="nc" id="L47">		CanonicalName = canonicalName;</span>
+<span class="nc" id="L48">	}</span>
+
+	public int getFirstAppearance() {
+<span class="nc" id="L51">		return FirstAppearance;</span>
+	}
+
+	public void setFirstAppearance(int firstAppearance) {
+<span class="nc" id="L55">		FirstAppearance = firstAppearance;</span>
+<span class="nc" id="L56">	}</span>
+
+	public int getLastAppearance() {
+<span class="nc" id="L59">		return LastAppearance;</span>
+	}
+
+	public void setLastAppearance(int lastAppearance) {
+<span class="nc" id="L63">		LastAppearance = lastAppearance;</span>
+<span class="nc" id="L64">	}</span>
+
+	public BigDecimal getImportance() {
+<span class="nc" id="L67">		return Importance;</span>
+	}
+
+	public void setImportance(BigDecimal importance) {
+<span class="nc" id="L71">		Importance = importance;</span>
+<span class="nc" id="L72">	}</span>
+	
+	public void addImportance(int score) {
+<span class="nc" id="L75">		Importance = getImportance().add(new BigDecimal(score));</span>
+<span class="nc" id="L76">	}</span>
+
+	public List&lt;BigDecimal&gt; getVaderSentiment() {
+<span class="nc" id="L79">		return VaderSentiment;</span>
+	}
+
+	public void addVaderSentiment(BigDecimal vaderSentiment) {
+<span class="nc" id="L83">		this.VaderSentiment.add(vaderSentiment);</span>
+<span class="nc" id="L84">	}</span>
+
+	public List&lt;BigDecimal&gt; getCoreNlpSentiment() {
+<span class="nc" id="L87">		return CoreNlpSentiment;</span>
+	}
+
+	public void addCoreNlpSentiment(BigDecimal coreNlpSentiment) {
+<span class="nc" id="L91">		this.CoreNlpSentiment.add(coreNlpSentiment);</span>
+<span class="nc" id="L92">	}</span>
+
+	public Map&lt;String, Map&lt;String, BigDecimal&gt;&gt; getAttributes() {
+<span class="nc" id="L95">		return Attributes;</span>
+	}
+	
+	public Map&lt;String, BigDecimal&gt; getAttribute(String subAttributeName) {
+<span class="nc bnc" id="L99" title="All 2 branches missed.">		if (!getAttributes().containsKey(subAttributeName)) {</span>
+<span class="nc" id="L100">			getAttributes().put(subAttributeName, new HashMap&lt;String, BigDecimal&gt;());</span>
+		}
+<span class="nc" id="L102">		return getAttributes().get(subAttributeName);</span>
+	}
+	
+	public List&lt;String&gt; getThumbnails() {
+<span class="nc" id="L106">		return Thumbnails;</span>
+	}
+
+	public void setThumbnails(List&lt;String&gt; bingThumbnails) {
+<span class="nc" id="L110">		this.Thumbnails = bingThumbnails;</span>
+<span class="nc" id="L111">	}</span>
+	
+
+	public void setVaderSentiment(List&lt;BigDecimal&gt; vaderSentiment) {
+<span class="nc" id="L115">		VaderSentiment = vaderSentiment;</span>
+<span class="nc" id="L116">	}</span>
+
+	public void setCoreNlpSentiment(List&lt;BigDecimal&gt; coreNlpSentiment) {
+<span class="nc" id="L119">		CoreNlpSentiment = coreNlpSentiment;</span>
+<span class="nc" id="L120">	}</span>
+
+	public BigDecimal getVaderSentimentAvg() {
+<span class="nc" id="L123">		return VaderSentimentAvg;</span>
+	}
+
+	public void setVaderSentimentAvg(BigDecimal vaderSentimentAvg) {
+<span class="nc" id="L127">		VaderSentimentAvg = vaderSentimentAvg;</span>
+<span class="nc" id="L128">	}</span>
+	
+	public void setVaderSentimentAvg() {
+<span class="nc" id="L131">		BigDecimal total = new BigDecimal(0);</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">		for (BigDecimal score : getVaderSentiment()) {</span>
+<span class="nc" id="L133">			total = total.add(score);</span>
+<span class="nc" id="L134">		}</span>
+<span class="nc" id="L135">		setVaderSentimentAvg(total.divide(new BigDecimal(getVaderSentiment().size()), 10, RoundingMode.HALF_DOWN));</span>
+<span class="nc" id="L136">	}</span>
+
+	public BigDecimal getCoreNlpSentimentAvg() {
+<span class="nc" id="L139">		return CoreNlpSentimentAvg;</span>
+	}
+
+	public void setCoreNlpSentimentAvg(BigDecimal coreNlpSentimentAvg) {
+<span class="nc" id="L143">		CoreNlpSentimentAvg = coreNlpSentimentAvg;</span>
+<span class="nc" id="L144">	}</span>
+	
+	public void setCoreNlpSentimentAvg() {
+<span class="nc" id="L147">		BigDecimal total = new BigDecimal(0);</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">		for (BigDecimal score : getCoreNlpSentiment()) {</span>
+<span class="nc" id="L149">			total = total.add(score);</span>
+<span class="nc" id="L150">		}</span>
+<span class="nc" id="L151">		setCoreNlpSentimentAvg(total.divide(new BigDecimal(getCoreNlpSentiment().size()), 10, RoundingMode.HALF_DOWN));</span>
+<span class="nc" id="L152">	}</span>
+
+	public void setAttributes(Map&lt;String, Map&lt;String, BigDecimal&gt;&gt; attributes) {
+<span class="nc" id="L155">		Attributes = attributes;</span>
+<span class="nc" id="L156">	}</span>
+
+	public ContextualAnnotation() {
+<span class="nc" id="L159">		super();</span>
+<span class="nc" id="L160">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

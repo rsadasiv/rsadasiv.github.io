@@ -1,0 +1,513 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WikipediaUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OOP Core NLP</a> &gt; <a href="index.source.html" class="el_package">io.outofprintmagazine.nlp.utils</a> &gt; <span class="el_source">WikipediaUtils.java</span></div><h1>WikipediaUtils.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright (C) 2020 Ram Sadasiv
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ ******************************************************************************/
+package io.outofprintmagazine.nlp.utils;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import edu.stanford.nlp.pipeline.CoreDocument;
+import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+import io.outofprintmagazine.util.ParameterStore;
+
+public class WikipediaUtils {
+
+	@SuppressWarnings(&quot;unused&quot;)
+<span class="fc" id="L54">	private static final Logger logger = LogManager.getLogger(WikipediaUtils.class);</span>
+	private static final int CACHE_SIZE = 5000;
+	
+	
+//	private Deque mruPageList = new LinkedList&lt;String&gt;();
+//	private Map&lt;String, String&gt; pageCache = new HashMap&lt;String, String&gt;();
+//	private List&lt;String&gt; failedPages = new ArrayList&lt;String&gt;();
+<span class="fc" id="L61">	private Deque mruPageviewList = new LinkedList&lt;String&gt;();</span>
+<span class="fc" id="L62">	private Map&lt;String, BigDecimal&gt; pageviewCache = new HashMap&lt;String, BigDecimal&gt;();</span>
+<span class="fc" id="L63">	private Deque mruCategoriesList = new LinkedList&lt;String&gt;();</span>
+<span class="fc" id="L64">	private Map&lt;String, Map&lt;String,BigDecimal&gt;&gt; categoriesCache = new HashMap&lt;String, Map&lt;String,BigDecimal&gt;&gt;();</span>
+
+	
+/*    public String getPageCache(String topic) {
+    	String retval = pageCache.get(topic);
+    	if (retval != null) {
+    		mruPageList.remove(topic);
+    		mruPageList.push(topic);
+    	}
+    	return retval;
+    }
+    
+	public void putPageCache(String topic, String score) {
+		mruPageviewList.push(topic);
+		pageCache.put(topic, score);
+    	for (int i=WikipediaUtils.CACHE_SIZE;i&lt;mruPageviewList.size();i++) {
+    		String token = (String)mruPageList.pollLast();
+    		if (token != null) {
+    			pageCache.remove(token);
+    		}
+    	}
+    }
+	
+	public List&lt;String&gt; getFailedPages() {
+		return failedPages;
+	}*/
+	
+    public BigDecimal getPageviewCache(String topic) {
+<span class="fc" id="L92">    	BigDecimal retval = pageviewCache.get(topic);</span>
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">    	if (retval != null) {</span>
+<span class="nc" id="L94">    		mruPageviewList.remove(topic);</span>
+<span class="nc" id="L95">    		mruPageviewList.push(topic);</span>
+    	}
+<span class="fc" id="L97">    	return retval;</span>
+    }
+    
+	public void putPageviewCache(String topic, BigDecimal score) {
+<span class="fc" id="L101">		mruPageviewList.push(topic);</span>
+<span class="fc" id="L102">		pageviewCache.put(topic, score);</span>
+<span class="pc bpc" id="L103" title="1 of 2 branches missed.">    	for (int i=WikipediaUtils.CACHE_SIZE;i&lt;mruPageviewList.size();i++) {</span>
+<span class="nc" id="L104">    		String token = (String)mruPageviewList.pollLast();</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">    		if (token != null) {</span>
+<span class="nc" id="L106">    			pageviewCache.remove(token);</span>
+    		}
+    	}
+<span class="fc" id="L109">    }</span>
+    
+    public Map&lt;String,BigDecimal&gt; getCategoriesCache(String topic) {
+<span class="fc" id="L112">    	Map&lt;String,BigDecimal&gt; retval = categoriesCache.get(topic);</span>
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">    	if (retval != null) {</span>
+<span class="nc" id="L114">    		mruCategoriesList.remove(topic);</span>
+<span class="nc" id="L115">    		mruCategoriesList.push(topic);</span>
+    	}
+<span class="fc" id="L117">    	return retval;</span>
+    }
+    
+	public void putCategoryCache(String topic, Map&lt;String,BigDecimal&gt; score) {
+<span class="fc" id="L121">		mruCategoriesList.push(topic);</span>
+<span class="fc" id="L122">		categoriesCache.put(topic, score);</span>
+<span class="pc bpc" id="L123" title="1 of 2 branches missed.">    	for (int i=WikipediaUtils.CACHE_SIZE;i&lt;mruCategoriesList.size();i++) {</span>
+<span class="nc" id="L124">    		String token = (String)mruCategoriesList.pollLast();</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">    		if (token != null) {</span>
+<span class="nc" id="L126">    			categoriesCache.remove(token);</span>
+    		}
+    	}
+<span class="fc" id="L129">    }</span>
+	
+<span class="fc" id="L131">	private StanfordCoreNLP wikiPipeline = null;</span>
+	
+	public static Properties getWikiProps() {
+<span class="nc" id="L134">		Properties props = new Properties();</span>
+<span class="nc" id="L135">	    props.put(&quot;customAnnotatorClass.oop_nouns&quot;,</span>
+	            &quot;io.outofprintmagazine.nlp.pipeline.annotators.NounsAnnotator&quot;);
+<span class="nc" id="L137">		props.setProperty(&quot;annotators&quot;,&quot;tokenize,ssplit,pos,lemma,oop_nouns&quot;);</span>
+<span class="nc" id="L138">		return props;</span>
+	}
+
+//	public class TopicPage {
+//		public String title;
+//		public String page;
+//		
+//		public TopicPage() {
+//			super();
+//		}
+//	}
+	
+	private WikipediaUtils(ParameterStore parameterStore) throws IOException {
+<span class="fc" id="L151">		super();</span>
+
+<span class="fc" id="L153">	}</span>
+	
+<span class="fc" id="L155">	private static Map&lt;ParameterStore, WikipediaUtils&gt; instances = new HashMap&lt;ParameterStore, WikipediaUtils&gt;();</span>
+	
+    public static WikipediaUtils getInstance(ParameterStore parameterStore) throws IOException { 
+<span class="fc bfc" id="L158" title="All 2 branches covered.">        if (instances.get(parameterStore) == null) {</span>
+<span class="fc" id="L159">        	WikipediaUtils instance = new WikipediaUtils(parameterStore);</span>
+<span class="fc" id="L160">            instances.put(parameterStore, instance);</span>
+        }
+<span class="fc" id="L162">        return instances.get(parameterStore); </span>
+    }
+    
+    public StanfordCoreNLP getWikiPipeline() {
+<span class="nc bnc" id="L166" title="All 2 branches missed.">    	if (wikiPipeline == null) {</span>
+<span class="nc" id="L167">    		wikiPipeline = new StanfordCoreNLP(WikipediaUtils.getWikiProps());</span>
+    	}
+<span class="nc" id="L169">    	return wikiPipeline;</span>
+    }
+    
+	public CoreDocument annotate(String text) {
+<span class="nc" id="L173">		CoreDocument document = new CoreDocument(text);</span>
+<span class="nc" id="L174">		getWikiPipeline().annotate(document);</span>
+<span class="nc" id="L175">		return document;</span>
+	}
+	
+/*	public Class getTopicsAnnotationClass() {
+		return io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPTopicsAnnotation.class;
+	}
+	
+	public Class getNounsAnnotationClass() {
+		return io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPNounsAnnotation.class;
+	}*/
+    
+	public BigDecimal getWikipediaPageviewsForTopic(String topic) throws MalformedURLException, UnsupportedEncodingException, IOException {
+<span class="fc" id="L187">		BigDecimal retval = getPageviewCache(topic);</span>
+<span class="pc bpc" id="L188" title="1 of 2 branches missed.">		if (retval != null) {</span>
+<span class="nc" id="L189">			return retval;</span>
+		}
+<span class="fc" id="L191">		ObjectMapper mapper = new ObjectMapper();</span>
+<span class="fc" id="L192">		Calendar calendar = Calendar.getInstance();</span>
+<span class="fc" id="L193">		String endDate = Integer.toString(calendar.get(Calendar.YEAR)) + String.format(&quot;%02d&quot;, calendar.get(Calendar.MONTH)+1) + &quot;01&quot;;</span>
+<span class="fc" id="L194">		calendar.add(Calendar.MONTH, -1);</span>
+<span class="fc" id="L195">		String startDate = Integer.toString(calendar.get(Calendar.YEAR)) + String.format(&quot;%02d&quot;, calendar.get(Calendar.MONTH)+1) + &quot;01&quot;;</span>
+		
+<span class="fc" id="L197">		retval = new BigDecimal(0);</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">		for (String title : getWikipediaPagesForTopic(topic)) {</span>
+<span class="fc" id="L199">			title = title.replace(' ', '_');</span>
+<span class="fc" id="L200">			JsonNode obj = mapper.readTree(</span>
+					new URL(
+							&quot;https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia.org/all-access/all-agents/&quot; 
+<span class="fc" id="L203">							+ URLEncoder.encode(title,&quot;utf-8&quot;) </span>
+							+ &quot;/monthly/&quot;
+							+ startDate
+							+ &quot;/&quot;
+							+ endDate
+							)
+					);
+<span class="fc" id="L210">			retval = retval.add(new BigDecimal(obj.get(&quot;items&quot;).get(0).get(&quot;views&quot;).asInt()));</span>
+<span class="fc" id="L211">		}</span>
+<span class="fc" id="L212">		putPageviewCache(topic, retval);</span>
+<span class="fc" id="L213">		return retval;</span>
+	
+	}
+	//https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia.org/all-access/all-agents/Hair/monthly/20190601/20190701
+
+	public Map&lt;String,BigDecimal&gt; getWikipediaCategoriesForTopic(String topic) throws MalformedURLException, UnsupportedEncodingException, IOException {
+<span class="fc" id="L219">		Map&lt;String,BigDecimal&gt; retval = getCategoriesCache(topic);</span>
+<span class="pc bpc" id="L220" title="1 of 2 branches missed.">		if (retval != null) {</span>
+<span class="nc" id="L221">			return retval;</span>
+		}
+<span class="fc" id="L223">		ObjectMapper mapper = new ObjectMapper();</span>
+<span class="fc" id="L224">    	Map&lt;String,BigDecimal&gt; scoreMap = new HashMap&lt;String,BigDecimal&gt;();</span>
+<span class="fc bfc" id="L225" title="All 2 branches covered.">		for (String title : getWikipediaPagesForTopic(topic)) {</span>
+<span class="fc" id="L226">			title = title.replace(' ', '_');</span>
+<span class="fc" id="L227">			String clcontinue = &quot;init&quot;;</span>
+<span class="fc bfc" id="L228" title="All 2 branches covered.">			while (clcontinue != null) {</span>
+<span class="fc" id="L229">				JsonNode categoryRootNode = null;</span>
+		
+<span class="fc bfc" id="L231" title="All 2 branches covered.">				if (clcontinue.equals(&quot;init&quot;)) {</span>
+<span class="fc" id="L232">					categoryRootNode = mapper.readValue(new URL(&quot;https://en.wikipedia.org/w/api.php?format=json&amp;action=query&amp;prop=categories&amp;utf8=1&amp;titles=&quot;+(URLEncoder.encode(title, &quot;UTF-8&quot;))), JsonNode.class);</span>
+				}
+				else {
+<span class="fc" id="L235">					categoryRootNode = mapper.readValue(new URL(&quot;https://en.wikipedia.org/w/api.php?format=json&amp;action=query&amp;prop=categories&amp;utf8=1&amp;titles=&quot;+(URLEncoder.encode(title, &quot;UTF-8&quot;)+&quot;&amp;clcontinue=&quot;+clcontinue)), JsonNode.class);</span>
+				}
+<span class="fc bfc" id="L237" title="All 2 branches covered.">				if (categoryRootNode.get(&quot;continue&quot;) != null) {</span>
+<span class="fc" id="L238">					clcontinue = categoryRootNode.get(&quot;continue&quot;).get(&quot;clcontinue&quot;).asText();</span>
+				}
+				else {
+<span class="fc" id="L241">					clcontinue = null;</span>
+				}
+				//System.out.println(categoryRootNode);
+<span class="fc" id="L244">				JsonNode pageCategoriesNode = categoryRootNode.get(&quot;query&quot;).get(&quot;pages&quot;);</span>
+<span class="fc" id="L245">				Iterator&lt;Entry&lt;String, JsonNode&gt;&gt; fieldsIter = pageCategoriesNode.fields();</span>
+<span class="fc bfc" id="L246" title="All 2 branches covered.">				while (fieldsIter.hasNext()) {</span>
+<span class="fc" id="L247">					JsonNode categoriesNode = fieldsIter.next().getValue().get(&quot;categories&quot;);</span>
+<span class="pc bpc" id="L248" title="2 of 4 branches missed.">					if (categoriesNode != null &amp;&amp; categoriesNode.isArray()) {</span>
+<span class="fc bfc" id="L249" title="All 2 branches covered.">						for (final JsonNode categoryNode : categoriesNode) {</span>
+<span class="fc" id="L250">							String categoryName = categoryNode.get(&quot;title&quot;).asText().substring(&quot;Category:&quot;.length());</span>
+<span class="fc bfc" id="L251" title="All 2 branches covered.">							if (!categoryName.startsWith(&quot;All&quot;) </span>
+<span class="fc bfc" id="L252" title="All 2 branches covered.">									&amp;&amp; !categoryName.startsWith(&quot;Articles&quot;)</span>
+<span class="fc bfc" id="L253" title="All 2 branches covered.">									&amp;&amp; !categoryName.startsWith(&quot;Wikipedia&quot;) </span>
+<span class="fc bfc" id="L254" title="All 2 branches covered.">									&amp;&amp; !categoryName.startsWith(&quot;CS1&quot;) </span>
+<span class="fc bfc" id="L255" title="All 2 branches covered.">									&amp;&amp; !categoryName.startsWith(&quot;Pages&quot;) </span>
+<span class="fc bfc" id="L256" title="All 2 branches covered.">									&amp;&amp; !categoryName.startsWith(&quot;Commons&quot;) </span>
+<span class="pc bpc" id="L257" title="1 of 2 branches missed.">									&amp;&amp; !categoryName.startsWith(&quot;Disambiguation&quot;)</span>
+<span class="pc bpc" id="L258" title="1 of 2 branches missed.">									&amp;&amp; !categoryName.contains(&quot;disambiguation&quot;)</span>
+<span class="fc bfc" id="L259" title="All 2 branches covered.">									&amp;&amp; !categoryName.contains(&quot;wayback&quot;)</span>
+<span class="fc bfc" id="L260" title="All 2 branches covered.">									&amp;&amp; !categoryName.contains(&quot;dates&quot;)</span>
+<span class="fc bfc" id="L261" title="All 2 branches covered.">									&amp;&amp; !categoryName.contains(&quot;articles&quot;)</span>
+<span class="pc bpc" id="L262" title="1 of 2 branches missed.">									&amp;&amp; !categoryName.contains(&quot;inventions&quot;)</span>
+<span class="pc bpc" id="L263" title="1 of 2 branches missed.">									&amp;&amp; !categoryName.contains(&quot;time&quot;)									</span>
+<span class="pc bpc" id="L264" title="1 of 2 branches missed.">									&amp;&amp; !categoryName.contains(&quot;Orders of magnitude&quot;)</span>
+<span class="pc bpc" id="L265" title="1 of 2 branches missed.">									&amp;&amp; !categoryName.startsWith(&quot;Cleanup&quot;)</span>
+<span class="pc bpc" id="L266" title="1 of 2 branches missed.">									&amp;&amp; !categoryName.startsWith(&quot;Lists&quot;)</span>
+<span class="pc bpc" id="L267" title="1 of 2 branches missed.">									&amp;&amp; !categoryName.startsWith(&quot;Vague&quot;)</span>
+<span class="pc bpc" id="L268" title="1 of 2 branches missed.">									&amp;&amp; !categoryName.startsWith(&quot;Interlanguage&quot;)</span>
+<span class="pc bpc" id="L269" title="1 of 2 branches missed.">									&amp;&amp; !categoryName.startsWith(&quot;Webarchive&quot;)</span>
+<span class="pc bpc" id="L270" title="1 of 2 branches missed.">									&amp;&amp; !categoryName.startsWith(&quot;SI&quot;)</span>
+<span class="fc bfc" id="L271" title="All 2 branches covered.">									&amp;&amp; !categoryName.startsWith(&quot;Use&quot;)</span>
+<span class="pc bpc" id="L272" title="1 of 2 branches missed.">									&amp;&amp; !categoryName.startsWith(&quot;Portal&quot;)</span>
+<span class="fc bfc" id="L273" title="All 2 branches covered.">									&amp;&amp; !categoryName.startsWith(&quot;Coordinates&quot;)</span>
+<span class="pc bpc" id="L274" title="1 of 2 branches missed.">									&amp;&amp; !categoryName.startsWith(&quot;Redirects&quot;)</span>
+<span class="pc bpc" id="L275" title="1 of 2 branches missed.">									&amp;&amp; !categoryName.startsWith(&quot;Unprintworthy&quot;)</span>
+<span class="pc bpc" id="L276" title="1 of 2 branches missed.">									&amp;&amp; !categoryName.startsWith(&quot;Printworthy&quot;)</span>
+<span class="pc bpc" id="L277" title="1 of 2 branches missed.">									&amp;&amp; !categoryName.startsWith(&quot;Days&quot;)</span>
+<span class="pc bpc" id="L278" title="1 of 2 branches missed.">									&amp;&amp; !categoryName.startsWith(&quot;Months&quot;)</span>
+<span class="pc bpc" id="L279" title="1 of 2 branches missed.">									&amp;&amp; !categoryName.startsWith(&quot;Dynamic lists&quot;)</span>
+<span class="pc bpc" id="L280" title="1 of 2 branches missed.">									&amp;&amp; !categoryName.startsWith(&quot;Given names&quot;)</span>
+<span class="pc bpc" id="L281" title="1 of 2 branches missed.">									&amp;&amp; !categoryName.startsWith(&quot;Surnames&quot;)</span>
+<span class="pc bpc" id="L282" title="1 of 2 branches missed.">									&amp;&amp; !categoryName.startsWith(&quot;Year&quot;)</span>
+<span class="pc bpc" id="L283" title="1 of 2 branches missed.">									&amp;&amp; !categoryName.startsWith(&quot;Languages&quot;)</span>
+<span class="pc bpc" id="L284" title="1 of 2 branches missed.">									&amp;&amp; !categoryName.startsWith(&quot;ISO&quot;)</span>
+<span class="pc bpc" id="L285" title="1 of 2 branches missed.">									&amp;&amp; !categoryName.startsWith(&quot;Types&quot;)</span>
+<span class="fc bfc" id="L286" title="All 2 branches covered.">									&amp;&amp; !categoryName.startsWith(&quot;Concepts&quot;)</span>
+<span class="pc bpc" id="L287" title="1 of 2 branches missed.">									&amp;&amp; !categoryName.startsWith(&quot;Names&quot;)</span>
+<span class="pc bpc" id="L288" title="1 of 2 branches missed.">									&amp;&amp; !categoryName.startsWith(&quot;Harv and Sfn&quot;)</span>
+<span class="pc bpc" id="L289" title="1 of 2 branches missed.">									&amp;&amp; !categoryName.startsWith(&quot;Engvar&quot;)</span>
+<span class="pc bpc" id="L290" title="1 of 2 branches missed.">									&amp;&amp; !categoryName.contains(&quot; ISO &quot;)) {</span>
+								//System.out.println(categoryName);
+<span class="fc" id="L292">								BigDecimal existingScore = scoreMap.get(categoryName);</span>
+<span class="pc bpc" id="L293" title="1 of 2 branches missed.">								if (existingScore == null) {</span>
+<span class="fc" id="L294">									existingScore = new BigDecimal(0);</span>
+								}
+<span class="fc" id="L296">								scoreMap.put(categoryName, existingScore.add(new BigDecimal(1)));</span>
+							}
+<span class="fc" id="L298">						}</span>
+					}
+<span class="fc" id="L300">				}</span>
+<span class="fc" id="L301">			}</span>
+<span class="fc" id="L302">		}</span>
+<span class="fc" id="L303">		putCategoryCache(topic, scoreMap);</span>
+<span class="fc" id="L304">		return scoreMap;</span>
+	}
+	
+    public List&lt;String&gt; getWikipediaPagesForTopic(String topic) throws IOException {
+<span class="fc" id="L308">    	List&lt;String&gt; topicPages = new ArrayList&lt;String&gt;();</span>
+<span class="fc" id="L309">    	ObjectMapper objectMapper = new ObjectMapper();</span>
+<span class="fc" id="L310">		topic = topic.replace(' ', '_');</span>
+<span class="fc" id="L311">		JsonNode rootNode = objectMapper.readValue(new URL(&quot;https://en.wikipedia.org/w/api.php?action=query&amp;maxlag=1&amp;redirects&amp;format=json&amp;formatversion=2&amp;titles=&quot;+(URLEncoder.encode(topic, &quot;UTF-8&quot;))), JsonNode.class);</span>
+		//TODO - pagination?
+<span class="pc bpc" id="L313" title="2 of 4 branches missed.">		if (rootNode.get(&quot;query&quot;) != null &amp;&amp; rootNode.get(&quot;query&quot;).get(&quot;pages&quot;) != null) {</span>
+<span class="fc" id="L314">			JsonNode pagesNode = rootNode.get(&quot;query&quot;).get(&quot;pages&quot;);</span>
+<span class="pc bpc" id="L315" title="2 of 4 branches missed.">			if (pagesNode != null &amp;&amp; pagesNode.isArray()) {</span>
+<span class="fc bfc" id="L316" title="All 2 branches covered.">				for (final JsonNode pageNode : pagesNode) {</span>
+<span class="pc bpc" id="L317" title="3 of 4 branches missed.">					if (pageNode.get(&quot;missing&quot;) == null || !pageNode.get(&quot;missing&quot;).asBoolean()) {</span>
+<span class="fc" id="L318">						topicPages.add(pageNode.get(&quot;title&quot;).asText());</span>
+					}
+<span class="fc" id="L320">				}</span>
+			}
+		}
+<span class="fc" id="L323">		return topicPages;</span>
+    }
+	
+    public List&lt;String&gt; getWikipediaPagesForList(String topic) throws IOException {
+<span class="nc" id="L327">    	List&lt;String&gt; topicPages = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L328">    	ObjectMapper objectMapper = new ObjectMapper();</span>
+<span class="nc" id="L329">		topic = topic.replace(' ', '_');</span>
+<span class="nc" id="L330">		JsonNode rootNode = objectMapper.readValue(new URL(&quot;https://en.wikipedia.org/w/api.php?action=parse&amp;format=json&amp;prop=links&amp;page=&quot;+(URLEncoder.encode(topic, &quot;UTF-8&quot;))), JsonNode.class);</span>
+		//TODO - pagination?
+<span class="nc bnc" id="L332" title="All 4 branches missed.">		if (rootNode.get(&quot;parse&quot;) != null &amp;&amp; rootNode.get(&quot;parse&quot;).get(&quot;links&quot;) != null) {</span>
+<span class="nc" id="L333">			JsonNode pagesNode = rootNode.get(&quot;parse&quot;).get(&quot;links&quot;);</span>
+<span class="nc bnc" id="L334" title="All 4 branches missed.">			if (pagesNode != null &amp;&amp; pagesNode.isArray()) {</span>
+<span class="nc bnc" id="L335" title="All 2 branches missed.">				for (final JsonNode pageNode : pagesNode) {</span>
+<span class="nc bnc" id="L336" title="All 2 branches missed.">					if (pageNode.get(&quot;*&quot;) != null ) {</span>
+<span class="nc" id="L337">						topicPages.add(pageNode.get(&quot;*&quot;).asText().replace(' ', '_'));</span>
+					}
+<span class="nc" id="L339">				}</span>
+			}
+		}
+<span class="nc" id="L342">		return topicPages;</span>
+    }
+    
+    
+    public String getWikipediaPageText(String topic) {
+<span class="nc" id="L347">		topic = topic.replace(' ', '_');</span>
+		try {
+<span class="nc" id="L349">			StringWriter buf = new StringWriter();</span>
+<span class="nc" id="L350">			Document homepage = Jsoup.connect(&quot;https://en.wikipedia.org/wiki/&quot; + topic).get();</span>
+<span class="nc" id="L351">			Elements authorParas = homepage.select(&quot;#mw-content-text &gt; div &gt; p&quot;);</span>
+<span class="nc bnc" id="L352" title="All 2 branches missed.">			for (Element para : authorParas) {</span>
+<span class="nc" id="L353">				buf.write(para.wholeText());</span>
+<span class="nc" id="L354">				buf.write('\n');</span>
+<span class="nc" id="L355">				buf.write('\n');</span>
+<span class="nc" id="L356">			}</span>
+
+<span class="nc" id="L358">			return buf.toString();</span>
+		}
+<span class="nc" id="L360">		catch (IOException e) {</span>
+<span class="nc" id="L361">			return null;</span>
+		}
+    }
+    
+/*    public Map&lt;String,BigDecimal&gt; getNounsForTopicPages(List&lt;String&gt; topicPages) {
+    	Map&lt;String,BigDecimal&gt; retval = new HashMap&lt;String,BigDecimal&gt;();
+    	for (String pageText : topicPages) {
+    		try {
+    			Map&lt;String, BigDecimal&gt; topicPageScores = (Map&lt;String, BigDecimal&gt;)annotate(pageText).annotation().get(getNounsAnnotationClass());
+    			for(String topic : topicPageScores.keySet()) {
+    				BigDecimal existingScore = new BigDecimal(0);
+    				if (retval.get(topic) != null) {
+    					existingScore = retval.get(topic);
+    				}
+    				retval.put(topic, existingScore.add(topicPageScores.get(topic)));
+    			}
+    		}
+    		catch (Exception e) {
+    			logger.error(e);
+    		}
+    	}
+    	return retval;
+    }*/
+ 
+    
+//	@SuppressWarnings(&quot;unchecked&quot;)
+//	@Override
+//	public void annotate(Annotation annotation) {
+//		CoreDocument document = new CoreDocument(annotation);
+//		Map&lt;String,BigDecimal&gt; topics = scoreNouns(document);
+//		String topic = &quot;topic&quot;;
+//		List&lt;WikipediaUtils.TopicPage&gt; topicPages;
+//		try {
+//			topicPages = WikipediaUtils.getInstance().getWikipediaPagesForTopic(topic);
+//			Map&lt;String,BigDecimal&gt; topicPageTopics = WikipediaUtils.getInstance().getTopicsForTopicPages(topicPages);
+//			Map&lt;String, BigDecimal&gt; topicIdf = WikipediaUtils.getInstance().getTopicTopicPageIdf(topics, topicPageTopics);
+//			Map&lt;String, Map&lt;String,BigDecimal&gt;&gt; topicPageTf = WikipediaUtils.getInstance().getTopicTopicPageTf(topics, topicPageTopics);
+//			Map&lt;String, BigDecimal&gt; scores = WikipediaUtils.getInstance().getTopicPageTfIdf(topics, topicPageTopics, topicIdf, topicPageTf);
+//			//document.annotation().set(getAnnotationClass(), scores);
+//			//TODO - THIS NEEDS A LOT MORE WORK
+//		} 
+//		catch (IOException e) {
+//			logger.error(e);
+//		}
+//	}    
+//    public Map&lt;String, BigDecimal&gt; getTopicTopicPageIdf(Map&lt;String,BigDecimal&gt; topics, Map&lt;String,BigDecimal&gt; topicPageTopics) {
+//		Map&lt;String, BigDecimal&gt; topicIdf = new HashMap&lt;String,BigDecimal&gt;();
+//		for (String topic : topics.keySet()) {
+//			for (String topicPageTopic : topicPageTopics.keySet()) {
+//				int idf = 0;
+//				if (topicPageTopic.equals(topic)) {
+//					idf++;
+//					continue;
+//				}
+//				topicIdf.put(topic, new BigDecimal(idf));
+//			}
+//		}
+//		return topicIdf;
+//    }
+//    
+//    public Map&lt;String, Map&lt;String,BigDecimal&gt;&gt; getTopicTopicPageTf(Map&lt;String,BigDecimal&gt; topics, Map&lt;String,BigDecimal&gt; topicPageTopics) {
+//		Map&lt;String, Map&lt;String,BigDecimal&gt;&gt; topicPageTf = new HashMap&lt;String,Map&lt;String,BigDecimal&gt;&gt;();
+//		for (String topic : topics.keySet()) {
+//			Map&lt;String,BigDecimal&gt; topicPageScore = topicPageTf.get(topic);
+//			if (topicPageScore == null) {
+//				topicPageScore = new HashMap&lt;String,BigDecimal&gt;();
+//				topicPageTf.put(topic, topicPageScore);
+//			}
+//			for (String topicPageTopic : topicPageTopics.keySet()) {
+//				if (topicPageScore.get(topicPageTopic) == null) {
+//					topicPageScore.put(topicPageTopic, new BigDecimal(0.0));
+//				}
+//				if (topicPageTopic.equals(topic)) {
+//					BigDecimal existingScore = topicPageScore.get(topicPageTopic);
+//					BigDecimal newScore = topicPageTopics.get(topicPageTopic);
+//					topicPageScore.put(topicPageTopic, existingScore.add(newScore));						
+//					continue;
+//				}
+//			}
+//		}
+//		return topicPageTf;
+//    }
+//    
+//    
+///*
+//Suppose that we have term count tables of a corpus consisting of only two documents, as listed on the right.
+//
+//Document 2
+//Term	Term Count
+//this	1
+//is		1
+//another	2
+//example	3
+//
+//Document 1
+//Term	Term Count
+//this	1
+//is		1
+//a		2
+//sample	1
+//
+//
+//The calculation of tf–idf for the term &quot;this&quot; is performed as follows:
+//
+//In its raw frequency form, tf is just the frequency of the &quot;this&quot; for each document. 
+//In each document, the word &quot;this&quot; appears once; but as the document 2 has more words, its relative frequency is smaller.
+//
+//An idf is constant per corpus, and accounts for the ratio of documents that include the word &quot;this&quot;. 
+//In this case, we have a corpus of two documents and all of them include the word &quot;this&quot;.
+//
+//So tf–idf is zero for the word &quot;this&quot;, which implies that the word is not very informative as it appears in all documents.
+//The word &quot;example&quot; is more interesting - it occurs three times, but only in the second document.
+//
+//*/
+//	//calculate similarity
+//    public Map&lt;String,BigDecimal&gt; getTopicPageTfIdf(
+//    		Map&lt;String,BigDecimal&gt; topics, 
+//    		Map&lt;String,BigDecimal&gt; topicPageTopics,
+//    		Map&lt;String, BigDecimal&gt; topicIdf,
+//    		Map&lt;String, Map&lt;String,BigDecimal&gt;&gt; topicPageTf) {
+//		Map&lt;String,BigDecimal&gt; pageSimilarity = new HashMap&lt;String,BigDecimal&gt;();
+//		for (String pageName : topicPageTopics.keySet()) {		
+//			for (String topic : topics.keySet()) {
+//				BigDecimal mainPageTopicScore = topics.get(topic);
+//				BigDecimal topicIdfScore = topicIdf.get(topic);
+//				if (topicPageTf.get(topic) != null) {
+//					BigDecimal topicPageTfScore = topicPageTf.get(topic).get(pageName);
+//					BigDecimal answer = mainPageTopicScore.multiply(
+//							topicPageTfScore.multiply(
+//									new BigDecimal(
+//											Math.log(
+//											topicPageTopics.size()/(
+//													1+Math.abs(
+//															topicIdfScore.intValue()
+//															)
+//													)
+//											)
+//									)
+//							)
+//					);
+//					BigDecimal existingValue = pageSimilarity.get(pageName);
+//					if (existingValue == null) {
+//						existingValue = new BigDecimal(0);
+//					}
+//					existingValue = existingValue.add(answer);
+//					pageSimilarity.put(pageName, existingValue);
+//				}
+//			}
+//		}
+//		return pageSimilarity;
+//    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
