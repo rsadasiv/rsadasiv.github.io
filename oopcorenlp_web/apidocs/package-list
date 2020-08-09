@@ -1,2 +1,3 @@
-io.outofprintmagazine.web
+io.outofprintmagazine.web.servlets
+io.outofprintmagazine.web.storage
 io.outofprintmagazine.web.util
