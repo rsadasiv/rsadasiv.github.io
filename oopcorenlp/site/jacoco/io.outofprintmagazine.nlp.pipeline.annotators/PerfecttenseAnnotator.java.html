@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PerfecttenseAnnotator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OOP Core NLP</a> &gt; <a href="index.source.html" class="el_package">io.outofprintmagazine.nlp.pipeline.annotators</a> &gt; <span class="el_source">PerfecttenseAnnotator.java</span></div><h1>PerfecttenseAnnotator.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright (C) 2020 Ram Sadasiv
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ ******************************************************************************/
+package io.outofprintmagazine.nlp.pipeline.annotators;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.pipeline.Annotation;
+import edu.stanford.nlp.pipeline.Annotator;
+import edu.stanford.nlp.pipeline.CoreDocument;
+import edu.stanford.nlp.pipeline.CoreSentence;
+import io.outofprintmagazine.nlp.pipeline.scorers.IScorer;
+import io.outofprintmagazine.nlp.pipeline.scorers.MapSum;
+import io.outofprintmagazine.nlp.pipeline.serializers.ISerializer;
+import io.outofprintmagazine.nlp.pipeline.serializers.MapSerializer;
+import io.outofprintmagazine.nlp.utils.PerfecttenseUtils;
+
+public class PerfecttenseAnnotator extends AbstractPosAnnotator implements Annotator, IOOPAnnotator{
+	
+	@SuppressWarnings(&quot;unused&quot;)
+<span class="nc" id="L46">	private static final Logger logger = LogManager.getLogger(PerfecttenseAnnotator.class);</span>
+	
+	@SuppressWarnings(&quot;unused&quot;)
+	private Logger getLogger() {
+<span class="nc" id="L50">		return logger;</span>
+	}
+	
+	public PerfecttenseAnnotator() {
+<span class="nc" id="L54">		super();</span>
+<span class="nc" id="L55">		this.setScorer((IScorer)new MapSum(this.getAnnotationClass()));</span>
+<span class="nc" id="L56">		this.setSerializer((ISerializer)new MapSerializer(this.getAnnotationClass()));</span>
+<span class="nc" id="L57">	}</span>
+	
+	@Override
+	public String getDescription() {
+<span class="nc" id="L61">		return &quot;https://www.perfecttense.com/docs/&quot;;</span>
+	}
+	
+	@Override
+	public Class getAnnotationClass() {
+<span class="nc" id="L66">		return io.outofprintmagazine.nlp.pipeline.OOPAnnotations.PerfecttenseAnnotation.class;</span>
+	}
+	
+	public Class getGlossClass() {
+<span class="nc" id="L70">		return io.outofprintmagazine.nlp.pipeline.OOPAnnotations.PerfecttenseGlossAnnotation.class;</span>
+	}
+	
+	@Override
+	public void annotate(Annotation annotation) {
+<span class="nc" id="L75">		CoreDocument document = new CoreDocument(annotation);</span>
+		try {
+			//String response = PerfecttenseUtils.getInstance(getParameterStore()).correct(document.text(), new ArrayList&lt;String&gt;());
+			//ObjectMapper mapper = new ObjectMapper();
+	        //JsonNode corrected = mapper.readTree(response);
+<span class="nc" id="L80">			JsonNode corrected = PerfecttenseUtils.getInstance(getParameterStore()).correctJson(document.text(), new ArrayList&lt;String&gt;());</span>
+<span class="nc" id="L81">	        ArrayNode offset = (ArrayNode) corrected.get(&quot;offset&quot;);</span>
+<span class="nc" id="L82">	        Iterator&lt;CoreSentence&gt; sentenceIter = document.sentences().iterator();</span>
+<span class="nc" id="L83">	        Iterator&lt;JsonNode&gt; correctedSentenceIter = offset.iterator();</span>
+<span class="nc bnc" id="L84" title="All 4 branches missed.">	        while (sentenceIter.hasNext() &amp;&amp; correctedSentenceIter.hasNext()) {</span>
+<span class="nc" id="L85">	        	CoreSentence sentence = sentenceIter.next();</span>
+<span class="nc" id="L86">				JsonNode correctedSentence = correctedSentenceIter.next();</span>
+				//what happens if the sentencing gets out of sync?
+<span class="nc bnc" id="L88" title="All 2 branches missed.">				if (sentence.text().trim().equals(correctedSentence.get(&quot;originalSentence&quot;).asText().trim())) {</span>
+<span class="nc" id="L89">					ArrayNode corrections = (ArrayNode)correctedSentence.get(&quot;corrections&quot;);</span>
+<span class="nc bnc" id="L90" title="All 2 branches missed.">					if (corrections.size() &gt; 0) {</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">						for (JsonNode correction : corrections) {</span>
+<span class="nc" id="L92">							int correctionOffset = correction.get(&quot;offsetInSentence&quot;).asInt();</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">							for (CoreLabel token : sentence.tokens()) {</span>
+								//what happens if these get out of sync?
+<span class="nc bnc" id="L95" title="All 2 branches missed.">								if (token.beginPosition() &gt;= correctionOffset) {</span>
+<span class="nc" id="L96">									String glosses = null;</span>
+<span class="nc" id="L97">									Map&lt;String, BigDecimal&gt; scoreMap = new HashMap&lt;String, BigDecimal&gt;();</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">									for (JsonNode option : correction.get(&quot;options&quot;)) {</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">										for (JsonNode appliedRule : option.get(&quot;appliedRules&quot;)) {</span>
+<span class="nc bnc" id="L100" title="All 2 branches missed.">											if (glosses == null) {</span>
+<span class="nc" id="L101">												glosses = appliedRule.get(&quot;message&quot;).asText();</span>
+<span class="nc" id="L102">											}</span>
+											else {
+<span class="nc" id="L104">												glosses = glosses + &quot;/n&quot; + appliedRule.get(&quot;message&quot;).asText();</span>
+											}
+<span class="nc" id="L106">											BigDecimal score = new BigDecimal(1);</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">											if (option.get(&quot;isSuggestion&quot;).asBoolean(true)) {</span>
+<span class="nc" id="L108">												score = new BigDecimal(.5);</span>
+											}
+<span class="nc" id="L110">											scoreMap.put(appliedRule.get(&quot;ruleId&quot;).asText().replace('.', '_'), score);</span>
+										}
+									}
+<span class="nc" id="L113">									token.set(getGlossClass(), glosses);</span>
+<span class="nc" id="L114">									token.set(getAnnotationClass(), scoreMap);</span>
+<span class="nc" id="L115">									break;</span>
+								}
+							}
+						}
+					}
+				}
+			}
+<span class="nc" id="L122">		}</span>
+<span class="nc" id="L123">		catch (Exception e) {</span>
+<span class="nc" id="L124">			logger.error(e);</span>
+		}
+<span class="nc" id="L126">	}</span>
+	
+	@Override
+	public void serialize(CoreDocument document, ObjectNode json) {
+<span class="nc" id="L130">		getSerializer().serialize(document, json);</span>
+<span class="nc" id="L131">		serializeTokensGloss(document, json);</span>
+<span class="nc" id="L132">	}</span>
+	
+	@SuppressWarnings(&quot;unchecked&quot;)
+	protected void serializeTokensGloss(CoreDocument coreNlpDocument, ObjectNode jsonDocument) {
+<span class="nc" id="L136">		Iterator&lt;CoreSentence&gt; coreNlpSentencesIter = coreNlpDocument.sentences().iterator();</span>
+<span class="nc" id="L137">		Iterator&lt;JsonNode&gt; jsonSentencesIter = ((ArrayNode) jsonDocument.get(&quot;sentences&quot;)).iterator();</span>
+<span class="nc bnc" id="L138" title="All 4 branches missed.">		while (coreNlpSentencesIter.hasNext() &amp;&amp; jsonSentencesIter.hasNext()) {</span>
+<span class="nc" id="L139">			Iterator&lt;CoreLabel&gt; coreNlpTokensIter = coreNlpSentencesIter.next().tokens().iterator();</span>
+<span class="nc" id="L140">			Iterator&lt;JsonNode&gt; jsonTokensIter = ((ArrayNode) jsonSentencesIter.next().get(&quot;tokens&quot;)).iterator();</span>
+<span class="nc bnc" id="L141" title="All 4 branches missed.">			while (coreNlpTokensIter.hasNext() &amp;&amp; jsonTokensIter.hasNext()) {</span>
+<span class="nc" id="L142">				CoreLabel token = coreNlpTokensIter.next();</span>
+<span class="nc" id="L143">				ObjectNode tokenNode = (ObjectNode) jsonTokensIter.next();</span>
+<span class="nc bnc" id="L144" title="All 2 branches missed.">				if (token.containsKey(getGlossClass())) {</span>
+<span class="nc" id="L145">					tokenNode.put(getGlossClass().getSimpleName(), (String)token.get(getGlossClass()));</span>
+				}
+			}
+		}
+<span class="nc" id="L149">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

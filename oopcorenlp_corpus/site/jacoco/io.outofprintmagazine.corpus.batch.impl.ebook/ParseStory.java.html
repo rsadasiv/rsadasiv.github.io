@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ParseStory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OOP Corpus</a> &gt; <a href="index.source.html" class="el_package">io.outofprintmagazine.corpus.batch.impl.ebook</a> &gt; <span class="el_source">ParseStory.java</span></div><h1>ParseStory.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright (C) 2020 Ram Sadasiv
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ ******************************************************************************/
+package io.outofprintmagazine.corpus.batch.impl.ebook;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import io.outofprintmagazine.corpus.batch.CorpusBatchStep;
+import io.outofprintmagazine.corpus.batch.ICorpusBatchStep;
+
+public class ParseStory extends CorpusBatchStep implements ICorpusBatchStep {
+
+<span class="fc" id="L37">	private static final Logger logger = LogManager.getLogger(ParseStory.class);</span>
+
+	@SuppressWarnings(&quot;unused&quot;)
+	private Logger getLogger() {
+<span class="nc" id="L41">		return logger;</span>
+	}
+		
+	public ParseStory() {
+<span class="fc" id="L45">		super();</span>
+<span class="fc" id="L46">	}</span>
+	
+	@Override
+	public ArrayNode runOne(ObjectNode inputStepItem) throws Exception {
+<span class="fc" id="L50">		ArrayNode retval = getMapper().createArrayNode();</span>
+<span class="fc" id="L51">		BufferedReader reader = null;</span>
+		try {
+<span class="fc" id="L53">			reader = new BufferedReader(</span>
+				new StringReader(
+<span class="fc" id="L55">						getTextDocumentFromStorage(inputStepItem)</span>
+				)
+			);
+			//If there is a TOC, story titles will appear twice
+			//If there is no TOC, start reading as soon as you encounter the title
+
+<span class="fc" id="L61">			List&lt;String&gt; tocCandidates = new ArrayList&lt;String&gt;();</span>
+<span class="fc" id="L62">			StringBuffer buf = new StringBuffer();</span>
+<span class="fc" id="L63">			String line = null;</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">			while ((line = reader.readLine()) != null) {</span>
+<span class="fc" id="L65">				line = line.trim();</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">				if (line.equals(inputStepItem.get(&quot;esnlc_DocTitleAnnotation&quot;).asText())) {</span>
+<span class="fc" id="L67">					tocCandidates.add(line);</span>
+				}
+			}
+			
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">			boolean seenToc = (tocCandidates.size() == 1);</span>
+			
+<span class="fc" id="L73">			reader.close();</span>
+<span class="fc" id="L74">			reader = new BufferedReader(</span>
+				new StringReader(
+<span class="fc" id="L76">						getTextDocumentFromStorage(inputStepItem)</span>
+				)
+			);
+			
+<span class="fc" id="L80">			boolean inStory = false;</span>
+<span class="fc" id="L81">			buf = new StringBuffer();</span>
+<span class="fc" id="L82">			line = null;</span>
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">			while ((line = reader.readLine()) != null) {</span>
+<span class="fc" id="L84">				line = line.trim();</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">				if (line.equals(inputStepItem.get(&quot;esnlc_DocTitleAnnotation&quot;).asText())) {</span>
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">					if (seenToc) {</span>
+<span class="fc" id="L87">						inStory = true;</span>
+					}
+<span class="fc" id="L89">					seenToc = true;</span>
+				}
+<span class="pc bpc" id="L91" title="2 of 8 branches missed.">				else if (inStory &amp;&amp; inputStepItem.get(&quot;nextTitle&quot;) != null &amp;&amp; inputStepItem.get(&quot;nextTitle&quot;).asText().length() &gt; 0 &amp;&amp; line.equals(inputStepItem.get(&quot;nextTitle&quot;).asText())) {</span>
+<span class="fc" id="L92">					ObjectNode outputStepItem = copyInputToOutput(inputStepItem);</span>
+					try {
+<span class="fc" id="L94">						setStorageLink(</span>
+<span class="fc" id="L95">								getStorage().storeScratchFileString(</span>
+<span class="fc" id="L96">									getData().getCorpusId(), </span>
+<span class="fc" id="L97">									getOutputScratchFilePath(</span>
+<span class="fc" id="L98">											inputStepItem.get(&quot;esnlc_DocTitleAnnotation&quot;).asText(), </span>
+											&quot;txt&quot;
+									),
+<span class="fc" id="L101">									buf.toString().trim()</span>
+								),
+								outputStepItem
+						);
+					}
+<span class="nc" id="L106">					catch (IOException ioe) {</span>
+<span class="nc" id="L107">						setStorageLink(</span>
+<span class="nc" id="L108">								getStorage().storeScratchFileString(</span>
+<span class="nc" id="L109">									getData().getCorpusId(), </span>
+<span class="nc" id="L110">									getOutputScratchFilePath(</span>
+<span class="nc" id="L111">											DigestUtils.md5Hex(</span>
+<span class="nc" id="L112">													inputStepItem.get(&quot;esnlc_DocTitleAnnotation&quot;).asText() </span>
+											),
+											&quot;txt&quot;
+									),
+<span class="nc" id="L116">									buf.toString().trim()</span>
+								),
+								outputStepItem
+						);
+<span class="fc" id="L120">					}</span>
+<span class="fc" id="L121">					retval.add(outputStepItem);</span>
+<span class="fc" id="L122">					inStory = false;</span>
+<span class="fc" id="L123">					break;</span>
+				}
+<span class="fc bfc" id="L125" title="All 2 branches covered.">				else if (inStory) {</span>
+<span class="fc" id="L126">					buf.append(line);</span>
+<span class="fc" id="L127">					buf.append('\n');</span>
+<span class="fc" id="L128">					buf.append('\n');</span>
+				}
+			}
+<span class="pc bpc" id="L131" title="2 of 4 branches missed.">			if (buf.length() &gt; 0 &amp;&amp; inStory) {</span>
+<span class="nc" id="L132">				ObjectNode outputStepItem = copyInputToOutput(inputStepItem);</span>
+				try {
+<span class="nc" id="L134">					setStorageLink(</span>
+<span class="nc" id="L135">							getStorage().storeScratchFileString(</span>
+<span class="nc" id="L136">								getData().getCorpusId(), </span>
+<span class="nc" id="L137">								getOutputScratchFilePath(</span>
+<span class="nc" id="L138">										inputStepItem.get(&quot;esnlc_DocTitleAnnotation&quot;).asText(), </span>
+										&quot;txt&quot;
+								),
+<span class="nc" id="L141">								buf.toString().trim()</span>
+							),
+							outputStepItem
+					);
+				}
+<span class="nc" id="L146">				catch (IOException ioe) {</span>
+<span class="nc" id="L147">					setStorageLink(</span>
+<span class="nc" id="L148">							getStorage().storeScratchFileString(</span>
+<span class="nc" id="L149">								getData().getCorpusId(), </span>
+<span class="nc" id="L150">								getOutputScratchFilePath(</span>
+<span class="nc" id="L151">										DigestUtils.md5Hex(</span>
+<span class="nc" id="L152">												inputStepItem.get(&quot;esnlc_DocTitleAnnotation&quot;).asText() </span>
+										),
+										&quot;txt&quot;
+								),
+<span class="nc" id="L156">								buf.toString().trim()</span>
+							),
+							outputStepItem
+					);
+<span class="nc" id="L160">				}</span>
+<span class="nc" id="L161">				retval.add(outputStepItem);</span>
+			}
+<span class="fc" id="L163">			return retval;</span>
+		}
+		finally {
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">			if (reader != null) {</span>
+<span class="fc" id="L167">				reader.close();</span>
+			}
+		}
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

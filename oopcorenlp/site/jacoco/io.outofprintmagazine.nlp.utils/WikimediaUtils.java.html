@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WikimediaUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OOP Core NLP</a> &gt; <a href="index.source.html" class="el_package">io.outofprintmagazine.nlp.utils</a> &gt; <span class="el_source">WikimediaUtils.java</span></div><h1>WikimediaUtils.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright (C) 2020 Ram Sadasiv
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ ******************************************************************************/
+package io.outofprintmagazine.nlp.utils;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.Header;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.fasterxml.jackson.databind.JsonNode;
+
+import io.outofprintmagazine.util.IParameterStore;
+
+public class WikimediaUtils {
+	
+<span class="fc" id="L42">	private static final Logger logger = LogManager.getLogger(WikimediaUtils.class);</span>
+	
+	@SuppressWarnings(&quot;unused&quot;)
+	private Logger getLogger() {
+<span class="nc" id="L46">		return logger;</span>
+	}
+	
+	private static final int BATCH_SIZE = 20;
+<span class="fc" id="L50">	private IParameterStore parameterStore = null;</span>
+	
+<span class="fc" id="L52">	private WikimediaUtils(IParameterStore parameterStore) throws IOException {</span>
+<span class="fc" id="L53">		this.parameterStore = parameterStore;</span>
+<span class="fc" id="L54">	}</span>
+	
+<span class="fc" id="L56">	private static Map&lt;IParameterStore, WikimediaUtils&gt; instances = new HashMap&lt;IParameterStore, WikimediaUtils&gt;();</span>
+	
+    public static WikimediaUtils getInstance(IParameterStore parameterStore) throws IOException { 
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        if (instances.get(parameterStore) == null) {</span>
+<span class="fc" id="L60">        	WikimediaUtils instance = new WikimediaUtils(parameterStore);</span>
+<span class="fc" id="L61">            instances.put(parameterStore, instance);</span>
+        }
+<span class="fc" id="L63">        return instances.get(parameterStore); </span>
+    }
+    
+    public List&lt;String&gt; getImagesByText(String text) throws IOException, URISyntaxException {
+<span class="fc" id="L67">    	List&lt;String&gt; retval = getImages(text);</span>
+<span class="fc" id="L68">    	return retval;</span>
+    }
+    
+    public List&lt;String&gt; getImagesByTag(String text) throws IOException, URISyntaxException {
+<span class="nc" id="L72">    	List&lt;String&gt; retval = getImages(text);</span>
+<span class="nc" id="L73">    	return retval;</span>
+    }
+    
+    //https://en.wikipedia.org/w/api.php?action=query&amp;generator=images&amp;titles=Coimbatore&amp;prop=info
+    //https://en.wikipedia.org/w/api.php?action=query&amp;titles=File:Coimbatore-TNSTC-JnNURM-Bus.JPG&amp;prop=imageinfo&amp;iiprop=timestamp|user|userid|comment|canonicaltitle|url|size|dimensions|sha1|mime|thumbmime|mediatype|bitdepth
+/*
+https://en.wikipedia.org/w/api.php?format=json&amp;action=query&amp;prop=imageinfo&amp;iiprop=timestamp|user|userid|comment|canonicaltitle|url|size|dimensions|sha1|mime|thumbmime|mediatype|bitdepth&amp;titles=File%3A2009-3-14_ManUtd_vs_LFC_Red_Card_Vidic.JPG|File%3AAU_Fire_Danger_Indicator.jpg|File%3AAlfa_Romeo_33_SC_12_Sovralimentata_1977_red_vr_TCE.jpg|File%3AAlizarin-sample.jpg|File%3AAmsterdam_red_light_district_24-7-2003.JPG|File%3AAt_the_Devil%27s_Ball_1.jpg|File%3AAztecheaddress.jpg|File%3ABoutet_1708_color_circles.jpg|File%3AAgarplate_redbloodcells_edit.jpg|File%3ABoschTheCrucifixionOfStJulia.jpg|File%3ABritish_home_and_distant_railway_semaphore_RYG_signals.svg|File%3AByzantine_imperial_flag%2C_14th_century%2C_square.svg|File%3ACan_Setter_dog_GFDL.jpg|File%3ACardinal.jpg|File%3ACardinal_Th%C3%A9odore_Adrien_Sarr_2.JPG|File%3ACherry_blossoms_in_the_Tsutsujigaoka_Park.jpg|File%3AChinese_honor_guard_in_column_070322-F-0193C-014.JPEG|File%3ACrimson_sunset.jpg|File%3ACommons-logo.svg|File%3AElizabeth_I_Steven_Van_Der_Meulen.jpg
+https://en.wikipedia.org/w/api.php?format=json&amp;action=query&amp;prop=imageinfo&amp;iiprop=timestamp|user|userid|comment|canonicaltitle|url|size|dimensions|sha1|mime|thumbmime|mediatype|bitdepth&amp;titles=File%3AA_Badge_Pinning.jpg|File%3ABadge_1012.jpg|File%3AChevalier_l%C3%A9gion_d%27honneur_2.png|File%3ADima-rs1.jpg|File%3ADispositif_d%27une_%C3%A9pingle_de_s%C3%BBret%C3%A9_sur_une_%C3%A9pinglette.JPG|File%3AGeneseeDABadge.jpg|File%3AGreenville%2C_North_Carolina_Police_Badge.jpg|File%3ACommons-logo.svg|File%3AFolder_Hexagonal_Icon.svg|File%3ANobel_Prize.png|File%3APeople_icon.svg|File%3AStar_of_the_Garter.png|File%3AQuestion_book-new.svg
+https://en.wikipedia.org/w/api.php?format=json&amp;action=query&amp;prop=imageinfo&amp;iiprop=timestamp|user|userid|comment|canonicaltitle|url|size|dimensions|sha1|mime|thumbmime|mediatype|bitdepth&amp;titles=File:Disambig_gray.svg
+ */
+    
+    protected class ImagePageHandler implements IJsonResponseHandler {
+<span class="fc" id="L85">    	List&lt;String&gt; retval = new ArrayList&lt;String&gt;();</span>
+    	
+<span class="fc" id="L87">    	public ImagePageHandler() {</span>
+<span class="fc" id="L88">    		super();</span>
+<span class="fc" id="L89">    	}</span>
+    	
+    	public List&lt;String&gt; getValues() {
+<span class="fc" id="L92">    		return retval;</span>
+    	}
+    	
+    	@Override
+		public void onPage(JsonNode page) {
+<span class="pc bpc" id="L97" title="3 of 6 branches missed.">    		if (page != null &amp;&amp; page.has(&quot;query&quot;) &amp;&amp; page.get(&quot;query&quot;).has(&quot;pages&quot;)) {</span>
+<span class="fc" id="L98">				JsonNode pagesNode = page.get(&quot;query&quot;).get(&quot;pages&quot;);</span>
+<span class="fc" id="L99">				Iterator&lt;Entry&lt;String, JsonNode&gt;&gt; pagesIter = pagesNode.fields();</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">				while (pagesIter.hasNext()) {</span>
+<span class="fc" id="L101">					String x = pagesIter.next().getValue().get(&quot;title&quot;).asText();</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">					if (StringUtils.isAsciiPrintable(x)) {</span>
+<span class="fc" id="L103">						retval.add(x);</span>
+					}
+				}
+			}   		
+<span class="fc" id="L107">    	}</span>
+    }
+    
+    protected class ImageInfoPageHandler implements IJsonResponseHandler {
+<span class="fc" id="L111">    	List&lt;String&gt; retval = new ArrayList&lt;String&gt;();</span>
+    	
+<span class="fc" id="L113">    	public ImageInfoPageHandler() {</span>
+<span class="fc" id="L114">    		super();</span>
+<span class="fc" id="L115">    	}</span>
+    	
+    	public List&lt;String&gt; getValues() {
+<span class="fc" id="L118">    		return retval;</span>
+    	}
+    	
+    	@Override
+		public void onPage(JsonNode page) {
+<span class="pc bpc" id="L123" title="3 of 6 branches missed.">    		if (page != null &amp;&amp; page.has(&quot;query&quot;) &amp;&amp; page.get(&quot;query&quot;).has(&quot;pages&quot;)) {</span>
+<span class="fc" id="L124">    			JsonNode pagesNode = page.get(&quot;query&quot;).get(&quot;pages&quot;);</span>
+<span class="fc" id="L125">    			Iterator&lt;Entry&lt;String, JsonNode&gt;&gt; pagesIter = pagesNode.fields();</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">    			while (pagesIter.hasNext()) {</span>
+<span class="fc" id="L127">    				JsonNode pageNode = pagesIter.next().getValue().get(&quot;imageinfo&quot;).get(0);</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">    				if (pageNode.get(&quot;mediatype&quot;).asText().equalsIgnoreCase(&quot;BITMAP&quot;)) {</span>
+<span class="fc" id="L129">    					retval.add(pageNode.get(&quot;url&quot;).asText());</span>
+    				}
+    			}
+			}   		
+<span class="fc" id="L133">    	}</span>
+    }
+	
+    public List&lt;String&gt; getImages(String title) throws IOException, URISyntaxException {
+<span class="pc bpc" id="L137" title="1 of 2 branches missed.">    	if (!StringUtils.isAsciiPrintable(title)) {</span>
+<span class="nc" id="L138">    		return new ArrayList&lt;String&gt;();</span>
+    	}
+<span class="fc" id="L140">    	ImagePageHandler imageHandler = new ImagePageHandler();</span>
+<span class="fc" id="L141">		List&lt;NameValuePair&gt; imageParams = HttpUtils.getInstance(parameterStore).getWikimediaImageParameters();</span>
+<span class="fc" id="L142">		title = title.replace(' ', '_');</span>
+<span class="fc" id="L143">		imageParams.add(new BasicNameValuePair(&quot;titles&quot;, title));</span>
+<span class="fc" id="L144">		List&lt;Header&gt; headers = new ArrayList&lt;Header&gt;();</span>
+<span class="fc" id="L145">		headers.add(new BasicHeader(&quot;User-Agent&quot;, parameterStore.getProperty(&quot;wikipedia_apikey&quot;)));</span>
+<span class="fc" id="L146">		HttpUtils.getInstance(parameterStore).httpGetJsonPaginated(</span>
+<span class="fc" id="L147">				HttpUtils.getInstance(parameterStore).getWikipediaApi(), </span>
+<span class="fc" id="L148">				imageParams, </span>
+<span class="fc" id="L149">				headers, </span>
+<span class="fc" id="L150">				&quot;gimcontinue&quot;,</span>
+<span class="fc" id="L151">				imageHandler</span>
+		);
+
+<span class="fc" id="L154">    	ImageInfoPageHandler imageInfoHandler = new ImageInfoPageHandler();</span>
+<span class="fc" id="L155">		Iterator&lt;String&gt; imageTitlesIter = imageHandler.getValues().iterator();</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">		while (imageTitlesIter.hasNext()) {</span>
+<span class="fc" id="L157">			List&lt;String&gt; queries = new ArrayList&lt;String&gt;();</span>
+<span class="fc bfc" id="L158" title="All 4 branches covered.">			for (int i=0;i&lt;BATCH_SIZE&amp;&amp;imageTitlesIter.hasNext();i++) {</span>
+<span class="fc" id="L159">				String imageTitle = imageTitlesIter.next();</span>
+<span class="fc" id="L160">				imageTitle = imageTitle.replace(' ', '_');</span>
+<span class="fc" id="L161">				queries.add(imageTitle);</span>
+			}
+<span class="fc" id="L163">			List&lt;NameValuePair&gt; infoParams = HttpUtils.getInstance(parameterStore).getWikimediaImageInfoParameters();</span>
+<span class="fc" id="L164">			infoParams.add(new BasicNameValuePair(&quot;titles&quot;, String.join(&quot;|&quot;, queries)));			</span>
+<span class="fc" id="L165">			HttpUtils.getInstance(parameterStore).httpGetJsonCB(</span>
+<span class="fc" id="L166">					HttpUtils.getInstance(parameterStore).buildUri(</span>
+<span class="fc" id="L167">							HttpUtils.getInstance(parameterStore).getWikipediaApi(), </span>
+<span class="fc" id="L168">							infoParams</span>
+					),
+<span class="fc" id="L170">					headers, </span>
+<span class="fc" id="L171">					imageInfoHandler</span>
+			);
+			
+		}
+<span class="fc" id="L175">		return imageInfoHandler.getValues();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

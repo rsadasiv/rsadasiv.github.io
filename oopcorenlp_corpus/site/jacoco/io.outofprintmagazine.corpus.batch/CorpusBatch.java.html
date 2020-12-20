@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CorpusBatch.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OOP Corpus</a> &gt; <a href="index.source.html" class="el_package">io.outofprintmagazine.corpus.batch</a> &gt; <span class="el_source">CorpusBatch.java</span></div><h1>CorpusBatch.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright (C) 2020 Ram Sadasiv
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ ******************************************************************************/
+package io.outofprintmagazine.corpus.batch;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+
+import io.outofprintmagazine.corpus.batch.model.CorpusBatchModel;
+import io.outofprintmagazine.corpus.batch.model.CorpusBatchStepModel;
+import io.outofprintmagazine.corpus.storage.IBatchStorage;
+import io.outofprintmagazine.corpus.storage.IScratchStorage;
+import io.outofprintmagazine.util.IParameterStore;
+
+
+public class CorpusBatch {
+	
+<span class="nc" id="L46">	private static final Logger logger = LogManager.getLogger(CorpusBatch.class);</span>
+	
+	private Logger getLogger() {
+<span class="nc" id="L49">		return logger;</span>
+	}
+	
+	public CorpusBatch() {
+<span class="nc" id="L53">		super();</span>
+<span class="nc" id="L54">	}</span>
+	
+	private CorpusBatchModel data;
+	
+	public CorpusBatchModel getData() {
+<span class="nc" id="L59">		return data;</span>
+	}
+
+	public void setData(CorpusBatchModel data) {
+<span class="nc" id="L63">		this.data = data;</span>
+<span class="nc" id="L64">	}</span>
+	
+<span class="nc" id="L66">	private IScratchStorage scratchStorage = null;</span>
+	
+	public IScratchStorage getScratchStorage() throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+<span class="nc bnc" id="L69" title="All 2 branches missed.">		if (scratchStorage == null) {</span>
+<span class="nc" id="L70">			scratchStorage = (IScratchStorage) Class.forName(getData().getScratchStorageClass()).getConstructor().newInstance();</span>
+<span class="nc" id="L71">			scratchStorage.setParameterStore(getParameterStore());</span>
+		}
+<span class="nc" id="L73">		return scratchStorage;</span>
+	}
+	
+	public void setScratchStorage(IScratchStorage storage) {
+<span class="nc" id="L77">		this.scratchStorage = storage;</span>
+<span class="nc" id="L78">	}</span>
+	
+<span class="nc" id="L80">	private IBatchStorage batchStorage = null;</span>
+	
+	public IBatchStorage getBatchStorage() throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+<span class="nc bnc" id="L83" title="All 2 branches missed.">		if (batchStorage == null) {</span>
+<span class="nc" id="L84">			batchStorage = (IBatchStorage) Class.forName(getData().getBatchStorageClass()).getConstructor().newInstance();</span>
+<span class="nc" id="L85">			batchStorage.setParameterStore(getParameterStore());</span>
+		}
+<span class="nc" id="L87">		return batchStorage;</span>
+	}
+	
+	public void setBatchStorage(IBatchStorage batchStorage) {
+<span class="nc" id="L91">		this.batchStorage = batchStorage;</span>
+<span class="nc" id="L92">	}</span>
+	
+<span class="nc" id="L94">	private IParameterStore parameterStore = null;</span>
+	
+	public IParameterStore getParameterStore() throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
+<span class="nc bnc" id="L97" title="All 2 branches missed.">		if (parameterStore == null) {</span>
+<span class="nc" id="L98">			parameterStore = (IParameterStore) Class.forName(getData().getParameterStoreClass()).getConstructor().newInstance();</span>
+<span class="nc" id="L99">			parameterStore.init(getData().getProperties());</span>
+		}
+<span class="nc" id="L101">		return parameterStore;</span>
+	}
+	
+	public void setBatchStorage(IParameterStore parameterStore) {
+<span class="nc" id="L105">		this.parameterStore = parameterStore;</span>
+<span class="nc" id="L106">	}</span>
+	
+	public static CorpusBatch buildFromTemplate(String templateLocation) throws IOException {
+<span class="nc" id="L109">    	CorpusBatch corpusBatch = new CorpusBatch();</span>
+<span class="nc" id="L110">    	ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);</span>
+<span class="nc" id="L111">    	corpusBatch.setData(</span>
+<span class="nc" id="L112">    			mapper.readValue(</span>
+<span class="nc" id="L113">    					corpusBatch.getClass().getClassLoader().getResourceAsStream(templateLocation),</span>
+    					CorpusBatchModel.class
+    			)
+    	);
+<span class="nc" id="L117">    	return corpusBatch;</span>
+	}
+	
+	private List&lt;String&gt; readStreamToList(InputStream in) throws IOException {
+		try {
+<span class="nc" id="L122">			List&lt;String&gt; allLines = IOUtils.readLines(</span>
+					in,
+<span class="nc" id="L124">					StandardCharsets.UTF_8.name()</span>
+			);
+<span class="nc" id="L126">			List&lt;String&gt; retval = new ArrayList&lt;String&gt;();</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">			for (String line : allLines) {</span>
+<span class="nc bnc" id="L128" title="All 4 branches missed.">				if (!line.startsWith(&quot;#&quot;) &amp;&amp; !line.startsWith(&quot;/&quot;)) {</span>
+<span class="nc" id="L129">					retval.add(line);</span>
+				}
+<span class="nc" id="L131">			}</span>
+<span class="nc" id="L132">			return retval;</span>
+		}
+		finally {
+<span class="nc" id="L135">			in.close();</span>
+		}
+	}
+	
+	public void appendAnalyzeStep() throws IOException {
+<span class="nc" id="L140">		CorpusBatchStepModel analyzeStep = new CorpusBatchStepModel();</span>
+<span class="nc" id="L141">		analyzeStep.setCorpusBatchId(getData().getCorpusBatchId());</span>
+<span class="nc" id="L142">		analyzeStep.setCorpusBatchStepSequenceId(Integer.valueOf(getData().getCorpusBatchSteps().size()));</span>
+<span class="nc" id="L143">		analyzeStep.setCorpusBatchStepId(&quot;Analyze&quot;);</span>
+<span class="nc" id="L144">		analyzeStep.setCorpusBatchStepClass(&quot;io.outofprintmagazine.corpus.batch.impl.Analyze&quot;);</span>
+<span class="nc" id="L145">		ArrayNode customAnnotators = analyzeStep.getProperties().arrayNode();</span>
+<span class="nc" id="L146">		List&lt;String&gt; customAnnotatorList = readStreamToList(this.getClass().getClassLoader().getResourceAsStream(&quot;io/outofprintmagazine/util/annotators.txt&quot;));</span>
+<span class="nc bnc" id="L147" title="All 2 branches missed.">		for (String customAnnotator : customAnnotatorList) {</span>
+<span class="nc" id="L148">			customAnnotators.add(customAnnotator);</span>
+<span class="nc" id="L149">		}</span>
+<span class="nc" id="L150">		analyzeStep.getProperties().set(&quot;customAnnotators&quot;, customAnnotators);</span>
+<span class="nc" id="L151">		getData().getCorpusBatchSteps().add(analyzeStep);</span>
+<span class="nc" id="L152">	}</span>
+	
+	public void appendAggregateStep() throws IOException {
+<span class="nc" id="L155">		CorpusBatchStepModel aggregateStep = new CorpusBatchStepModel();</span>
+<span class="nc" id="L156">		aggregateStep.setCorpusBatchId(getData().getCorpusBatchId());</span>
+<span class="nc" id="L157">		aggregateStep.setCorpusBatchStepSequenceId(Integer.valueOf(getData().getCorpusBatchSteps().size()));</span>
+<span class="nc" id="L158">		aggregateStep.setCorpusBatchStepId(&quot;CorpusAggregate&quot;);</span>
+<span class="nc" id="L159">		aggregateStep.setCorpusBatchStepClass(&quot;io.outofprintmagazine.corpus.batch.impl.CorpusAggregate&quot;);</span>
+<span class="nc" id="L160">		getData().getCorpusBatchSteps().add(aggregateStep);</span>
+
+<span class="nc" id="L162">		CorpusBatchStepModel aggregateIdfStep = new CorpusBatchStepModel();</span>
+<span class="nc" id="L163">		aggregateIdfStep.setCorpusBatchId(getData().getCorpusBatchId());</span>
+<span class="nc" id="L164">		aggregateIdfStep.setCorpusBatchStepSequenceId(Integer.valueOf(getData().getCorpusBatchSteps().size()));</span>
+<span class="nc" id="L165">		aggregateIdfStep.setCorpusBatchStepId(&quot;CoreNLPTfidf&quot;);</span>
+<span class="nc" id="L166">		aggregateIdfStep.setCorpusBatchStepClass(&quot;io.outofprintmagazine.corpus.batch.impl.CoreNLPTfidfScores&quot;);</span>
+<span class="nc" id="L167">		getData().getCorpusBatchSteps().add(aggregateIdfStep);		</span>
+
+<span class="nc" id="L169">		CorpusBatchStepModel aggregateZStep = new CorpusBatchStepModel();</span>
+<span class="nc" id="L170">		aggregateZStep.setCorpusBatchId(getData().getCorpusBatchId());</span>
+<span class="nc" id="L171">		aggregateZStep.setCorpusBatchStepSequenceId(Integer.valueOf(getData().getCorpusBatchSteps().size()));</span>
+<span class="nc" id="L172">		aggregateZStep.setCorpusBatchStepId(&quot;CoreNLPZ&quot;);</span>
+<span class="nc" id="L173">		aggregateZStep.setCorpusBatchStepClass(&quot;io.outofprintmagazine.corpus.batch.impl.CoreNLPZScores&quot;);</span>
+<span class="nc" id="L174">		getData().getCorpusBatchSteps().add(aggregateZStep);	</span>
+
+<span class="nc" id="L176">		CorpusBatchStepModel aggregateMBStep = new CorpusBatchStepModel();</span>
+<span class="nc" id="L177">		aggregateMBStep.setCorpusBatchId(getData().getCorpusBatchId());</span>
+<span class="nc" id="L178">		aggregateMBStep.setCorpusBatchStepSequenceId(Integer.valueOf(getData().getCorpusBatchSteps().size()));</span>
+<span class="nc" id="L179">		aggregateMBStep.setCorpusBatchStepId(&quot;CoreNLPMB&quot;);</span>
+<span class="nc" id="L180">		aggregateMBStep.setCorpusBatchStepClass(&quot;io.outofprintmagazine.corpus.batch.impl.CoreNLPMyersBriggsScores&quot;);</span>
+<span class="nc" id="L181">		getData().getCorpusBatchSteps().add(aggregateMBStep);		</span>
+		
+<span class="nc" id="L183">		CorpusBatchStepModel word2vecStep = new CorpusBatchStepModel();</span>
+<span class="nc" id="L184">		word2vecStep.setCorpusBatchId(getData().getCorpusBatchId());</span>
+<span class="nc" id="L185">		word2vecStep.setCorpusBatchStepSequenceId(Integer.valueOf(getData().getCorpusBatchSteps().size()));</span>
+<span class="nc" id="L186">		word2vecStep.setCorpusBatchStepId(&quot;Word2Vec&quot;);</span>
+<span class="nc" id="L187">		word2vecStep.setCorpusBatchStepClass(&quot;io.outofprintmagazine.corpus.batch.impl.BuildWord2VecModels&quot;);</span>
+<span class="nc" id="L188">		getData().getCorpusBatchSteps().add(word2vecStep);</span>
+<span class="nc" id="L189">	}</span>
+	
+	public static CorpusBatch buildFromStagingBatch(String corpusName, String batchName) throws Exception {
+<span class="nc" id="L192">		return buildFromStagingBatch(corpusName, batchName, &quot;io.outofprintmagazine.corpus.storage.file.FileCorpora&quot;);</span>
+	}
+	
+	public static CorpusBatch buildFromStagingBatch(String corpusName, String batchName, String batchStorageClass) throws Exception {
+<span class="nc" id="L196">    	IBatchStorage batchStorage = (IBatchStorage) Class.forName(batchStorageClass).getConstructor().newInstance();</span>
+<span class="nc" id="L197">    	CorpusBatch corpusBatch = new CorpusBatch();</span>
+<span class="nc" id="L198">    	corpusBatch.setBatchStorage(batchStorage);</span>
+<span class="nc" id="L199">    	ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);</span>
+<span class="nc" id="L200">    	corpusBatch.setData(</span>
+<span class="nc" id="L201">    			mapper.treeToValue(</span>
+<span class="nc" id="L202">    					batchStorage.getStagingBatch(corpusName, batchName), </span>
+    					CorpusBatchModel.class
+    			)
+    	);
+<span class="nc" id="L206">    	return corpusBatch;</span>
+	}
+	
+	public static CorpusBatch buildFromFile(String fileName) throws Exception {
+<span class="nc" id="L210">    	CorpusBatch corpusBatch = new CorpusBatch();</span>
+<span class="nc" id="L211">    	ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);</span>
+<span class="nc" id="L212">    	corpusBatch.setData(</span>
+<span class="nc" id="L213">    			mapper.readValue(</span>
+    					new File(fileName), 
+    					CorpusBatchModel.class
+    			)
+    	);
+<span class="nc" id="L218">    	return corpusBatch;</span>
+	}
+	
+	public static CorpusBatch buildFromJson(String corpusName, JsonNode data) throws Exception {
+<span class="nc" id="L222">    	CorpusBatch corpusBatch = new CorpusBatch();</span>
+<span class="nc" id="L223">    	ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);</span>
+<span class="nc" id="L224">    	corpusBatch.setData(</span>
+<span class="nc" id="L225">    			mapper.treeToValue(</span>
+    					data, 
+    					CorpusBatchModel.class
+    			)
+    	);
+<span class="nc" id="L230">    	return corpusBatch;</span>
+	}
+	
+	public static CorpusBatch buildFromString(String corpusName, String data) throws Exception {
+<span class="nc" id="L234">    	CorpusBatch corpusBatch = new CorpusBatch();</span>
+<span class="nc" id="L235">    	ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);</span>
+<span class="nc" id="L236">    	corpusBatch.setData(</span>
+<span class="nc" id="L237">    			mapper.readValue(</span>
+    					data, 
+    					CorpusBatchModel.class
+    			)
+    	);
+<span class="nc" id="L242">    	return corpusBatch;</span>
+	}
+	
+	public void run() throws Exception {
+<span class="nc" id="L246">		List&lt;CorpusBatchStepModel&gt; sortedSteps = new ArrayList&lt;CorpusBatchStepModel&gt;(getData().getCorpusBatchSteps());</span>
+<span class="nc" id="L247">		getLogger().debug(sortedSteps.size());</span>
+<span class="nc" id="L248">		Collections.sort(sortedSteps);</span>
+<span class="nc" id="L249">		ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);</span>
+<span class="nc" id="L250">		ICorpusBatchStep previousBatchStep = null;</span>
+<span class="nc" id="L251">		ICorpusBatchStep currentBatchStep = null;</span>
+<span class="nc bnc" id="L252" title="All 2 branches missed.">    	for (CorpusBatchStepModel corpusBatchStepModel : sortedSteps) {</span>
+
+<span class="nc" id="L254">    		currentBatchStep = (ICorpusBatchStep) Class.forName(corpusBatchStepModel.getCorpusBatchStepClass()).getConstructor().newInstance();</span>
+<span class="nc" id="L255">    		currentBatchStep.setData(corpusBatchStepModel);</span>
+<span class="nc" id="L256">    		currentBatchStep.setStorage(getScratchStorage());</span>
+<span class="nc" id="L257">    		currentBatchStep.setParameterStore(getParameterStore());</span>
+<span class="nc" id="L258">    		currentBatchStep.getData().setCorpusId(getData().getCorpusId());</span>
+<span class="nc" id="L259">    		currentBatchStep.getData().setCorpusBatchId(getData().getCorpusBatchId());</span>
+<span class="nc" id="L260">    		getLogger().debug(getData().getCorpusId() + &quot; &quot; + getData().getCorpusBatchId() + &quot; &quot; + currentBatchStep.getData().getCorpusBatchStepId());</span>
+<span class="nc bnc" id="L261" title="All 2 branches missed.">    		if (previousBatchStep != null) {</span>
+<span class="nc" id="L262">    	    	currentBatchStep.run(previousBatchStep.getData().getOutput());</span>
+    		}
+    		else {
+<span class="nc" id="L265">    			currentBatchStep.run(currentBatchStep.getData().getInput().deepCopy());</span>
+    		}
+<span class="nc" id="L267">    		getBatchStorage().storeStagingBatchString(getData().getCorpusId(), getData().getCorpusBatchId(), mapper.writeValueAsString(getData()));</span>
+<span class="nc" id="L268">    		previousBatchStep = currentBatchStep;</span>
+<span class="nc" id="L269">    	}</span>
+    	//save incrementally
+    	//getBatchStorage().storeStagingBatchString(getData().getCorpusId(), getData().getCorpusBatchId(), mapper.writeValueAsString(getData()));
+<span class="nc" id="L272">	}</span>
+	
+	public void runStep(String stepId) throws Exception {
+<span class="nc" id="L275">		List&lt;CorpusBatchStepModel&gt; sortedSteps = new ArrayList&lt;CorpusBatchStepModel&gt;(getData().getCorpusBatchSteps());</span>
+<span class="nc" id="L276">		Collections.sort(sortedSteps);</span>
+<span class="nc" id="L277">		ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);</span>
+<span class="nc" id="L278">		ICorpusBatchStep previousBatchStep = null;</span>
+<span class="nc" id="L279">		ICorpusBatchStep currentBatchStep = null;</span>
+<span class="nc bnc" id="L280" title="All 2 branches missed.">    	for (CorpusBatchStepModel corpusBatchStepModel : sortedSteps) {</span>
+<span class="nc" id="L281">    		previousBatchStep = currentBatchStep;</span>
+<span class="nc" id="L282">    		currentBatchStep = (ICorpusBatchStep) Class.forName(corpusBatchStepModel.getCorpusBatchStepClass()).getConstructor().newInstance();</span>
+<span class="nc" id="L283">    		currentBatchStep.setData(corpusBatchStepModel);</span>
+<span class="nc bnc" id="L284" title="All 2 branches missed.">    		if (corpusBatchStepModel.getCorpusBatchStepId().equals(stepId)) {</span>
+<span class="nc bnc" id="L285" title="All 2 branches missed.">	    		if (previousBatchStep != null) {</span>
+<span class="nc" id="L286">	    			logger.debug(getData().getCorpusId() + &quot; &quot; + getData().getCorpusBatchId() + &quot; &quot; + currentBatchStep.getData().getCorpusBatchStepId());</span>
+<span class="nc" id="L287">	    	    	currentBatchStep.run(previousBatchStep.getData().getOutput());</span>
+	    		}
+	    		else {
+<span class="nc" id="L290">	    			currentBatchStep.run(currentBatchStep.getData().getInput());</span>
+	    		}
+    		}
+<span class="nc" id="L293">    	}</span>
+<span class="nc" id="L294">    	getBatchStorage().storeStagingBatchString(getData().getCorpusId(), getData().getCorpusBatchId(), mapper.writeValueAsString(getData()));</span>
+<span class="nc" id="L295">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

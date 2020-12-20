@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HttpUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OOP Core NLP</a> &gt; <a href="index.source.html" class="el_package">io.outofprintmagazine.nlp.utils</a> &gt; <span class="el_source">HttpUtils.java</span></div><h1>HttpUtils.java</h1><pre class="source lang-java linenums">package io.outofprintmagazine.nlp.utils;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.ServiceUnavailableRetryStrategy;
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.LaxRedirectStrategy;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+
+import io.outofprintmagazine.util.IParameterStore;
+
+public class HttpUtils {
+
+	public HttpUtils() {
+<span class="fc" id="L44">		super();</span>
+<span class="fc" id="L45">	}</span>
+	
+<span class="fc" id="L47">	private static final Logger logger = LogManager.getLogger(HttpUtils.class);</span>
+	
+	private Logger getLogger() {
+<span class="nc" id="L50">		return logger;</span>
+	}
+	
+<span class="fc" id="L53">	private ObjectMapper mapper = null;</span>
+<span class="fc" id="L54">	private HttpClientConnectionManager connManager = null;</span>
+	
+	private HttpUtils(IParameterStore parameterStore) throws IOException {
+<span class="fc" id="L57">		this();</span>
+<span class="fc" id="L58">		mapper = new ObjectMapper();</span>
+<span class="fc" id="L59">		connManager = new PoolingHttpClientConnectionManager();</span>
+		//((PoolingHttpClientConnectionManager)connManager).setMaxTotal(5);
+		//((PoolingHttpClientConnectionManager)connManager).setDefaultMaxPerRoute(4);
+		//((PoolingHttpClientConnectionManager)connManager).setMaxPerRoute(
+		//		new HttpRoute(
+		//				new HttpHost(&quot;en.wikipedia.org&quot;, -1)
+		//		),
+		//		5
+		//);
+<span class="fc" id="L68">	}</span>
+	
+<span class="fc" id="L70">	private static Map&lt;IParameterStore, HttpUtils&gt; instances = new HashMap&lt;IParameterStore, HttpUtils&gt;();</span>
+	
+    public static HttpUtils getInstance(IParameterStore parameterStore) throws IOException { 
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        if (instances.get(parameterStore) == null) {</span>
+<span class="fc" id="L74">        	HttpUtils instance = new HttpUtils(parameterStore);</span>
+<span class="fc" id="L75">            instances.put(parameterStore, instance);</span>
+        }
+<span class="fc" id="L77">        return instances.get(parameterStore); </span>
+    }
+    
+<span class="fc" id="L80">    class JsonResponseHandler implements ResponseHandler&lt;JsonNode&gt; {</span>
+    	
+		@Override
+		public JsonNode handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
+<span class="fc" id="L84">			int status = response.getStatusLine().getStatusCode();</span>
+<span class="fc" id="L85">			JsonNode retval = null;</span>
+<span class="pc bpc" id="L86" title="2 of 4 branches missed.">            if (status &gt;= 200 &amp;&amp; status &lt; 300) {</span>
+<span class="fc" id="L87">                HttpEntity entity = response.getEntity();</span>
+<span class="fc" id="L88">                retval = mapper.readTree(EntityUtils.toString(entity, StandardCharsets.UTF_8.name()));</span>
+<span class="fc" id="L89">                EntityUtils.consume(entity);</span>
+<span class="fc" id="L90">            } </span>
+            else {
+<span class="nc" id="L92">                throw new ClientProtocolException(&quot;Unexpected response status: &quot; + status);</span>
+            }
+<span class="fc" id="L94">            return retval;</span>
+		}
+	}
+    
+<span class="nc" id="L98">    class StringResponseHandler implements ResponseHandler&lt;String&gt; {</span>
+    	
+		@Override
+		public String handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
+<span class="nc" id="L102">			int status = response.getStatusLine().getStatusCode();</span>
+<span class="nc" id="L103">			String retval = null;</span>
+<span class="nc bnc" id="L104" title="All 4 branches missed.">            if (status &gt;= 200 &amp;&amp; status &lt; 300) {</span>
+<span class="nc" id="L105">                HttpEntity entity = response.getEntity();</span>
+<span class="nc" id="L106">                retval = EntityUtils.toString(entity, StandardCharsets.UTF_8.name());</span>
+<span class="nc" id="L107">                EntityUtils.consume(entity);</span>
+<span class="nc" id="L108">            } </span>
+            else {
+<span class="nc" id="L110">                throw new ClientProtocolException(&quot;Unexpected response status: &quot; + status);</span>
+            }
+<span class="nc" id="L112">            return retval;</span>
+		}
+	}
+    
+	protected CloseableHttpClient getHttpClient() {
+<span class="fc" id="L117">		int timeout = 5;</span>
+<span class="fc" id="L118">		return HttpClients.custom()</span>
+<span class="fc" id="L119">				.setConnectionManager(connManager)</span>
+<span class="fc" id="L120">                .setServiceUnavailableRetryStrategy(</span>
+<span class="fc" id="L121">                		new ServiceUnavailableRetryStrategy() {</span>
+                			@Override
+							public boolean retryRequest(
+                					final HttpResponse response, final int executionCount, final HttpContext context) {
+<span class="fc" id="L125">                					int statusCode = response.getStatusLine().getStatusCode();</span>
+<span class="pc bpc" id="L126" title="5 of 8 branches missed.">                					return (statusCode == 503 || statusCode == 500 || statusCode == 429) &amp;&amp; executionCount &lt; 5;</span>
+                			}
+
+                			@Override
+							public long getRetryInterval() {
+<span class="nc" id="L131">                				return 5;</span>
+                			}
+                		})
+<span class="fc" id="L134">                .setRedirectStrategy(new LaxRedirectStrategy())</span>
+<span class="fc" id="L135">                .setDefaultRequestConfig(</span>
+<span class="fc" id="L136">                		RequestConfig.custom()</span>
+<span class="fc" id="L137">                		.setConnectTimeout(timeout * 1000)</span>
+<span class="fc" id="L138">                		.setConnectionRequestTimeout(timeout * 1000)</span>
+<span class="fc" id="L139">                		.setSocketTimeout(timeout * 1000)</span>
+<span class="fc" id="L140">                		.setCookieSpec(CookieSpecs.STANDARD)</span>
+<span class="fc" id="L141">                		.build())</span>
+<span class="fc" id="L142">                .build();</span>
+	}
+
+	public URI buildUri(URI uri, List&lt;NameValuePair&gt; nvps) throws URISyntaxException {
+<span class="fc" id="L146">		URIBuilder builder = new URIBuilder(uri);</span>
+<span class="fc" id="L147">		builder.setParameters(nvps);</span>
+<span class="fc" id="L148">		return builder.build();</span>
+	}
+	
+	public JsonNode httpGetJson(URI url, List&lt;Header&gt; headers) throws IOException {
+<span class="fc" id="L152">		return httpGetJson(url, headers.toArray(new Header[0]));</span>
+	}
+	
+	public JsonNode httpGetJson(URI url, Header[] headers) throws IOException {
+		//getLogger().info(url);
+
+<span class="fc" id="L158">    	HttpGet http = new HttpGet(url);</span>
+<span class="fc" id="L159">    	http.setHeaders(headers);</span>
+<span class="fc" id="L160">        return getHttpClient().execute(</span>
+<span class="fc" id="L161">        		http, </span>
+<span class="fc" id="L162">        		new JsonResponseHandler()</span>
+        );
+	}
+	
+	public void httpGetJsonCB(URI url, List&lt;Header&gt; headers, IJsonResponseHandler handler) throws IOException {
+<span class="fc" id="L167">		handler.onPage(httpGetJson(url, headers.toArray(new Header[0])));</span>
+<span class="fc" id="L168">	}</span>
+	
+	public void httpGetJsonCB(URI url, Header[] headers, IJsonResponseHandler handler) throws IOException {
+<span class="nc" id="L171">		handler.onPage(httpGetJson(url, headers));</span>
+<span class="nc" id="L172">	}</span>
+	
+	public String httpGetString(URI url, List&lt;Header&gt;headers) throws IOException {
+<span class="nc" id="L175">		return httpGetString(url, headers.toArray(new Header[0]));</span>
+	}
+		
+	public String httpGetString(URI url, Header[] headers) throws IOException {
+		//getLogger().info(url);
+
+<span class="nc" id="L181">    	HttpGet http = new HttpGet(url);</span>
+<span class="nc" id="L182">    	http.setHeaders(headers);</span>
+<span class="nc" id="L183">        return getHttpClient().execute(</span>
+<span class="nc" id="L184">        		http, </span>
+<span class="nc" id="L185">        		new StringResponseHandler()</span>
+        );
+	}
+	
+	public JsonNode httpPostJson(HttpPost http) throws IOException {
+<span class="nc" id="L190">        return getHttpClient().execute(</span>
+<span class="nc" id="L191">        		http, </span>
+<span class="nc" id="L192">        		new JsonResponseHandler()</span>
+        );
+	}
+	
+	public String httpPostString(HttpPost http) throws IOException {
+<span class="nc" id="L197">        return getHttpClient().execute(</span>
+<span class="nc" id="L198">        		http, </span>
+<span class="nc" id="L199">        		new StringResponseHandler()</span>
+        );
+	}
+	
+	public URI getWikipediaApi() throws URISyntaxException {
+<span class="fc" id="L204">		return new URI(&quot;https&quot;, &quot;en.wikipedia.org&quot;, &quot;/w/api.php&quot;, null);</span>
+	}
+	
+	public List&lt;NameValuePair&gt; getWikimediaImageParameters() {
+<span class="fc" id="L208">		List&lt;NameValuePair&gt; nvps = new ArrayList&lt;NameValuePair&gt;();</span>
+<span class="fc" id="L209">		nvps.add(new BasicNameValuePair(&quot;utf8&quot;, &quot;1&quot;));</span>
+<span class="fc" id="L210">		nvps.add(new BasicNameValuePair(&quot;format&quot;, &quot;json&quot;));</span>
+<span class="fc" id="L211">		nvps.add(new BasicNameValuePair(&quot;action&quot;, &quot;query&quot;));</span>
+<span class="fc" id="L212">		nvps.add(new BasicNameValuePair(&quot;maxlag&quot;, &quot;1&quot;));		</span>
+<span class="fc" id="L213">		nvps.add(new BasicNameValuePair(&quot;generator&quot;, &quot;images&quot;));</span>
+<span class="fc" id="L214">		nvps.add(new BasicNameValuePair(&quot;prop&quot;, &quot;info&quot;));</span>
+<span class="fc" id="L215">		return nvps;</span>
+	}
+	
+	public List&lt;NameValuePair&gt; getWikimediaImageInfoParameters() {
+<span class="fc" id="L219">		List&lt;NameValuePair&gt; nvps = new ArrayList&lt;NameValuePair&gt;();</span>
+<span class="fc" id="L220">		nvps.add(new BasicNameValuePair(&quot;utf8&quot;, &quot;1&quot;));		</span>
+<span class="fc" id="L221">		nvps.add(new BasicNameValuePair(&quot;format&quot;, &quot;json&quot;));</span>
+<span class="fc" id="L222">		nvps.add(new BasicNameValuePair(&quot;action&quot;, &quot;query&quot;));</span>
+<span class="fc" id="L223">		nvps.add(new BasicNameValuePair(&quot;maxlag&quot;, &quot;1&quot;));		</span>
+<span class="fc" id="L224">		nvps.add(new BasicNameValuePair(&quot;prop&quot;, &quot;imageinfo&quot;));</span>
+<span class="fc" id="L225">		nvps.add(new BasicNameValuePair(&quot;iiprop&quot;, &quot;timestamp|user|userid|comment|canonicaltitle|url|size|dimensions|sha1|mime|thumbmime|mediatype|bitdepth&quot;));</span>
+<span class="fc" id="L226">		return nvps;</span>
+	}
+	
+	public List&lt;NameValuePair&gt; getWikionaryParameters() {
+<span class="fc" id="L230">		List&lt;NameValuePair&gt; nvps = new ArrayList&lt;NameValuePair&gt;();</span>
+<span class="fc" id="L231">		nvps.add(new BasicNameValuePair(&quot;utf8&quot;, &quot;1&quot;));</span>
+<span class="fc" id="L232">		nvps.add(new BasicNameValuePair(&quot;format&quot;, &quot;json&quot;));</span>
+<span class="fc" id="L233">		nvps.add(new BasicNameValuePair(&quot;action&quot;, &quot;query&quot;));</span>
+<span class="fc" id="L234">		nvps.add(new BasicNameValuePair(&quot;maxlag&quot;, &quot;1&quot;));</span>
+<span class="fc" id="L235">		return nvps;</span>
+	}
+	
+	public List&lt;NameValuePair&gt; getWikipediaCategoriesParameters() {
+<span class="fc" id="L239">		List&lt;NameValuePair&gt; nvps = new ArrayList&lt;NameValuePair&gt;();</span>
+<span class="fc" id="L240">		nvps.add(new BasicNameValuePair(&quot;utf8&quot;, &quot;1&quot;));		</span>
+<span class="fc" id="L241">		nvps.add(new BasicNameValuePair(&quot;format&quot;, &quot;json&quot;));</span>
+<span class="fc" id="L242">		nvps.add(new BasicNameValuePair(&quot;action&quot;, &quot;query&quot;));</span>
+<span class="fc" id="L243">		nvps.add(new BasicNameValuePair(&quot;maxlag&quot;, &quot;1&quot;));		</span>
+<span class="fc" id="L244">		nvps.add(new BasicNameValuePair(&quot;prop&quot;, &quot;categories&quot;));</span>
+<span class="fc" id="L245">		return nvps;</span>
+	}
+	
+	public List&lt;NameValuePair&gt; getWikipediaPagesParameters() {
+<span class="fc" id="L249">		List&lt;NameValuePair&gt; nvps = new ArrayList&lt;NameValuePair&gt;();</span>
+<span class="fc" id="L250">		nvps.add(new BasicNameValuePair(&quot;utf8&quot;, &quot;1&quot;));		</span>
+<span class="fc" id="L251">		nvps.add(new BasicNameValuePair(&quot;format&quot;, &quot;json&quot;));</span>
+<span class="fc" id="L252">		nvps.add(new BasicNameValuePair(&quot;action&quot;, &quot;query&quot;));</span>
+<span class="fc" id="L253">		nvps.add(new BasicNameValuePair(&quot;maxlag&quot;, &quot;1&quot;));</span>
+<span class="fc" id="L254">		nvps.add(new BasicNameValuePair(&quot;formatversion&quot;, &quot;2&quot;));</span>
+<span class="fc" id="L255">		nvps.add(new BasicNameValuePair(&quot;redirects&quot;, null));	</span>
+<span class="fc" id="L256">		return nvps;</span>
+	}
+	
+	public List&lt;NameValuePair&gt; getWikipediaExtractsParameters() {
+<span class="fc" id="L260">		List&lt;NameValuePair&gt; nvps = new ArrayList&lt;NameValuePair&gt;();</span>
+<span class="fc" id="L261">		nvps.add(new BasicNameValuePair(&quot;utf8&quot;, &quot;1&quot;));		</span>
+<span class="fc" id="L262">		nvps.add(new BasicNameValuePair(&quot;format&quot;, &quot;json&quot;));</span>
+<span class="fc" id="L263">		nvps.add(new BasicNameValuePair(&quot;action&quot;, &quot;query&quot;));</span>
+<span class="fc" id="L264">		nvps.add(new BasicNameValuePair(&quot;maxlag&quot;, &quot;1&quot;));</span>
+<span class="fc" id="L265">		nvps.add(new BasicNameValuePair(&quot;prop&quot;, &quot;extracts&quot;));</span>
+<span class="fc" id="L266">		nvps.add(new BasicNameValuePair(&quot;exlimit&quot;, &quot;20&quot;));</span>
+<span class="fc" id="L267">		nvps.add(new BasicNameValuePair(&quot;exsentences&quot;, &quot;1&quot;));</span>
+<span class="fc" id="L268">		nvps.add(new BasicNameValuePair(&quot;exintro&quot;, null));</span>
+<span class="fc" id="L269">		nvps.add(new BasicNameValuePair(&quot;explaintext&quot;, null));</span>
+<span class="fc" id="L270">		return nvps;</span>
+	}
+	
+	public void httpGetJsonPaginated(
+			URI baseUri, 
+			List&lt;NameValuePair&gt; parameters, 
+			List&lt;Header&gt; headers, 
+			String gimcontinueName, 
+			IJsonResponseHandler handler 
+		) throws IOException, URISyntaxException {
+<span class="fc" id="L280">		String gimcontinue = &quot;init&quot;;</span>
+<span class="fc bfc" id="L281" title="All 2 branches covered.">		while (gimcontinue != null) {</span>
+<span class="fc" id="L282">			JsonNode rootNode = null;</span>
+<span class="fc bfc" id="L283" title="All 2 branches covered.">			if (gimcontinue.equals(&quot;init&quot;)) {</span>
+<span class="fc" id="L284">				rootNode = httpGetJson(</span>
+<span class="fc" id="L285">								buildUri(</span>
+<span class="fc" id="L286">										baseUri, </span>
+<span class="fc" id="L287">										parameters</span>
+								),
+<span class="fc" id="L289">								headers</span>
+						);
+<span class="fc" id="L291">			}</span>
+			else {
+<span class="fc" id="L293">				List&lt;NameValuePair&gt; mynvps = new ArrayList&lt;NameValuePair&gt;();</span>
+<span class="fc" id="L294">				mynvps.addAll(parameters);</span>
+<span class="fc" id="L295">				mynvps.add(new BasicNameValuePair(gimcontinueName, gimcontinue));</span>
+<span class="fc" id="L296">				rootNode = httpGetJson(</span>
+<span class="fc" id="L297">								buildUri(</span>
+<span class="fc" id="L298">										baseUri, </span>
+<span class="fc" id="L299">										mynvps</span>
+								),
+<span class="fc" id="L301">								headers</span>
+						);
+			}
+<span class="fc bfc" id="L304" title="All 2 branches covered.">			if (rootNode.has(&quot;continue&quot;)) {</span>
+<span class="fc" id="L305">				gimcontinue = rootNode.get(&quot;continue&quot;).get(gimcontinueName).asText();</span>
+<span class="fc" id="L306">				gimcontinue = gimcontinue.replace(' ', '_');</span>
+<span class="fc" id="L307">			}</span>
+			else {
+<span class="fc" id="L309">				gimcontinue = null;</span>
+			}
+<span class="pc bpc" id="L311" title="2 of 4 branches missed.">			if (rootNode != null &amp;&amp; rootNode.has(&quot;errors&quot;)) {</span>
+<span class="nc bnc" id="L312" title="All 2 branches missed.">				for (JsonNode err : ((ArrayNode)rootNode.get(&quot;errors&quot;))) {</span>
+<span class="nc bnc" id="L313" title="All 2 branches missed.">					if (err.get(&quot;code&quot;).asText().equals(&quot;ratelimited&quot;)) {</span>
+						try {
+<span class="nc" id="L315">							Thread.sleep(1000);</span>
+<span class="nc" id="L316">						}</span>
+<span class="nc" id="L317">						catch (Exception e) {</span>
+<span class="nc" id="L318">							getLogger().error(e);</span>
+						}
+					}
+				}
+<span class="nc" id="L322">			}</span>
+			else {
+<span class="fc" id="L324">				handler.onPage(rootNode);</span>
+			}
+		}		
+<span class="fc" id="L327">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

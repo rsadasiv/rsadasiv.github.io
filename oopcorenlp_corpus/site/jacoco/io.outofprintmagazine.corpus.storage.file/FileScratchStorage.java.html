@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FileScratchStorage.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OOP Corpus</a> &gt; <a href="index.source.html" class="el_package">io.outofprintmagazine.corpus.storage.file</a> &gt; <span class="el_source">FileScratchStorage.java</span></div><h1>FileScratchStorage.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright (C) 2020 Ram Sadasiv
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ ******************************************************************************/
+package io.outofprintmagazine.corpus.storage.file;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.regex.Pattern;
+
+import org.apache.commons.io.IOUtils;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import io.outofprintmagazine.corpus.storage.IScratchStorage;
+import io.outofprintmagazine.util.IParameterStore;
+
+public class FileScratchStorage implements IScratchStorage {
+
+
+	protected ObjectMapper getMapper() {
+<span class="nc" id="L40">		return mapper; </span>
+	}
+	
+	protected ObjectMapper mapper;
+	
+	private IParameterStore parameterStore;
+	
+	public IParameterStore getParameterStore() {
+<span class="fc" id="L48">		return parameterStore;</span>
+	}
+	
+	@Override
+    public void setParameterStore(IParameterStore parameterStore) {
+<span class="fc" id="L53">		this.parameterStore = parameterStore;</span>
+<span class="fc" id="L54">	}</span>
+	
+	public FileScratchStorage() throws IOException {
+<span class="fc" id="L57">		super();</span>
+<span class="fc" id="L58">		mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);</span>
+<span class="fc" id="L59">		mapper.configure(com.fasterxml.jackson.core.JsonGenerator.Feature.WRITE_BIGDECIMAL_AS_PLAIN, true);</span>
+<span class="fc" id="L60">	}</span>
+		
+	protected String getCorpusPath(String corpus) throws IOException {
+<span class="fc" id="L63">		String path = (</span>
+<span class="fc" id="L64">				getParameterStore().getProperty(&quot;fileCorpus_Path&quot;)</span>
+<span class="fc" id="L65">				+ System.getProperty(&quot;file.separator&quot;, &quot;/&quot;)	</span>
+				+ corpus
+		);
+<span class="fc" id="L68">		File dir = new File(path);</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">		if (!dir.exists()) dir.mkdirs();</span>
+<span class="fc" id="L70">		return path;</span>
+		
+	}
+	
+	protected String getCorpusStagingBatchPath(String corpus, String stagingBatchName) throws IOException {
+<span class="nc" id="L75">		String path = (</span>
+<span class="nc" id="L76">				getCorpusPath(corpus) </span>
+<span class="nc" id="L77">				+ System.getProperty(&quot;file.separator&quot;, &quot;/&quot;) </span>
+				+ stagingBatchName
+		);
+<span class="nc" id="L80">		File dir = new File(path);</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">		if (!dir.exists()) dir.mkdirs();</span>
+<span class="nc" id="L82">		return path;</span>
+	}
+	
+	protected String getCorpusStagingBatchItemPath(String corpus, String stagingBatchName, String stagingBatchItemName) throws IOException {
+<span class="nc" id="L86">		String path = (</span>
+<span class="nc" id="L87">				getCorpusPath(corpus) </span>
+<span class="nc" id="L88">				+ System.getProperty(&quot;file.separator&quot;, &quot;/&quot;) </span>
+				+ stagingBatchName
+<span class="nc" id="L90">				+ System.getProperty(&quot;file.separator&quot;, &quot;/&quot;) </span>
+				+ stagingBatchItemName
+		);
+<span class="nc" id="L93">		File dir = new File(path);</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">		if (!dir.exists()) dir.mkdirs();</span>
+<span class="nc" id="L95">		return path;</span>
+	}
+	
+
+	protected String getCorpusStagingBatchItemPropertiesPath(String corpus, String stagingBatchName, String stagingBatchItemName) throws IOException {
+<span class="nc" id="L100">		return (</span>
+<span class="nc" id="L101">				getCorpusStagingBatchItemPath(corpus, stagingBatchName, stagingBatchItemName)</span>
+<span class="nc" id="L102">				+ System.getProperty(&quot;file.separator&quot;, &quot;/&quot;) </span>
+				+ &quot;BatchItemProperties.json&quot;
+		);
+	}	
+	
+	protected String getCorpusStagingBatchScratchPath(String corpus, String stagingBatchName) throws IOException {
+<span class="nc" id="L108">		String path = (</span>
+<span class="nc" id="L109">				getCorpusStagingBatchPath(corpus, stagingBatchName) </span>
+<span class="nc" id="L110">				+ System.getProperty(&quot;file.separator&quot;, &quot;/&quot;) </span>
+				+ &quot;Scratch&quot;
+		);
+<span class="nc" id="L113">		File dir = new File(path);</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">		if (!dir.exists()) dir.mkdirs();</span>
+<span class="nc" id="L115">		return path;</span>
+	}
+	
+	protected String getCorpusStagingBatchScratchFilePath(String corpus, String scratchFilePath) throws IOException {
+<span class="fc" id="L119">		String path = (</span>
+<span class="fc" id="L120">				getCorpusPath(corpus) </span>
+<span class="fc" id="L121">				+ System.getProperty(&quot;file.separator&quot;, &quot;/&quot;) </span>
+				+ scratchFilePath
+		);
+<span class="fc" id="L124">		File file = new File(path);</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">		if (!file.getParentFile().exists()) {</span>
+<span class="fc" id="L126">			file.getParentFile().mkdirs();</span>
+		}
+<span class="fc" id="L128">		return path;</span>
+	}
+	
+	protected String getCorpusStagingBatchPropertiesPath(String corpus, String stagingBatchName) throws IOException {
+<span class="nc" id="L132">		return (</span>
+<span class="nc" id="L133">				getCorpusStagingBatchPath(corpus, stagingBatchName)</span>
+<span class="nc" id="L134">				+ System.getProperty(&quot;file.separator&quot;, &quot;/&quot;) </span>
+				+ &quot;BatchProperties.json&quot;
+		);
+	}
+	
+	@Override
+	public String getScratchFilePath(String stagingBatchName, String stagingBatchItemName, String scratchFileName) throws Exception {
+<span class="fc" id="L141">		return (</span>
+				stagingBatchName
+<span class="fc" id="L143">				+ System.getProperty(&quot;file.separator&quot;, &quot;/&quot;) </span>
+				+ stagingBatchItemName
+<span class="fc" id="L145">				+ System.getProperty(&quot;file.separator&quot;, &quot;/&quot;) </span>
+				+ scratchFileName
+		);
+	}
+	
+	@Override
+	public String storeScratchFileString(String corpus, String scratchFilePath, String in) throws Exception {
+<span class="fc" id="L152">        File f = new File(getCorpusStagingBatchScratchFilePath(corpus, scratchFilePath));</span>
+<span class="fc" id="L153">        FileOutputStream fout = null;</span>
+        try {
+<span class="fc" id="L155">        	fout = new FileOutputStream(f);</span>
+<span class="fc" id="L156">	        fout.write(in.getBytes(StandardCharsets.UTF_8.name()));</span>
+<span class="fc" id="L157">	        fout.flush();</span>
+
+        }
+        finally {
+<span class="pc bpc" id="L161" title="1 of 2 branches missed.">        	if (fout != null) {</span>
+<span class="fc" id="L162">    	        fout.close();</span>
+        	}
+        }
+<span class="fc" id="L165">        return scratchFilePath;</span>
+	}
+	
+	@Override
+	public String storeScratchFileStream(String corpus, String scratchFilePath, InputStream in) throws Exception {
+<span class="fc" id="L170">        File f = new File(getCorpusStagingBatchScratchFilePath(corpus,  scratchFilePath));</span>
+<span class="fc" id="L171">        FileOutputStream fout = null;</span>
+        try {
+<span class="fc" id="L173">        	fout = new FileOutputStream(f);</span>
+<span class="fc" id="L174">	        IOUtils.copy(in,fout);</span>
+<span class="fc" id="L175">	        fout.flush();</span>
+        }
+        finally {
+<span class="fc" id="L178">        	in.close();</span>
+<span class="pc bpc" id="L179" title="1 of 2 branches missed.">        	if (fout != null) {</span>
+<span class="fc" id="L180">    	        fout.close();</span>
+        	}
+        }
+<span class="fc" id="L183">        return scratchFilePath;</span>
+
+	}
+	
+	@Override
+	public String storeScratchFileObject(String corpus, String scratchFilePath, ObjectNode in) throws Exception {
+<span class="nc" id="L189">        File f = new File(getCorpusStagingBatchScratchFilePath(corpus, scratchFilePath));</span>
+<span class="nc" id="L190">        getMapper().writeValue(f, in);</span>
+<span class="nc" id="L191">        return scratchFilePath;</span>
+	}
+	
+	
+	@Override
+	public InputStream getScratchFileStream(String corpus, String scratchFileName) throws Exception {
+<span class="fc" id="L197">        File f = new File(getCorpusStagingBatchScratchFilePath(corpus, scratchFileName));</span>
+<span class="fc" id="L198">        FileInputStream fin = new FileInputStream(f);</span>
+<span class="fc" id="L199">        return fin;</span>
+	}
+	
+	@Override
+	public String getScratchFileString(String corpus, String scratchFileName) throws Exception {	
+<span class="fc" id="L204">	    return IOUtils.toString(</span>
+<span class="fc" id="L205">	    		getScratchFileStream(corpus, scratchFileName),</span>
+<span class="fc" id="L206">	    		StandardCharsets.UTF_8.name()</span>
+	    );
+	}
+
+	@Override
+	public String getFileNameFromPath(String scratchFilePath) {
+<span class="fc" id="L212">		String[] paths = scratchFilePath.split(Pattern.quote(System.getProperty(&quot;file.separator&quot;, &quot;/&quot;)));</span>
+<span class="fc" id="L213">		return paths[paths.length-1];</span>
+	}
+	
+	@Override
+	public String trimFileExtension(String scratchFileName) {
+<span class="fc" id="L218">		int idx = scratchFileName.lastIndexOf(&quot;.&quot;);</span>
+<span class="pc bpc" id="L219" title="1 of 2 branches missed.">		if (idx &lt; 1) {</span>
+<span class="nc" id="L220">			idx = scratchFileName.length();</span>
+		}   
+<span class="fc" id="L222">		return scratchFileName.substring(0, idx);</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
