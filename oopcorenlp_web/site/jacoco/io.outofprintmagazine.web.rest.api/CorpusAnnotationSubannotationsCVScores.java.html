@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CorpusAnnotationSubannotationsCVScores.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OOP Core NLP Viewer</a> &gt; <a href="index.source.html" class="el_package">io.outofprintmagazine.web.rest.api</a> &gt; <span class="el_source">CorpusAnnotationSubannotationsCVScores.java</span></div><h1>CorpusAnnotationSubannotationsCVScores.java</h1><pre class="source lang-java linenums">package io.outofprintmagazine.web.rest.api;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import io.outofprintmagazine.web.servlets.AbstractOOPCacheableServlet;
+import io.outofprintmagazine.web.util.JsonSort;
+
+@Path(&quot;/CorpusAnnotationSubannotationsCVScores&quot;)
+<span class="nc" id="L30">public class CorpusAnnotationSubannotationsCVScores extends AbstractOOPCacheableServlet {</span>
+	
+	private static final long serialVersionUID = 1L;
+	@Context
+	private ServletConfig servletConfig;
+	@Context
+	private ServletContext servletContext;
+	@Context
+	private HttpServletRequest httpServletRequest;
+	@Context
+	private HttpServletResponse httpServletResponse;
+	
+    @GET
+    @Produces(&quot;application/json; charset=utf-8&quot;)
+	public String doGet(
+			@QueryParam(&quot;Corpus&quot;) String corpus,
+			@QueryParam(&quot;Annotation&quot;) String annotation,
+			//raw, normalized, count
+			//rank, percentage, percentile
+			@QueryParam(&quot;AggregateName&quot;) String aggregateName
+			) throws JsonProcessingException, IOException, ServletException
+    {
+<span class="nc bnc" id="L52" title="All 2 branches missed.">    	if (getStorage() == null) {</span>
+<span class="nc" id="L53">    		super.init(servletConfig);</span>
+    	}
+	
+<span class="nc" id="L56">    	ArrayNode retval = getMapper().createArrayNode();</span>
+<span class="nc" id="L57">    	ObjectNode corpusAggregates = (ObjectNode) getStorage().getCorpusAggregatesJson(corpus);</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">    	calculateCVSubScores(corpusAggregates, annotation, aggregateName==null?&quot;normalized&quot;:aggregateName, retval);</span>
+
+<span class="nc" id="L60">        JsonSort.sort(retval);</span>
+<span class="nc" id="L61">        Iterator&lt;JsonNode&gt; iter = retval.iterator();</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        for (int i=0;iter.hasNext();i++) {</span>
+<span class="nc" id="L63">        	ObjectNode o = (ObjectNode) iter.next();</span>
+<span class="nc" id="L64">        	o.put(&quot;id&quot;, i);</span>
+        }
+<span class="nc" id="L66">        return getMapper().writeValueAsString(retval);</span>
+	}
+    
+    protected void calculateCVSubScores(ObjectNode corpusAggregates, String annotation, String aggregateName, ArrayNode retval) {
+<span class="nc" id="L70">	    List&lt;String&gt; scoreMeasures = Arrays.asList(&quot;raw&quot;, &quot;normalized&quot;, &quot;count&quot;);</span>
+<span class="nc" id="L71">	    List&lt;String&gt; statsMeasures = Arrays.asList(&quot;rank&quot;, &quot;percentage&quot;, &quot;percentile&quot;);</span>
+<span class="nc" id="L72">		Iterator&lt;String&gt; annotationNameIter = corpusAggregates.fieldNames();</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">		while (annotationNameIter.hasNext()) {</span>
+<span class="nc" id="L74">			String annotationName = annotationNameIter.next();</span>
+<span class="nc bnc" id="L75" title="All 6 branches missed.">			if (annotationName.equals(annotation) &amp;&amp;  corpusAggregates.has(annotationName) &amp;&amp; corpusAggregates.get(annotationName).isObject()) {</span>
+<span class="nc" id="L76">				ObjectNode annotationScoreStats = (ObjectNode) corpusAggregates.get(annotationName);</span>
+<span class="nc" id="L77">				ArrayNode aggregatedScores = (ArrayNode) annotationScoreStats.get(&quot;aggregatedScores&quot;);</span>
+<span class="nc" id="L78">				Iterator&lt;JsonNode&gt; aggregatedScoreIter = aggregatedScores.iterator();</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">				while (aggregatedScoreIter.hasNext()) {</span>
+<span class="nc" id="L80">					ObjectNode annotationSubScoreStatsScore = (ObjectNode) aggregatedScoreIter.next();</span>
+<span class="nc" id="L81">					String subscoreName = annotationSubScoreStatsScore.get(&quot;name&quot;).asText();</span>
+<span class="nc" id="L82">					String measure = null;</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">					if (scoreMeasures.contains(aggregateName)) {</span>
+<span class="nc" id="L84">						measure = &quot;score&quot;;</span>
+					}
+<span class="nc bnc" id="L86" title="All 2 branches missed.">					if (statsMeasures.contains(aggregateName)) {</span>
+<span class="nc" id="L87">						measure = &quot;aggregateScore&quot;;</span>
+					}		
+
+<span class="nc bnc" id="L90" title="All 2 branches missed.">					if (measure != null) {</span>
+<span class="nc" id="L91">						ObjectNode corpusAnnotationScoreStatsScore = (ObjectNode) annotationSubScoreStatsScore.get(measure).get(aggregateName);</span>
+<span class="nc" id="L92">			    		BigDecimal corpusStddev = new BigDecimal(corpusAnnotationScoreStatsScore.get(&quot;stddev&quot;).asDouble());</span>
+<span class="nc" id="L93">			    		BigDecimal corpusMean = new BigDecimal(corpusAnnotationScoreStatsScore.get(&quot;mean&quot;).asDouble());</span>
+<span class="nc bnc" id="L94" title="All 4 branches missed.">			    		if (!corpusMean.equals(new BigDecimal(0)) &amp;&amp; !corpusStddev.equals(new BigDecimal(0))) {</span>
+<span class="nc" id="L95">					    	BigDecimal cvScore = (corpusStddev).divide(corpusMean, 10, RoundingMode.HALF_DOWN);</span>
+<span class="nc" id="L96">				    		ObjectNode r = createObjectTidy(0, subscoreName, cvScore);</span>
+<span class="nc" id="L97">				    		retval.add(r);</span>
+			    		}
+					}
+<span class="nc" id="L100">				}</span>
+			}
+<span class="nc" id="L102">		}</span>
+<span class="nc" id="L103">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

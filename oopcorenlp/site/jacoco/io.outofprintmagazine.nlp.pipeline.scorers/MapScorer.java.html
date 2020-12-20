@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MapScorer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OOP Core NLP</a> &gt; <a href="index.source.html" class="el_package">io.outofprintmagazine.nlp.pipeline.scorers</a> &gt; <span class="el_source">MapScorer.java</span></div><h1>MapScorer.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright (C) 2020 Ram Sadasiv
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ ******************************************************************************/
+package io.outofprintmagazine.nlp.pipeline.scorers;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.pipeline.CoreDocument;
+import edu.stanford.nlp.pipeline.CoreSentence;
+import io.outofprintmagazine.util.AggregatedScore;
+import io.outofprintmagazine.util.DocumentAggregateScore;
+
+public abstract class MapScorer implements IScorer {
+
+<span class="fc" id="L40">	private static final Logger logger = LogManager.getLogger(MapScorer.class);</span>
+
+	private Logger getLogger() {
+<span class="fc" id="L43">		return logger;</span>
+	}
+	
+<span class="pc" id="L46">	protected Class annotationClass = null;</span>
+
+	public MapScorer() {
+<span class="nc" id="L49">		super();</span>
+<span class="nc" id="L50">	}</span>
+
+	public MapScorer(Class annotationClass) {
+<span class="fc" id="L53">		super();</span>
+<span class="fc" id="L54">		this.setAnnotationClass(annotationClass);</span>
+<span class="fc" id="L55">	}</span>
+	
+	public void setAnnotationClass(Class annotationClass) {
+<span class="fc" id="L58">		this.annotationClass = annotationClass;</span>
+<span class="fc" id="L59">	}</span>
+
+	public Class getAnnotationClass() {
+<span class="fc" id="L62">		return this.annotationClass;</span>
+	}
+
+	@Override
+	public void score(CoreDocument document) {
+<span class="fc" id="L67">		scoreTokens(document);</span>
+<span class="fc" id="L68">		scoreSentences(document);</span>
+<span class="fc" id="L69">		scoreDocument(document);</span>
+<span class="fc" id="L70">	}</span>
+
+	public void scoreTokens(CoreDocument document) {
+		// pass
+<span class="fc" id="L74">	}</span>
+
+	public void scoreSentences(CoreDocument document) {
+		//TODO - would we ever need to merge existing and token rollup?
+<span class="fc bfc" id="L78" title="All 2 branches covered.">		for (CoreSentence sentence : document.sentences()) {</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">			if (! sentence.coreMap().containsKey(getAnnotationClass())) {</span>
+<span class="fc" id="L80">				ArrayList&lt;Map&lt;String, BigDecimal&gt;&gt; rawScores = new ArrayList&lt;Map&lt;String, BigDecimal&gt;&gt;();</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">				for (CoreLabel token : sentence.tokens()) {</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">					if (token.containsKey(getAnnotationClass())) {</span>
+<span class="fc" id="L83">						rawScores.add((Map&lt;String, BigDecimal&gt;) token.get(getAnnotationClass()));</span>
+					}
+				}
+<span class="fc bfc" id="L86" title="All 2 branches covered.">				if (rawScores.size() &gt; 0) {</span>
+<span class="fc" id="L87">					sentence.coreMap().set(getAnnotationClass(), aggregateScores(rawScores));</span>
+				}
+			}
+		}
+<span class="fc" id="L91">	}</span>
+
+	public void scoreDocument(CoreDocument document) {
+<span class="fc bfc" id="L94" title="All 2 branches covered.">		if (! document.annotation().containsKey(getAnnotationClass())) {</span>
+<span class="fc" id="L95">			ArrayList&lt;Map&lt;String, BigDecimal&gt;&gt; rawScores = new ArrayList&lt;Map&lt;String, BigDecimal&gt;&gt;();</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">			for (CoreSentence sentence : document.sentences()) {</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">				if (sentence.coreMap().containsKey(getAnnotationClass())) {</span>
+<span class="fc" id="L98">					rawScores.add((Map&lt;String, BigDecimal&gt;)sentence.coreMap().get(getAnnotationClass()));</span>
+<span class="fc" id="L99">				}</span>
+				else {
+<span class="fc bfc" id="L101" title="All 2 branches covered.">					for (CoreLabel token : sentence.tokens()) {</span>
+<span class="pc bpc" id="L102" title="1 of 2 branches missed.">						if (token.containsKey(getAnnotationClass())) {</span>
+<span class="nc" id="L103">							rawScores.add((Map&lt;String, BigDecimal&gt;) token.get(getAnnotationClass()));</span>
+						}
+					}
+				}
+
+			}
+<span class="fc" id="L109">			document.annotation().set(getAnnotationClass(), aggregateScores(rawScores));</span>
+		}
+<span class="fc" id="L111">	}</span>
+	
+	@Override
+	public Object aggregateDocument(CoreDocument document) {
+<span class="fc" id="L115">		Map&lt;String, BigDecimal&gt; rawScores = (Map&lt;String, BigDecimal&gt;) document.annotation().get(getAnnotationClass());</span>
+<span class="fc" id="L116">		BigDecimal normalizer = new BigDecimal(document.tokens().size());</span>
+<span class="fc" id="L117">		DocumentAggregateScore retval = new DocumentAggregateScore(getAnnotationClass().getSimpleName());</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">		if (rawScores == null) {</span>
+<span class="fc" id="L119">			getLogger().debug(String.format(&quot;No document scores: %s&quot;, getAnnotationClass()));</span>
+<span class="fc" id="L120">			return retval;</span>
+		}
+<span class="fc bfc" id="L122" title="All 2 branches covered.">		if (rawScores.size() == 0) {</span>
+<span class="fc" id="L123">			return retval;</span>
+		}
+<span class="fc" id="L125">		double[] primitiveNormalizedScores = new double[rawScores.size()];</span>
+<span class="fc" id="L126">		BigDecimal rawSum = new BigDecimal(0);</span>
+<span class="fc" id="L127">		Iterator&lt;Entry&lt;String,BigDecimal&gt;&gt; rawScoresIter = rawScores.entrySet().iterator();</span>
+
+<span class="pc bpc" id="L129" title="1 of 4 branches missed.">		for (int i=0; i&lt;rawScores.size() &amp;&amp; rawScoresIter.hasNext(); i++) {</span>
+<span class="fc" id="L130">			Entry&lt;String,BigDecimal&gt; rawScore = rawScoresIter.next();</span>
+<span class="fc" id="L131">			rawSum = rawSum.add(rawScore.getValue());</span>
+<span class="fc" id="L132">			primitiveNormalizedScores[i] = rawScore.getValue().divide(normalizer, 10, RoundingMode.HALF_UP).doubleValue();</span>
+<span class="fc" id="L133">			retval.getAggregatedScores().add(new AggregatedScore(rawScore.getKey(), rawScore.getValue(), normalizer, rawScore.getValue()));</span>
+		}
+<span class="fc" id="L135">		retval.getScoreStats().getScore().setRaw(rawSum);</span>
+<span class="fc" id="L136">		retval.getScoreStats().getScore().setNormalized(rawSum.divide(normalizer, 10, RoundingMode.HALF_UP));</span>
+<span class="fc" id="L137">		retval.getScoreStats().getScore().setCount(new BigDecimal(rawScores.size()));</span>
+<span class="fc" id="L138">		retval.getScoreStats().getStats().setStddev(new BigDecimal(new StandardDeviation().evaluate(primitiveNormalizedScores)));</span>
+<span class="fc" id="L139">		retval.getScoreStats().getStats().setMean(retval.getScoreStats().getScore().getNormalized().divide(new BigDecimal(rawScores.size()), 10, RoundingMode.HALF_UP));</span>
+		
+<span class="fc" id="L141">		Collections.sort(retval.getAggregatedScores());</span>
+<span class="fc" id="L142">		Iterator&lt;AggregatedScore&gt; aggregatedScoresIter = retval.getAggregatedScores().iterator();</span>
+<span class="pc bpc" id="L143" title="1 of 4 branches missed.">		for (int i=0; i&lt;retval.getAggregatedScores().size() &amp;&amp; aggregatedScoresIter.hasNext(); i++) {</span>
+<span class="fc" id="L144">			AggregatedScore aggregatedScore = aggregatedScoresIter.next();</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">			if (aggregatedScore.getScore().getNormalized().compareTo(new BigDecimal(0)) &gt; 0) {</span>
+<span class="fc" id="L146">				aggregatedScore.getAggregateScore().setPercentage(aggregatedScore.getScore().getNormalized().divide(retval.getScoreStats().getScore().getNormalized(), 10, RoundingMode.HALF_UP));</span>
+<span class="fc" id="L147">			}</span>
+			else {
+<span class="fc" id="L149">				aggregatedScore.getAggregateScore().setPercentage(new BigDecimal(0));</span>
+			}
+<span class="fc bfc" id="L151" title="All 2 branches covered.">			if (retval.getScoreStats().getStats().getStddev().compareTo(new BigDecimal(0)) != 0) {</span>
+<span class="fc" id="L152">				aggregatedScore.getAggregateScore().setZ(aggregatedScore.getScore().getNormalized().subtract(retval.getScoreStats().getStats().getMean()).divide(retval.getScoreStats().getStats().getStddev(), 10, RoundingMode.HALF_UP));</span>
+<span class="fc" id="L153">			}</span>
+			else {
+<span class="fc" id="L155">				aggregatedScore.getAggregateScore().setZ(new BigDecimal(0));</span>
+			}
+<span class="fc" id="L157">			aggregatedScore.getAggregateScore().setRank(new BigDecimal(i));</span>
+<span class="fc" id="L158">			aggregatedScore.getAggregateScore().setPercentile(new BigDecimal(1).subtract(new BigDecimal(i).divide(new BigDecimal(retval.getAggregatedScores().size()), 10, RoundingMode.HALF_UP)));</span>
+<span class="fc bfc" id="L159" title="All 4 branches covered.">			if (retval.getScoreStats().getStats().getMin().equals(new BigDecimal(0)) || retval.getScoreStats().getStats().getMin().compareTo(aggregatedScore.getScore().getNormalized()) &gt; 0) {</span>
+<span class="fc" id="L160">				retval.getScoreStats().getStats().setMin(aggregatedScore.getScore().getNormalized());</span>
+				
+			}
+<span class="fc bfc" id="L163" title="All 2 branches covered.">			if (retval.getScoreStats().getStats().getMax().compareTo(aggregatedScore.getScore().getNormalized()) &lt; 0) {</span>
+<span class="fc" id="L164">				retval.getScoreStats().getStats().setMax(aggregatedScore.getScore().getNormalized());</span>
+			}
+<span class="fc bfc" id="L166" title="All 4 branches covered.">			if (retval.getScoreStats().getStats().getMedian().equals(new BigDecimal(0)) &amp;&amp; (i &gt; retval.getAggregatedScores().size()/2)) {</span>
+<span class="fc" id="L167">				retval.getScoreStats().getStats().setMedian(aggregatedScore.getScore().getNormalized());</span>
+			}
+
+		}
+<span class="fc" id="L171">		return retval;</span>
+	}
+
+	public abstract Map&lt;String, BigDecimal&gt; aggregateScores(List&lt;Map&lt;String, BigDecimal&gt;&gt; allScores);
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

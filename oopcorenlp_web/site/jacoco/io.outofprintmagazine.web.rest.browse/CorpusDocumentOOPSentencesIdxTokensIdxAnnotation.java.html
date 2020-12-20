@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CorpusDocumentOOPSentencesIdxTokensIdxAnnotation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OOP Core NLP Viewer</a> &gt; <a href="index.source.html" class="el_package">io.outofprintmagazine.web.rest.browse</a> &gt; <span class="el_source">CorpusDocumentOOPSentencesIdxTokensIdxAnnotation.java</span></div><h1>CorpusDocumentOOPSentencesIdxTokensIdxAnnotation.java</h1><pre class="source lang-java linenums">package io.outofprintmagazine.web.rest.browse;
+
+import java.io.IOException;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+
+import io.outofprintmagazine.web.servlets.AbstractOOPCacheableServlet;
+
+@Path(&quot;/Corpora/{Corpus}/{Document}/OOP/sentences/{SentenceIdx}/tokens/{TokenIdx}/{Annotation}&quot;)
+<span class="nc" id="L22">public class CorpusDocumentOOPSentencesIdxTokensIdxAnnotation extends AbstractOOPCacheableServlet  {</span>
+
+	private static final long serialVersionUID = 1L;
+	@Context
+	private ServletConfig servletConfig;
+	@Context
+	private ServletContext servletContext;
+	@Context
+	private HttpServletRequest httpServletRequest;
+	@Context
+	private HttpServletResponse httpServletResponse;
+    
+    @GET
+    @Produces(&quot;application/json; charset=utf-8&quot;)
+	public String doGet(
+			@PathParam(&quot;Corpus&quot;) String corpus,
+			@PathParam(&quot;Document&quot;) String document,
+			@PathParam(&quot;SentenceIdx&quot;) Integer sentenceIdx,
+			@PathParam(&quot;TokenIdx&quot;) Integer tokenIdx,			
+			@PathParam(&quot;Annotation&quot;) String annotation
+			) throws IOException, ServletException
+    {
+<span class="nc bnc" id="L44" title="All 2 branches missed.">    	if (getStorage() == null) {</span>
+<span class="nc" id="L45">    		super.init(servletConfig);</span>
+    	}
+	
+<span class="nc" id="L48">		JsonNode retval = getMapper().createObjectNode();</span>
+<span class="nc" id="L49">		JsonNode oop = getStorage().getCorpusDocumentOOPJson(corpus, document);</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">		if (oop.hasNonNull(&quot;sentences&quot;)) {</span>
+<span class="nc" id="L51">			ArrayNode sentencesNode = (ArrayNode) oop.get(&quot;sentences&quot;);</span>
+<span class="nc bnc" id="L52" title="All 4 branches missed.">			if (sentenceIdx.intValue() &lt; 0 || sentenceIdx.intValue() &gt;= sentencesNode.size() ) {</span>
+<span class="nc" id="L53">				throw new IndexOutOfBoundsException();</span>
+			}
+<span class="nc" id="L55">			ArrayNode tokensNode = (ArrayNode) sentencesNode.get(sentenceIdx.intValue()).get(&quot;tokens&quot;);</span>
+<span class="nc bnc" id="L56" title="All 4 branches missed.">			if (tokenIdx.intValue() &lt; 0 || tokenIdx.intValue() &gt;= tokensNode.size() ) {</span>
+<span class="nc" id="L57">				throw new IndexOutOfBoundsException();</span>
+			}
+<span class="nc" id="L59">			retval = tokensNode.get(tokenIdx.intValue()).get(annotation);</span>
+		}
+
+<span class="nc" id="L62">		return getMapper().writeValueAsString(retval);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

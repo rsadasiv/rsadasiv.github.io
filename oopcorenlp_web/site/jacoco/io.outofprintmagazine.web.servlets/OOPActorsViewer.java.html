@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OOPActorsViewer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OOP Core NLP Viewer</a> &gt; <a href="index.source.html" class="el_package">io.outofprintmagazine.web.servlets</a> &gt; <span class="el_source">OOPActorsViewer.java</span></div><h1>OOPActorsViewer.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright (C) 2020 Ram Sadasiv
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ ******************************************************************************/
+package io.outofprintmagazine.web.servlets;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Iterator;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import io.outofprintmagazine.web.util.JsonSort;
+
+
+@WebServlet(&quot;/OOPActorsViewer&quot;)
+public class OOPActorsViewer extends AbstractOOPServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public OOPActorsViewer() {
+<span class="nc" id="L45">        super();</span>
+<span class="nc" id="L46">    }</span>
+    
+    private void setSelectedActor(HttpServletRequest request, String corpus, String document) throws IOException {
+<span class="nc" id="L49">    	String actor = request.getParameter(&quot;Actor&quot;);</span>
+<span class="nc" id="L50">		JsonNode stats = (JsonNode) request.getAttribute(&quot;Stats&quot;);</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">		if (stats == null) {</span>
+<span class="nc" id="L52">			setStatsAttribute(request, corpus, document);</span>
+<span class="nc" id="L53">			stats = (JsonNode) request.getAttribute(&quot;Stats&quot;);</span>
+		}
+		
+<span class="nc" id="L56">		boolean firstActor = true;</span>
+<span class="nc" id="L57">		ArrayNode actors = (ArrayNode) stats.get(&quot;OOPActorsAnnotation&quot;);</span>
+<span class="nc" id="L58">		JsonSort.sortActors(actors);</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">		for (JsonNode actorNode : actors) {</span>
+<span class="nc bnc" id="L60" title="All 4 branches missed.">	    	if (actor == null &amp;&amp; firstActor) {</span>
+<span class="nc" id="L61">	    		request.setAttribute(&quot;SelectedActor&quot;, actorNode);</span>
+<span class="nc" id="L62">	    		firstActor = false;</span>
+	    	}
+<span class="nc bnc" id="L64" title="All 2 branches missed.">	    	else if (actorNode.get(&quot;canonicalName&quot;).asText().equals(actor)) {</span>
+<span class="nc" id="L65">				request.setAttribute(&quot;SelectedActor&quot;, actorNode);</span>
+<span class="nc" id="L66">				return;</span>
+			}
+<span class="nc" id="L68">		}</span>
+<span class="nc" id="L69">    }</span>
+    
+    private void setActorMyersBriggs(HttpServletRequest request, String corpus, String document) throws IOException {
+<span class="nc" id="L72">    	BigDecimal introvert = getActorMBI(request, corpus, document, &quot;introvert&quot;);</span>
+<span class="nc" id="L73">    	BigDecimal intuitive = getActorMBI(request, corpus, document, &quot;intuitive&quot;);</span>
+<span class="nc" id="L74">    	BigDecimal thinking = getActorMBI(request, corpus, document, &quot;thinking&quot;);</span>
+<span class="nc" id="L75">    	BigDecimal judging = getActorMBI(request, corpus, document, &quot;judging&quot;);</span>
+<span class="nc" id="L76">    	BigDecimal extrovert = getActorMBI(request, corpus, document, &quot;extrovert&quot;);</span>
+<span class="nc" id="L77">    	BigDecimal sensing = getActorMBI(request, corpus, document, &quot;sensing&quot;);</span>
+<span class="nc" id="L78">    	BigDecimal feeling = getActorMBI(request, corpus, document, &quot;feeling&quot;);</span>
+<span class="nc" id="L79">    	BigDecimal perceiving = getActorMBI(request, corpus, document, &quot;perceiving&quot;);</span>
+
+<span class="nc" id="L81">    	StringBuffer mb = new StringBuffer();</span>
+<span class="nc" id="L82">    	mb.append(extractPairLabel(introvert, &quot;I&quot;, extrovert, &quot;E&quot;));</span>
+<span class="nc" id="L83">    	mb.append(extractPairLabel(sensing, &quot;S&quot;, intuitive, &quot;N&quot;));</span>
+<span class="nc" id="L84">    	mb.append(extractPairLabel(feeling, &quot;F&quot;, thinking, &quot;T&quot;));	</span>
+<span class="nc" id="L85">    	mb.append(extractPairLabel(judging, &quot;J&quot;, perceiving, &quot;P&quot;));</span>
+<span class="nc" id="L86">    	request.setAttribute(&quot;myersBriggs&quot;, mb.toString());</span>
+    	
+<span class="nc" id="L88">    	request.setAttribute(</span>
+    			&quot;introvert&quot;,
+<span class="nc" id="L90">    			String.format(&quot;%.0f&quot;, extractPairNormalized(introvert, extrovert).multiply(new BigDecimal(100)).floatValue())</span>
+    	);
+<span class="nc" id="L92">    	request.setAttribute(</span>
+    			&quot;extrovert&quot;,
+<span class="nc" id="L94">    			String.format(&quot;%.0f&quot;, extractPairNormalized(extrovert, introvert).multiply(new BigDecimal(100)).floatValue())</span>
+    	);
+    	
+<span class="nc" id="L97">    	request.setAttribute(</span>
+    			&quot;intuitive&quot;,
+<span class="nc" id="L99">    			String.format(&quot;%.0f&quot;, extractPairNormalized(intuitive, sensing).multiply(new BigDecimal(100)).floatValue())</span>
+    	);
+<span class="nc" id="L101">    	request.setAttribute(</span>
+    			&quot;sensing&quot;,
+<span class="nc" id="L103">    			String.format(&quot;%.0f&quot;, extractPairNormalized(sensing, intuitive).multiply(new BigDecimal(100)).floatValue())</span>
+    	);
+    	
+<span class="nc" id="L106">    	request.setAttribute(</span>
+    			&quot;thinking&quot;,
+<span class="nc" id="L108">    			String.format(&quot;%.0f&quot;, extractPairNormalized(thinking, feeling).multiply(new BigDecimal(100)).floatValue())</span>
+    	);
+<span class="nc" id="L110">    	request.setAttribute(</span>
+    			&quot;feeling&quot;,
+<span class="nc" id="L112">    			String.format(&quot;%.0f&quot;, extractPairNormalized(feeling, thinking).multiply(new BigDecimal(100)).floatValue())</span>
+    	);
+    	
+<span class="nc" id="L115">    	request.setAttribute(</span>
+    			&quot;judging&quot;,
+<span class="nc" id="L117">    			String.format(&quot;%.0f&quot;, extractPairNormalized(judging, perceiving).multiply(new BigDecimal(100)).floatValue())</span>
+    	);
+<span class="nc" id="L119">    	request.setAttribute(</span>
+    			&quot;perceiving&quot;,
+<span class="nc" id="L121">    			String.format(&quot;%.0f&quot;, extractPairNormalized(perceiving, judging).multiply(new BigDecimal(100)).floatValue())</span>
+    	);
+
+    	
+<span class="nc" id="L125">    }</span>
+    
+    private String extractPairLabel(BigDecimal left, String leftLabel, BigDecimal right, String rightLabel) {
+<span class="nc bnc" id="L128" title="All 2 branches missed.">    	if (left.compareTo(right) &lt; 0) {</span>
+<span class="nc" id="L129">    		return rightLabel;</span>
+    	}
+    	else {
+<span class="nc" id="L132">    		return leftLabel;</span>
+    	}
+    }
+    
+    private BigDecimal extractPairNormalized(BigDecimal left, BigDecimal right) {
+<span class="nc" id="L137">    	BigDecimal retval = new BigDecimal(0);</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">    	if (right.equals(new BigDecimal(0))) {</span>
+<span class="nc" id="L139">    		retval = new BigDecimal(1);</span>
+    	}
+<span class="nc bnc" id="L141" title="All 2 branches missed.">    	else if (left.add(right).compareTo(new BigDecimal(0)) != 0) {</span>
+    		try {
+<span class="nc" id="L143">    			retval = left.divide(left.add(right), 10, RoundingMode.HALF_DOWN);</span>
+    		}
+<span class="nc" id="L145">    		catch (Exception e) {</span>
+<span class="nc" id="L146">    			System.err.println(&quot;left: &quot; + left.toString());</span>
+<span class="nc" id="L147">    			System.err.println(&quot;right: &quot; + right.toString());</span>
+<span class="nc" id="L148">    			e.printStackTrace();</span>
+<span class="nc" id="L149">    		}</span>
+    	}
+<span class="nc" id="L151">    	return retval;</span>
+    }
+    
+    private BigDecimal getActorMBI(HttpServletRequest request, String corpus, String document, String mbi) throws IOException {
+<span class="nc" id="L155">		JsonNode stats = (JsonNode) request.getAttribute(&quot;Stats&quot;);</span>
+<span class="nc bnc" id="L156" title="All 2 branches missed.">		if (stats == null) {</span>
+<span class="nc" id="L157">			setStatsAttribute(request, corpus, document);</span>
+<span class="nc" id="L158">			stats = (JsonNode) request.getAttribute(&quot;Stats&quot;);</span>
+		}
+		
+<span class="nc" id="L161">		JsonNode selectedActor = (JsonNode) request.getAttribute(&quot;SelectedActor&quot;);</span>
+<span class="nc bnc" id="L162" title="All 2 branches missed.">		if (selectedActor == null) {</span>
+<span class="nc" id="L163">			setSelectedActor(request, corpus, document);</span>
+<span class="nc" id="L164">			selectedActor = (JsonNode) request.getAttribute(&quot;SelectedActor&quot;);</span>
+		}
+		
+<span class="nc" id="L167">		JsonNode corpusMBIDoc = getStorage().getCorpusAggregatesMBJson(corpus);</span>
+    	//BigDecimal documentMBI = new BigDecimal(((JsonNode) request.getAttribute(&quot;Stats&quot;)).get(&quot;OOPMyersBriggsAnnotation&quot;).get(mbi).asText(&quot;0&quot;));
+<span class="nc" id="L169">		BigDecimal corpusMBI = new BigDecimal(corpusMBIDoc.get(mbi).asText(&quot;0&quot;));</span>
+<span class="nc bnc" id="L170" title="All 2 branches missed.">		BigDecimal actorMBI = new BigDecimal(selectedActor.get(&quot;oopmyersBriggs&quot;)==null?&quot;0&quot;:selectedActor.get(&quot;oopmyersBriggs&quot;).get(mbi).asText(&quot;0&quot;));</span>
+<span class="nc" id="L171">		BigDecimal mbiScore = new BigDecimal(0);</span>
+		//if (!documentMBI.equals(new BigDecimal(0))) {
+		//	mbiScore = String.format(&quot;%.0f&quot;, actorMBI.divide(documentMBI, 10, RoundingMode.HALF_DOWN).multiply(new BigDecimal(100)).floatValue());
+		//}
+<span class="nc bnc" id="L175" title="All 2 branches missed.">		if (!corpusMBI.equals(new BigDecimal(0))) {</span>
+<span class="nc" id="L176">			mbiScore = actorMBI.divide(corpusMBI, 10, RoundingMode.HALF_DOWN);</span>
+		}		
+<span class="nc" id="L178">		return mbiScore;</span>
+    }
+    
+    private void setActorAttributes(HttpServletRequest request, String corpus, String document) throws IOException {
+<span class="nc" id="L182">		JsonNode selectedActor = (JsonNode) request.getAttribute(&quot;SelectedActor&quot;);</span>
+<span class="nc bnc" id="L183" title="All 2 branches missed.">		if (selectedActor == null) {</span>
+<span class="nc" id="L184">			setSelectedActor(request, corpus, document);</span>
+<span class="nc" id="L185">			selectedActor = (JsonNode) request.getAttribute(&quot;SelectedActor&quot;);</span>
+		}
+<span class="nc" id="L187">		request.setAttribute(</span>
+				&quot;OOPNounsAnnotation&quot;,
+<span class="nc" id="L189">				getActorAttribute(selectedActor, &quot;OOPNounsAnnotation&quot;)</span>
+		);
+<span class="nc" id="L191">		request.setAttribute(</span>
+				&quot;OOPVerbsAnnotation&quot;,
+<span class="nc" id="L193">				getActorAttribute(selectedActor, &quot;OOPVerbsAnnotation&quot;)</span>
+		);
+<span class="nc" id="L195">		request.setAttribute(</span>
+				&quot;OOPAdjectivesAnnotation&quot;,
+<span class="nc" id="L197">				getActorAttribute(selectedActor, &quot;OOPAdjectivesAnnotation&quot;)</span>
+		);
+<span class="nc" id="L199">		request.setAttribute(</span>
+				&quot;OOPAdverbsAnnotation&quot;,
+<span class="nc" id="L201">				getActorAttribute(selectedActor, &quot;OOPAdverbsAnnotation&quot;)</span>
+		);
+<span class="nc" id="L203">    }</span>
+    
+    private ArrayNode getActorAttribute(JsonNode actorNode, String attributeName) {
+<span class="nc" id="L206">    	ArrayNode retval = getMapper().createArrayNode();</span>
+<span class="nc bnc" id="L207" title="All 2 branches missed.">		if (actorNode.get(&quot;attributes&quot;).hasNonNull(attributeName)) {</span>
+<span class="nc" id="L208">			Iterator&lt;String&gt; attributeIter = ((ObjectNode)actorNode.get(&quot;attributes&quot;).get(attributeName)).fieldNames();</span>
+<span class="nc bnc" id="L209" title="All 2 branches missed.">			while (attributeIter.hasNext()) {</span>
+<span class="nc" id="L210">				String subannotation = attributeIter.next();</span>
+<span class="nc" id="L211">	        	retval.add(createObjectTidy(0, subannotation, new BigDecimal(actorNode.get(&quot;attributes&quot;).get(attributeName).get(subannotation).asText())));</span>
+<span class="nc" id="L212">	        }</span>
+		}
+<span class="nc" id="L214">        JsonSort.sort(retval);</span>
+<span class="nc" id="L215">        return retval;</span>
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+<span class="nc" id="L222">		String corpus = request.getParameter(&quot;Corpus&quot;);</span>
+<span class="nc" id="L223">		String document = request.getParameter(&quot;Document&quot;);</span>
+<span class="nc" id="L224">        setMetadataAttributes(request, corpus, document);</span>
+<span class="nc" id="L225">        setStatsAttribute(request, corpus, document);</span>
+<span class="nc" id="L226">        setSelectedActor(request, corpus, document);</span>
+<span class="nc" id="L227">        setActorMyersBriggs(request, corpus, document);</span>
+<span class="nc" id="L228">        setActorAttributes(request, corpus, document);</span>
+<span class="nc" id="L229">        request.getSession().getServletContext().getRequestDispatcher(&quot;/jsp/OOPActorsViewer.jsp&quot;).forward(request, response);</span>
+<span class="nc" id="L230">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MyersBriggsAnnotator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OOP Core NLP</a> &gt; <a href="index.source.html" class="el_package">io.outofprintmagazine.nlp.pipeline.annotators</a> &gt; <span class="el_source">MyersBriggsAnnotator.java</span></div><h1>MyersBriggsAnnotator.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright (C) 2020 Ram Sadasiv
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ ******************************************************************************/
+package io.outofprintmagazine.nlp.pipeline.annotators;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import edu.stanford.nlp.pipeline.Annotation;
+import edu.stanford.nlp.pipeline.Annotator;
+import edu.stanford.nlp.pipeline.CoreDocument;
+import edu.stanford.nlp.pipeline.CoreSentence;
+import io.outofprintmagazine.nlp.pipeline.scorers.MapSum;
+import io.outofprintmagazine.nlp.pipeline.scorers.IScorer;
+import io.outofprintmagazine.nlp.pipeline.serializers.MapSerializer;
+import io.outofprintmagazine.nlp.pipeline.serializers.ISerializer;
+
+public class MyersBriggsAnnotator extends AbstractPosAnnotator implements Annotator, IOOPAnnotator {
+	
+	@SuppressWarnings(&quot;unused&quot;)
+<span class="fc" id="L38">	private static final Logger logger = LogManager.getLogger(MyersBriggsAnnotator.class);</span>
+	
+	@SuppressWarnings(&quot;unused&quot;)
+	private Logger getLogger() {
+<span class="nc" id="L42">		return logger;</span>
+	}
+	
+	//VerbGroups
+<span class="fc" id="L46">	private String extrovert = &quot;social&quot;;</span>
+<span class="fc" id="L47">	private String introvert = &quot;perception&quot;;</span>
+<span class="fc" id="L48">	private String sensing = &quot;stative&quot;;</span>
+<span class="fc" id="L49">	private String intuitive = &quot;change&quot;;</span>
+<span class="fc" id="L50">	private String thinking = &quot;cognition&quot;;</span>
+<span class="fc" id="L51">	private String feeling = &quot;emotion&quot;;</span>
+	//Biber features
+<span class="fc" id="L53">	private String judging = &quot;PRMD&quot;;</span>
+<span class="fc" id="L54">	private String perceiving = &quot;NEMD&quot;;</span>
+	
+	public MyersBriggsAnnotator() {
+<span class="fc" id="L57">		super();</span>
+<span class="fc" id="L58">		this.setScorer((IScorer) new MapSum(this.getAnnotationClass()));</span>
+<span class="fc" id="L59">		this.setSerializer((ISerializer)new MapSerializer(this.getAnnotationClass()));</span>
+<span class="fc" id="L60">	}</span>
+	
+	@Override
+	public String getDescription() {
+<span class="fc" id="L64">		return &quot;Personality types. https://www.myersbriggs.org/my-mbti-personality-type/mbti-basics/&quot;;</span>
+	}
+	
+	@Override
+	public Class getAnnotationClass() {
+<span class="fc" id="L69">		return io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPMyersBriggsAnnotation.class;</span>
+	}
+	
+	@Override
+	public void annotate(Annotation annotation) {
+<span class="fc" id="L74">		CoreDocument document = new CoreDocument(annotation);</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">		for (CoreSentence sentence : document.sentences()) {</span>
+<span class="fc" id="L76">			Map&lt;String,BigDecimal&gt; scoreMap = new HashMap&lt;String,BigDecimal&gt;();</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">			if (sentence.coreMap().containsKey(io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPVerbGroupsAnnotation.class)) {</span>
+<span class="fc" id="L78">				Map&lt;String,BigDecimal&gt; annotationScore = sentence.coreMap().get(io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPVerbGroupsAnnotation.class);</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">				if (annotationScore.containsKey(extrovert)) {</span>
+<span class="fc" id="L80">					addToScoreMap(scoreMap, &quot;extrovert&quot;, annotationScore.get(extrovert));</span>
+				}
+<span class="fc bfc" id="L82" title="All 2 branches covered.">				if (annotationScore.containsKey(introvert)) {</span>
+<span class="fc" id="L83">					addToScoreMap(scoreMap, &quot;introvert&quot;, annotationScore.get(introvert));</span>
+				}
+<span class="fc bfc" id="L85" title="All 2 branches covered.">				if (annotationScore.containsKey(sensing)) {</span>
+<span class="fc" id="L86">					addToScoreMap(scoreMap, &quot;sensing&quot;, annotationScore.get(sensing));</span>
+				}
+<span class="fc bfc" id="L88" title="All 2 branches covered.">				if (annotationScore.containsKey(intuitive)) {</span>
+<span class="fc" id="L89">					addToScoreMap(scoreMap, &quot;intuitive&quot;, annotationScore.get(intuitive));</span>
+				}
+<span class="fc bfc" id="L91" title="All 2 branches covered.">				if (annotationScore.containsKey(thinking)) {</span>
+<span class="fc" id="L92">					addToScoreMap(scoreMap, &quot;thinking&quot;, annotationScore.get(thinking));</span>
+				}
+<span class="fc bfc" id="L94" title="All 2 branches covered.">				if (annotationScore.containsKey(feeling)) {</span>
+<span class="fc" id="L95">					addToScoreMap(scoreMap, &quot;feeling&quot;, annotationScore.get(feeling));</span>
+				}
+			}
+<span class="fc bfc" id="L98" title="All 2 branches covered.">			if (sentence.coreMap().containsKey(io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPBiberAnnotation.class)) {</span>
+<span class="fc" id="L99">				Map&lt;String, BigDecimal&gt; biberScoreMap = sentence.coreMap().get(io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPBiberAnnotation.class);</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">				if (biberScoreMap.containsKey(judging)) {</span>
+<span class="fc" id="L101">					addToScoreMap(scoreMap, &quot;judging&quot;, biberScoreMap.get(judging));</span>
+				}
+<span class="fc bfc" id="L103" title="All 2 branches covered.">				if (biberScoreMap.containsKey(perceiving)) {</span>
+<span class="fc" id="L104">					addToScoreMap(scoreMap, &quot;perceiving&quot;, biberScoreMap.get(perceiving));</span>
+				}
+			}
+<span class="fc" id="L107">			sentence.coreMap().set(getAnnotationClass(), scoreMap);</span>
+		}
+<span class="fc" id="L109">	}</span>
+	
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

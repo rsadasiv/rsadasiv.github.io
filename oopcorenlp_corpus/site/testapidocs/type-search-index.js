@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes","url":"allclasses-index.html"},{"p":"io.outofprintmagazine.corpus.batch","l":"CorpusBatchStep_Test"},{"p":"io.outofprintmagazine.corpus","l":"CorpusIT"},{"p":"io.outofprintmagazine.util","l":"ParameterStoreLocal"}]

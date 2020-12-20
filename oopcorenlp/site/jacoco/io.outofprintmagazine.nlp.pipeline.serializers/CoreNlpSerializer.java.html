@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CoreNlpSerializer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OOP Core NLP</a> &gt; <a href="index.source.html" class="el_package">io.outofprintmagazine.nlp.pipeline.serializers</a> &gt; <span class="el_source">CoreNlpSerializer.java</span></div><h1>CoreNlpSerializer.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright (C) 2020 Ram Sadasiv
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ ******************************************************************************/
+package io.outofprintmagazine.nlp.pipeline.serializers;
+
+import java.util.Map;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import edu.stanford.nlp.coref.CorefCoreAnnotations;
+import edu.stanford.nlp.coref.data.CorefChain;
+import edu.stanford.nlp.coref.data.CorefChain.CorefMention;
+import edu.stanford.nlp.ling.CoreAnnotations;
+import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.pipeline.CoreDocument;
+import edu.stanford.nlp.pipeline.CoreQuote;
+import edu.stanford.nlp.pipeline.CoreSentence;
+import edu.stanford.nlp.pipeline.QuoteAttributionAnnotator;
+import io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPThumbnailAnnotation;
+
+/**
+ * &lt;p&gt;Creates the base json syntax tree from coreDocument.&lt;/p&gt;
+ * &lt;ul&gt;
+ * 	&lt;li&gt;root (document)
+ * 		&lt;ul&gt;
+ * 			&lt;li&gt;metadata
+ * 				&lt;ul&gt;
+ * 					    &lt;li&gt;DocIDAnnotation&lt;/li&gt;
+ * 					    &lt;li&gt;DocTitleAnnotation&lt;/li&gt;
+ * 					    &lt;li&gt;DocSourceTypeAnnotation&lt;/li&gt;
+ * 					    &lt;li&gt;DocTypeAnnotation&lt;/li&gt;
+ * 					    &lt;li&gt;AuthorAnnotation&lt;/li&gt;
+ * 					    &lt;li&gt;DocDateAnnotation&lt;/li&gt;
+ * 						&lt;li&gt;OOPThumbnailAnnotation&lt;/li&gt;
+ *				&lt;/ul&gt;
+ *			&lt;/li&gt;
+ * 			&lt;li&gt;corefs&lt;/li&gt;
+ * 			&lt;li&gt;quotes&lt;/li&gt;
+ * 			&lt;li&gt;sentences
+ * 				&lt;ul&gt;
+ * 					&lt;li&gt;tokens
+ * 						&lt;ul&gt;
+ * 							&lt;li&gt;tokenIndex&lt;/li&gt;
+ * 							&lt;li&gt;TokensAnnotation
+ * 								&lt;ul&gt;
+ * 									&lt;li&gt;word&lt;/li&gt;
+ * 									&lt;li&gt;originalText&lt;/li&gt;
+ * 									&lt;li&gt;lemma&lt;/li&gt;
+ * 									&lt;li&gt;characterOffsetBegin&lt;/li&gt;
+ * 									&lt;li&gt;characterOffsetEnd&lt;/li&gt;
+ * 									&lt;li&gt;pos&lt;/li&gt;
+ * 									&lt;li&gt;ner&lt;/li&gt;
+ * 									&lt;li&gt;before&lt;/li&gt;
+ * 									&lt;li&gt;after&lt;/li&gt;
+ * 								&lt;/ul&gt;
+ * 							&lt;/li&gt;
+ * 						&lt;/ul&gt;
+ * 					&lt;/li&gt;
+ * 				&lt;/ul&gt;
+ * 			&lt;/li&gt;
+ * 		&lt;/ul&gt;
+ * 	&lt;/li&gt;
+ * &lt;/ul&gt;
+ * @author Ram Sadasiv
+ *
+ */
+public class CoreNlpSerializer implements ISerializer {
+
+<span class="fc" id="L84">	ObjectMapper mapper = new ObjectMapper();</span>
+	
+	ObjectMapper getMapper() {
+<span class="fc" id="L87">		return mapper;</span>
+	}
+	
+	public CoreNlpSerializer() {
+<span class="fc" id="L91">		super();</span>
+<span class="fc" id="L92">	}</span>
+
+	protected void serializeMetadata(CoreDocument document, ObjectNode documentNode) {
+<span class="fc" id="L95">		ObjectNode metadata = documentNode.putObject(&quot;metadata&quot;);</span>
+<span class="pc bpc" id="L96" title="1 of 2 branches missed.">		if (document.annotation().containsKey(CoreAnnotations.DocIDAnnotation.class)) {</span>
+<span class="fc" id="L97">			metadata.put(CoreAnnotations.DocIDAnnotation.class.getSimpleName(),</span>
+<span class="fc" id="L98">					document.annotation().get(CoreAnnotations.DocIDAnnotation.class));</span>
+		}
+<span class="pc bpc" id="L100" title="1 of 2 branches missed.">		if (document.annotation().containsKey(CoreAnnotations.DocTitleAnnotation.class)) {</span>
+<span class="fc" id="L101">			metadata.put(CoreAnnotations.DocTitleAnnotation.class.getSimpleName(),</span>
+<span class="fc" id="L102">					document.annotation().get(CoreAnnotations.DocTitleAnnotation.class));</span>
+		}
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">		if (document.annotation().containsKey(CoreAnnotations.DocSourceTypeAnnotation.class)) {</span>
+<span class="fc" id="L105">			metadata.put(CoreAnnotations.DocSourceTypeAnnotation.class.getSimpleName(),</span>
+<span class="fc" id="L106">					document.annotation().get(CoreAnnotations.DocSourceTypeAnnotation.class));</span>
+		}
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">		if (document.annotation().containsKey(CoreAnnotations.DocTypeAnnotation.class)) {</span>
+<span class="fc" id="L109">			metadata.put(CoreAnnotations.DocTypeAnnotation.class.getSimpleName(),</span>
+<span class="fc" id="L110">					document.annotation().get(CoreAnnotations.DocTypeAnnotation.class));</span>
+		}
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">		if (document.annotation().containsKey(CoreAnnotations.AuthorAnnotation.class)) {</span>
+<span class="fc" id="L113">			metadata.put(CoreAnnotations.AuthorAnnotation.class.getSimpleName(),</span>
+<span class="fc" id="L114">					document.annotation().get(CoreAnnotations.AuthorAnnotation.class));</span>
+		}
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">		if (document.annotation().containsKey(CoreAnnotations.DocDateAnnotation.class)) {</span>
+<span class="fc" id="L117">			metadata.put(CoreAnnotations.DocDateAnnotation.class.getSimpleName(),</span>
+<span class="fc" id="L118">					document.annotation().get(CoreAnnotations.DocDateAnnotation.class));</span>
+		}
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">		if (document.annotation().containsKey(OOPThumbnailAnnotation.class)) {</span>
+<span class="fc" id="L121">			metadata.put(OOPThumbnailAnnotation.class.getSimpleName(),</span>
+<span class="fc" id="L122">					document.annotation().get(OOPThumbnailAnnotation.class));</span>
+		}
+<span class="fc" id="L124">	}</span>
+	
+	protected void serializeCoref(CoreDocument document, ObjectNode documentNode) {
+<span class="fc" id="L127">		ArrayNode corefsNode = documentNode.putArray(&quot;corefs&quot;);</span>
+<span class="fc" id="L128">		Map&lt;Integer, CorefChain&gt; corefChains = document.annotation().get(CorefCoreAnnotations.CorefChainAnnotation.class);</span>
+<span class="pc bpc" id="L129" title="1 of 2 branches missed.">		if (corefChains != null) {</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">			for (CorefChain chain : corefChains.values()) {</span>
+<span class="fc" id="L131">				CorefChain.CorefMention representative = chain.getRepresentativeMention();</span>
+<span class="fc" id="L132">				ObjectNode chainNode = getMapper().createObjectNode();</span>
+<span class="fc" id="L133">				corefsNode.add(chainNode);</span>
+<span class="fc" id="L134">				ArrayNode mentionListNode = chainNode.putArray(Integer.toString(chain.getChainID()));</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">				for (CorefMention mention : chain.getMentionsInTextualOrder()) {</span>
+<span class="fc" id="L136">					ObjectNode mentionNode = mapper.createObjectNode();</span>
+<span class="fc" id="L137">					mentionNode.put(&quot;id&quot;, mention.mentionID);</span>
+<span class="fc" id="L138">					mentionNode.put(&quot;text&quot;, mention.mentionSpan);</span>
+<span class="fc" id="L139">					mentionNode.put(&quot;type&quot;, mention.mentionType.toString());</span>
+<span class="fc" id="L140">					mentionNode.put(&quot;number&quot;, mention.number.toString());</span>
+<span class="fc" id="L141">					mentionNode.put(&quot;gender&quot;, mention.gender.toString());</span>
+<span class="fc" id="L142">					mentionNode.put(&quot;animacy&quot;, mention.animacy.toString());</span>
+<span class="fc" id="L143">					mentionNode.put(&quot;startIndex&quot;, mention.startIndex);</span>
+<span class="fc" id="L144">					mentionNode.put(&quot;endIndex&quot;, mention.endIndex);</span>
+<span class="fc" id="L145">					mentionNode.put(&quot;headIndex&quot;, mention.headIndex);</span>
+<span class="fc" id="L146">					mentionNode.put(&quot;sentNum&quot;, mention.sentNum);</span>
+					// mentionWriter.set(&quot;position&quot;,
+					// Arrays.stream(mention.position.elems()).boxed().collect(Collectors.toList()));
+<span class="fc bfc" id="L149" title="All 2 branches covered.">					mentionNode.put(&quot;isRepresentativeMention&quot;, mention == representative);</span>
+<span class="fc" id="L150">					mentionListNode.add(mentionNode);</span>
+				}
+			}
+		}		
+<span class="fc" id="L154">	}</span>
+	
+	public void serializeQuotes(CoreDocument document, ObjectNode documentNode) {
+<span class="fc" id="L157">		ArrayNode quotesNode = documentNode.putArray(&quot;quotes&quot;);</span>
+<span class="pc bpc" id="L158" title="1 of 2 branches missed.">		for (CoreQuote quote : document.quotes()) {</span>
+<span class="nc" id="L159">			ObjectNode quoteNode = mapper.createObjectNode();</span>
+<span class="nc" id="L160">			quoteNode.put(&quot;id&quot;, quote.coreMap().get(CoreAnnotations.QuotationIndexAnnotation.class));</span>
+<span class="nc" id="L161">			quoteNode.put(&quot;text&quot;, quote.coreMap().get(CoreAnnotations.TextAnnotation.class));</span>
+<span class="nc" id="L162">			quoteNode.put(&quot;beginIndex&quot;, quote.coreMap().get(CoreAnnotations.CharacterOffsetBeginAnnotation.class));</span>
+<span class="nc" id="L163">			quoteNode.put(&quot;endIndex&quot;, quote.coreMap().get(CoreAnnotations.CharacterOffsetEndAnnotation.class));</span>
+<span class="nc" id="L164">			quoteNode.put(&quot;beginToken&quot;, quote.coreMap().get(CoreAnnotations.TokenBeginAnnotation.class));</span>
+<span class="nc" id="L165">			quoteNode.put(&quot;endToken&quot;, quote.coreMap().get(CoreAnnotations.TokenEndAnnotation.class));</span>
+<span class="nc" id="L166">			quoteNode.put(&quot;beginSentence&quot;, quote.coreMap().get(CoreAnnotations.SentenceBeginAnnotation.class));</span>
+<span class="nc" id="L167">			quoteNode.put(&quot;endSentence&quot;, quote.coreMap().get(CoreAnnotations.SentenceEndAnnotation.class));</span>
+<span class="nc" id="L168">			quoteNode.put(&quot;speaker&quot;,</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">					quote.coreMap().get(QuoteAttributionAnnotator.SpeakerAnnotation.class) != null</span>
+<span class="nc" id="L170">							? quote.coreMap().get(QuoteAttributionAnnotator.SpeakerAnnotation.class)</span>
+<span class="nc" id="L171">							: &quot;Unknown&quot;);</span>
+<span class="nc" id="L172">			quoteNode.put(&quot;canonicalSpeaker&quot;,</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">					quote.coreMap().get(QuoteAttributionAnnotator.CanonicalMentionAnnotation.class) != null</span>
+<span class="nc" id="L174">							? quote.coreMap().get(QuoteAttributionAnnotator.CanonicalMentionAnnotation.class)</span>
+<span class="nc" id="L175">							: &quot;Unknown&quot;);</span>
+<span class="nc" id="L176">			quotesNode.add(quoteNode);</span>
+		}
+<span class="fc" id="L178">	}</span>
+	
+	@Override
+	public void serialize(CoreDocument document, ObjectNode documentNode) {
+		
+
+<span class="fc" id="L184">		serializeMetadata(document, documentNode);</span>
+<span class="fc" id="L185">		serializeCoref(document, documentNode);</span>
+<span class="fc" id="L186">		serializeQuotes(document, documentNode);</span>
+
+
+		//crud - paragraphs not going to work easily.
+		//Just use Tokens, sentences, document
+		/*
+		 * ArrayNode paragraphsList = documentNode.putArray(&quot;paragraphs&quot;); Integer
+		 * paragraphIndex = new Integer(-1); ObjectNode paragraphNode = null; ArrayNode
+		 * sentencesList = null; for (CoreSentence sentence : document.sentences()) {
+		 * 
+		 * if (!sentence.coreMap().get(CoreAnnotations.ParagraphIndexAnnotation.class).
+		 * equals(paragraphIndex)) { paragraphIndex =
+		 * sentence.coreMap().get(CoreAnnotations.ParagraphIndexAnnotation.class);
+		 * paragraphNode = mapper.createObjectNode();
+		 * paragraphNode.put(&quot;paragraphIndex&quot;, paragraphIndex);
+		 * paragraphsList.add(paragraphNode); sentencesList =
+		 * paragraphNode.putArray(&quot;sentences&quot;); }
+		 */
+<span class="fc" id="L204">		ArrayNode sentencesList = documentNode.putArray(&quot;sentences&quot;);</span>
+<span class="fc bfc" id="L205" title="All 2 branches covered.">		for (CoreSentence sentence : document.sentences()) {</span>
+<span class="fc" id="L206">			ObjectNode sentenceNode = mapper.createObjectNode();</span>
+<span class="fc" id="L207">			sentencesList.add(sentenceNode);</span>
+<span class="fc" id="L208">			sentenceNode.put(CoreAnnotations.SentenceIndexAnnotation.class.getSimpleName(),</span>
+<span class="fc" id="L209">					sentence.coreMap().get(CoreAnnotations.SentenceIndexAnnotation.class));</span>
+<span class="fc" id="L210">			sentenceNode.put(&quot;text&quot;, sentence.text().replace(&quot;\&quot;&quot;, &quot;&quot;));</span>
+<span class="fc" id="L211">			ArrayNode tokensList = sentenceNode.putArray(&quot;tokens&quot;);</span>
+<span class="fc bfc" id="L212" title="All 2 branches covered.">			for (CoreLabel token : sentence.tokens()) {</span>
+<span class="fc" id="L213">				ObjectNode tokenNode = mapper.createObjectNode();</span>
+<span class="fc" id="L214">				tokensList.add(tokenNode);</span>
+<span class="fc" id="L215">				tokenNode.put(&quot;tokenIndex&quot;, token.index());</span>
+<span class="fc" id="L216">				ObjectNode coreNlpTokenAnnotationsNode = mapper.createObjectNode();</span>
+<span class="fc" id="L217">				tokenNode.set(CoreAnnotations.TokensAnnotation.class.getSimpleName(), coreNlpTokenAnnotationsNode);</span>
+<span class="fc" id="L218">				coreNlpTokenAnnotationsNode.put(&quot;word&quot;, token.word());</span>
+<span class="fc" id="L219">				coreNlpTokenAnnotationsNode.put(&quot;originalText&quot;, token.originalText());</span>
+<span class="fc" id="L220">				coreNlpTokenAnnotationsNode.put(&quot;lemma&quot;, token.lemma());</span>
+<span class="fc" id="L221">				coreNlpTokenAnnotationsNode.put(&quot;characterOffsetBegin&quot;, token.beginPosition());</span>
+<span class="fc" id="L222">				coreNlpTokenAnnotationsNode.put(&quot;characterOffsetEnd&quot;, token.endPosition());</span>
+<span class="fc" id="L223">				coreNlpTokenAnnotationsNode.put(&quot;pos&quot;, token.tag());</span>
+<span class="fc" id="L224">				coreNlpTokenAnnotationsNode.put(&quot;ner&quot;, token.ner());</span>
+<span class="fc" id="L225">				coreNlpTokenAnnotationsNode.put(&quot;before&quot;, token.get(CoreAnnotations.BeforeAnnotation.class));</span>
+<span class="fc" id="L226">				coreNlpTokenAnnotationsNode.put(&quot;after&quot;, token.get(CoreAnnotations.AfterAnnotation.class));</span>
+			}
+		}
+<span class="fc" id="L229">	}</span>
+
+
+	public static void main(String[] argv) {
+<span class="nc" id="L233">		System.out.println(CoreAnnotations.DocIDAnnotation.class.getSimpleName());</span>
+<span class="nc" id="L234">	}</span>
+
+	//aggregate must be the document itself?
+	@Override
+	public void serializeAggregate(Object aggregate, ObjectNode json) {
+<span class="fc" id="L239">		serializeMetadata((CoreDocument)aggregate, json);</span>
+<span class="fc" id="L240">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
