@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CoreNlpParagraphAnnotator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OOP Core NLP</a> &gt; <a href="index.source.html" class="el_package">io.outofprintmagazine.nlp.pipeline.annotators</a> &gt; <span class="el_source">CoreNlpParagraphAnnotator.java</span></div><h1>CoreNlpParagraphAnnotator.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright (C) 2020 Ram Sadasiv
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ ******************************************************************************/
+package io.outofprintmagazine.nlp.pipeline.annotators;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.Set;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import edu.stanford.nlp.ling.CoreAnnotation;
+import edu.stanford.nlp.ling.CoreAnnotations;
+import edu.stanford.nlp.pipeline.Annotator;
+import edu.stanford.nlp.pipeline.CoreDocument;
+import edu.stanford.nlp.pipeline.CoreSentence;
+import edu.stanford.nlp.util.ArraySet;
+import io.outofprintmagazine.util.IParameterStore;
+
+public class CoreNlpParagraphAnnotator extends edu.stanford.nlp.paragraphs.ParagraphAnnotator implements Annotator, IOOPAnnotator {
+	
+	@SuppressWarnings(&quot;unused&quot;)
+<span class="fc" id="L43">	private static final Logger logger = LogManager.getLogger(CoreNlpParagraphAnnotator.class);</span>
+	
+	
+	@SuppressWarnings(&quot;unused&quot;)
+	private Logger getLogger() {
+<span class="nc" id="L48">		return logger;</span>
+	}
+	
+	public CoreNlpParagraphAnnotator() {
+<span class="fc" id="L52">		super(CoreNlpParagraphAnnotator.getProperties(), false);</span>
+<span class="fc" id="L53">	}</span>
+	
+	protected IParameterStore properties;
+	
+	@Override
+	public void init(IParameterStore properties) {
+<span class="fc" id="L59">		this.properties = properties;</span>
+<span class="fc" id="L60">	}</span>
+
+	private static Properties getProperties() {
+<span class="fc" id="L63">		Properties props = new Properties();</span>
+<span class="fc" id="L64">		props.setProperty(&quot;paragraphBreak&quot;, &quot;two&quot;);</span>
+<span class="fc" id="L65">		return props;</span>
+	}
+	
+	@Override
+	public Class getAnnotationClass() {
+<span class="fc" id="L70">		return edu.stanford.nlp.ling.CoreAnnotations.ParagraphIndexAnnotation.class;</span>
+	}
+
+	@Override
+	public Set&lt;Class&lt;? extends CoreAnnotation&gt;&gt; requires() {
+<span class="nc" id="L75">		return Collections.unmodifiableSet(</span>
+<span class="nc" id="L76">			new ArraySet&lt;&gt;(</span>
+<span class="nc" id="L77">				Arrays.asList(</span>
+<span class="nc" id="L78">					CoreAnnotations.ParagraphIndexAnnotation.class</span>
+				)
+			)
+		);
+	}
+	
+	@Override
+	public void score(CoreDocument document) {
+		//pass
+<span class="fc" id="L87">	}</span>
+	
+	@Override
+	public void serialize(CoreDocument document, ObjectNode json) {
+<span class="fc" id="L91">		Iterator&lt;CoreSentence&gt; coreNlpSentencesIter = document.sentences().iterator();</span>
+<span class="fc" id="L92">		Iterator&lt;JsonNode&gt; jsonSentencesIter = ((ArrayNode) json.get(&quot;sentences&quot;)).iterator();</span>
+<span class="pc bpc" id="L93" title="1 of 4 branches missed.">		while (coreNlpSentencesIter.hasNext() &amp;&amp; jsonSentencesIter.hasNext()) {</span>
+<span class="fc" id="L94">			CoreSentence sentence = coreNlpSentencesIter.next();</span>
+<span class="fc" id="L95">			ObjectNode sentenceNode = (ObjectNode) jsonSentencesIter.next();</span>
+<span class="pc bpc" id="L96" title="1 of 2 branches missed.">			if (sentence.coreMap().containsKey(getAnnotationClass())) {</span>
+<span class="fc" id="L97">				sentenceNode.put(CoreAnnotations.ParagraphIndexAnnotation.class.getSimpleName(), sentence.coreMap().get(CoreAnnotations.ParagraphIndexAnnotation.class));</span>
+			}
+		}
+<span class="fc" id="L100">	}</span>
+
+	@Override
+	public String getDescription() {
+<span class="fc" id="L104">		return &quot;CoreAnnotations.ParagraphIndexAnnotation.class. Recorded per sentence, index starts at 0.&quot;;</span>
+	}
+	
+	@Override
+	public void serializeAggregateDocument(CoreDocument document, ObjectNode json) {
+		//pass
+<span class="fc" id="L110">	}</span>
+	
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

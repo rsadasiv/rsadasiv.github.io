@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>S3ScratchStorage.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OOP Corpus</a> &gt; <a href="index.source.html" class="el_package">io.outofprintmagazine.corpus.storage.s3</a> &gt; <span class="el_source">S3ScratchStorage.java</span></div><h1>S3ScratchStorage.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright (C) 2020 Ram Sadasiv
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ ******************************************************************************/
+package io.outofprintmagazine.corpus.storage.s3;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.regex.Pattern;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import io.outofprintmagazine.corpus.storage.IScratchStorage;
+import io.outofprintmagazine.util.IParameterStore;
+
+public class S3ScratchStorage implements IScratchStorage {
+
+	//extends FileCorpora
+	//Path=//
+	//Bucket=
+
+	@SuppressWarnings(&quot;unused&quot;)
+<span class="nc" id="L50">	private static final Logger logger = LogManager.getLogger(S3ScratchStorage.class);</span>
+	
+	protected Logger getLogger() {
+<span class="nc" id="L53">		return logger;</span>
+	}
+	
+	public S3ScratchStorage() {
+<span class="nc" id="L57">		super();</span>
+<span class="nc" id="L58">		mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);</span>
+<span class="nc" id="L59">		mapper.configure(com.fasterxml.jackson.core.JsonGenerator.Feature.WRITE_BIGDECIMAL_AS_PLAIN, true);</span>
+<span class="nc" id="L60">	}</span>
+	
+	public S3ScratchStorage(IParameterStore parameterStore) {
+<span class="nc" id="L63">		this();</span>
+<span class="nc" id="L64">		this.setParameterStore(parameterStore);</span>
+<span class="nc" id="L65">	}</span>
+	
+	protected ObjectMapper getMapper() {
+<span class="nc" id="L68">		return mapper; </span>
+	}
+	
+	protected ObjectMapper mapper;
+	
+	private IParameterStore parameterStore;
+	
+	public IParameterStore getParameterStore() {
+<span class="nc" id="L76">		return parameterStore;</span>
+	}
+	
+	@Override
+    public void setParameterStore(IParameterStore parameterStore) {
+<span class="nc" id="L81">		this.parameterStore = parameterStore;</span>
+<span class="nc" id="L82">	}</span>
+
+	
+	
+	protected String getCorpusPath(String corpus) throws IOException {
+<span class="nc" id="L87">		String path = (</span>
+<span class="nc" id="L88">				getParameterStore().getProperty(&quot;s3_Path&quot;)</span>
+				+ &quot;/&quot;	
+				+ corpus
+		);
+
+<span class="nc" id="L93">		return path;</span>
+		
+	}
+	
+	protected String getCorpusStagingBatchPath(String corpus, String stagingBatchName) throws IOException {
+<span class="nc" id="L98">		String path = (</span>
+<span class="nc" id="L99">				getCorpusPath(corpus) </span>
+				+ &quot;/&quot; 
+				+ stagingBatchName
+		);
+
+<span class="nc" id="L104">		return path;</span>
+	}
+	
+	protected String getCorpusStagingBatchItemPath(String corpus, String stagingBatchName, String stagingBatchItemName) throws IOException {
+<span class="nc" id="L108">		String path = (</span>
+<span class="nc" id="L109">				getCorpusPath(corpus) </span>
+				+ &quot;/&quot; 
+				+ stagingBatchName
+				+ &quot;/&quot; 
+				+ stagingBatchItemName
+		);
+
+<span class="nc" id="L116">		return path;</span>
+	}
+	
+
+	protected String getCorpusStagingBatchItemPropertiesPath(String corpus, String stagingBatchName, String stagingBatchItemName) throws IOException {
+<span class="nc" id="L121">		return (</span>
+<span class="nc" id="L122">				getCorpusStagingBatchItemPath(corpus, stagingBatchName, stagingBatchItemName)</span>
+				+ &quot;/&quot; 
+				+ &quot;BatchItemProperties.json&quot;
+		);
+	}	
+	
+	protected String getCorpusStagingBatchScratchPath(String corpus, String stagingBatchName) throws IOException {
+<span class="nc" id="L129">		String path = (</span>
+<span class="nc" id="L130">				getCorpusStagingBatchPath(corpus, stagingBatchName) </span>
+				+ &quot;/&quot; 
+				+ &quot;Scratch&quot;
+		);
+
+<span class="nc" id="L135">		return path;</span>
+	}
+	
+	protected String getCorpusStagingBatchScratchFilePath(String corpus, String scratchFileName) throws IOException {
+<span class="nc" id="L139">		String path = (</span>
+<span class="nc" id="L140">				getCorpusPath(corpus) </span>
+				+ &quot;/&quot; 
+				+ scratchFileName
+		);
+<span class="nc" id="L144">		return path;</span>
+	}
+	
+	protected String getCorpusStagingBatchPropertiesPath(String corpus, String stagingBatchName) throws IOException {
+<span class="nc" id="L148">		return (</span>
+<span class="nc" id="L149">				getCorpusStagingBatchPath(corpus, stagingBatchName)</span>
+				+ &quot;/&quot; 
+				+ &quot;BatchProperties.json&quot;
+		);
+	}
+	
+	@Override
+	public String getScratchFilePath(String stagingBatchName, String stagingBatchItemName, String scratchFileName) throws Exception {
+<span class="nc" id="L157">		return (</span>
+				stagingBatchName
+				+ &quot;/&quot;
+				+ stagingBatchItemName
+				+ &quot;/&quot;
+				+ scratchFileName
+		);
+	}
+
+
+	@Override
+	public String storeScratchFileString(String corpus, String scratchFileName, String in) throws Exception {
+<span class="nc" id="L169">		return storeScratchFileObject(corpus, scratchFileName, in);</span>
+		//storeScratchFileProperties(corpus, stagingBatchName, scratchFileName, properties);
+	}
+	
+	protected String storeScratchFileObject(String corpus, String scratchFileName, String in) throws Exception {
+<span class="nc" id="L174">        Long contentLength = Long.valueOf(in.getBytes(StandardCharsets.UTF_8.name()).length);</span>
+<span class="nc" id="L175">		ObjectMetadata metadata = new ObjectMetadata();</span>
+<span class="nc" id="L176">		metadata.setContentLength(contentLength);</span>
+		//metadata.setContentType(properties.get(&quot;mimeType&quot;).asText(&quot;application/json&quot;));
+<span class="nc" id="L178">		metadata.setContentEncoding(StandardCharsets.UTF_8.name());</span>
+<span class="nc" id="L179">		S3Utils.getInstance(getParameterStore()).getS3Client().putObject(</span>
+				new PutObjectRequest(
+<span class="nc" id="L181">						getParameterStore().getProperty(&quot;s3_Bucket&quot;),</span>
+<span class="nc" id="L182">						getCorpusStagingBatchScratchFilePath(</span>
+								corpus, 
+								scratchFileName
+						),
+<span class="nc" id="L186">						IOUtils.toInputStream(in, StandardCharsets.UTF_8.name()),</span>
+						metadata
+				)
+		);
+<span class="nc" id="L190">		return scratchFileName;</span>
+
+	}
+
+	//TODO - Plain text?
+	@Override
+	public String storeScratchFileStream(String corpus, String scratchFileName, InputStream in) throws Exception {
+		//do I need to buffer this in a file?
+<span class="nc" id="L198">		File f = null;</span>
+<span class="nc" id="L199">		FileOutputStream fout = null;</span>
+		
+		try {
+<span class="nc" id="L202">			f = File.createTempFile(scratchFileName, scratchFileName.substring(trimFileExtension(scratchFileName).length()+1));</span>
+<span class="nc" id="L203">			fout = new FileOutputStream(f);</span>
+<span class="nc" id="L204">			IOUtils.copy(in,fout);</span>
+<span class="nc" id="L205">			in.close();</span>
+<span class="nc" id="L206">			fout.flush();</span>
+
+<span class="nc" id="L208">			S3Utils.getInstance(getParameterStore()).getS3Client().putObject(</span>
+					new PutObjectRequest(
+<span class="nc" id="L210">							getParameterStore().getProperty(&quot;s3_Bucket&quot;),</span>
+<span class="nc" id="L211">							getCorpusStagingBatchScratchFilePath(</span>
+									corpus, 
+									scratchFileName
+							),
+							f
+					)
+			);
+		}
+		finally {
+<span class="nc bnc" id="L220" title="All 2 branches missed.">			if (fout != null) {</span>
+<span class="nc" id="L221">				fout.close();</span>
+<span class="nc" id="L222">				fout = null;</span>
+			}
+<span class="nc bnc" id="L224" title="All 2 branches missed.">			if (f != null) {</span>
+<span class="nc" id="L225">				f.delete();</span>
+<span class="nc" id="L226">				f = null;</span>
+			}
+		}
+<span class="nc" id="L229">		return scratchFileName;</span>
+		
+	}
+	
+	@Override
+	public String storeScratchFileObject(String corpus, String scratchFilePath, ObjectNode in) throws Exception {
+<span class="nc" id="L235">		return storeJsonFile(corpus, scratchFilePath, in);</span>
+	}
+		
+	
+	
+	public String storeJsonFile(String corpus, String scratchFileName, ObjectNode in) throws Exception {
+<span class="nc" id="L241">		ObjectWriter writer = getMapper().writer(new DefaultPrettyPrinter());</span>
+<span class="nc" id="L242">		String buf = writer.writeValueAsString(in);</span>
+<span class="nc" id="L243">		return storeScratchFileObject(corpus, scratchFileName, buf);</span>
+		//return storeScratchFileProperties(corpus, stagingBatchName, scratchFileName, properties);
+	}
+
+	
+	public String storeJsonFileStream(String corpus, String scratchFileName, InputStream in) throws Exception {
+<span class="nc" id="L249">		return storeScratchFileObject(corpus, scratchFileName, IOUtils.toString(in, StandardCharsets.UTF_8.name()));</span>
+		//return storeScratchFileProperties(corpus, stagingBatchName, scratchFileName, properties);
+	}
+
+	@Override
+	public InputStream getScratchFileStream(String corpus, String scratchFileName) throws Exception {
+		try {
+<span class="nc" id="L256">			return S3Utils.getInstance(getParameterStore()).getS3Client().getObject(</span>
+					new GetObjectRequest(
+<span class="nc" id="L258">							getParameterStore().getProperty(&quot;s3_Bucket&quot;), </span>
+<span class="nc" id="L259">							getCorpusStagingBatchScratchFilePath(corpus, scratchFileName)</span>
+					)
+<span class="nc" id="L261">			).getObjectContent();</span>
+		}
+<span class="nc" id="L263">		catch (AmazonS3Exception s3e) {</span>
+<span class="nc" id="L264">			getLogger().error(s3e);</span>
+<span class="nc" id="L265">			Thread.sleep(1000);</span>
+<span class="nc" id="L266">			return S3Utils.getInstance(getParameterStore()).getS3Client().getObject(</span>
+					new GetObjectRequest(
+<span class="nc" id="L268">							getParameterStore().getProperty(&quot;s3_Bucket&quot;), </span>
+<span class="nc" id="L269">							getCorpusStagingBatchScratchFilePath(corpus, scratchFileName)</span>
+					)
+<span class="nc" id="L271">			).getObjectContent();</span>
+		}
+
+	}
+
+	@Override
+	public String getScratchFileString(String corpus, String scratchFileName) throws Exception {
+		//getLogger().debug(String.format(&quot;s3:get %s %s&quot;, corpus, scratchFileName));
+		try {
+<span class="nc" id="L280">			return IOUtils.toString(</span>
+<span class="nc" id="L281">					S3Utils.getInstance(getParameterStore()).getS3Client().getObject(</span>
+							new GetObjectRequest(
+<span class="nc" id="L283">									getParameterStore().getProperty(&quot;s3_Bucket&quot;), </span>
+<span class="nc" id="L284">									getCorpusStagingBatchScratchFilePath(corpus, scratchFileName)</span>
+							)
+<span class="nc" id="L286">					).getObjectContent(),</span>
+<span class="nc" id="L287">					StandardCharsets.UTF_8.name()</span>
+			);
+		}
+<span class="nc" id="L290">		catch (AmazonS3Exception s3e) {</span>
+<span class="nc" id="L291">			getLogger().error(s3e);</span>
+<span class="nc" id="L292">			Thread.sleep(1000);</span>
+<span class="nc" id="L293">			return IOUtils.toString(</span>
+<span class="nc" id="L294">					S3Utils.getInstance(getParameterStore()).getS3Client().getObject(</span>
+							new GetObjectRequest(
+<span class="nc" id="L296">									getParameterStore().getProperty(&quot;s3_Bucket&quot;), </span>
+<span class="nc" id="L297">									getCorpusStagingBatchScratchFilePath(corpus, scratchFileName)</span>
+							)
+<span class="nc" id="L299">					).getObjectContent(),</span>
+<span class="nc" id="L300">					StandardCharsets.UTF_8.name()</span>
+			);
+		}
+	}
+
+	@Override
+	public String getFileNameFromPath(String scratchFilePath) {
+<span class="nc" id="L307">		String[] paths = scratchFilePath.split(Pattern.quote(&quot;/&quot;));</span>
+<span class="nc" id="L308">		return paths[paths.length-1];</span>
+	}
+	
+	@Override
+	public String trimFileExtension(String scratchFileName) {
+<span class="nc" id="L313">		int idx = scratchFileName.lastIndexOf(&quot;.&quot;);</span>
+<span class="nc bnc" id="L314" title="All 2 branches missed.">		if (idx &lt; 1) {</span>
+<span class="nc" id="L315">			idx = scratchFileName.length();</span>
+		}   
+<span class="nc" id="L317">		return scratchFileName.substring(0, idx);</span>
+	}
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

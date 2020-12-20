@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CorpusDocumentAnnotationSubannotationsSimilarity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OOP Core NLP Viewer</a> &gt; <a href="index.source.html" class="el_package">io.outofprintmagazine.web.rest.api</a> &gt; <span class="el_source">CorpusDocumentAnnotationSubannotationsSimilarity.java</span></div><h1>CorpusDocumentAnnotationSubannotationsSimilarity.java</h1><pre class="source lang-java linenums">package io.outofprintmagazine.web.rest.api;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+
+import org.apache.commons.text.similarity.CosineSimilarity;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import io.outofprintmagazine.web.servlets.AbstractOOPCacheableServlet;
+
+@Path(&quot;/CorpusDocumentAnnotationSubannotationsSimilarity&quot;)
+<span class="nc" id="L30">public class CorpusDocumentAnnotationSubannotationsSimilarity extends AbstractOOPCacheableServlet {</span>
+	
+	private static final long serialVersionUID = 1L;
+	@Context
+	private ServletConfig servletConfig;
+	@Context
+	private ServletContext servletContext;
+	@Context
+	private HttpServletRequest httpServletRequest;
+	@Context
+	private HttpServletResponse httpServletResponse;
+	
+    @GET
+    @Produces(&quot;application/json; charset=utf-8&quot;)
+	public String doGet(
+			@QueryParam(&quot;TargetCorpus&quot;) String targetCorpus,
+			@QueryParam(&quot;Corpus&quot;) String corpus,
+			@QueryParam(&quot;Document&quot;) String document,
+			@QueryParam(&quot;Annotation&quot;) String annotation
+			) throws JsonProcessingException, IOException, ServletException
+    {
+<span class="nc bnc" id="L51" title="All 2 branches missed.">    	if (getStorage() == null) {</span>
+<span class="nc" id="L52">    		super.init(servletConfig);</span>
+    	}
+	
+<span class="nc" id="L55">    	ObjectNode retval = getMapper().createObjectNode();</span>
+<span class="nc" id="L56">    	ObjectNode corpusAggregates = (ObjectNode) getStorage().getCorpusAggregatesJson(targetCorpus);</span>
+<span class="nc" id="L57">    	ObjectNode documentAggregates = (ObjectNode) getStorage().getCorpusDocumentAggregatesJson(corpus, document);</span>
+<span class="nc" id="L58">       	retval.put(</span>
+       			&quot;value&quot;, 
+<span class="nc" id="L60">       			calculateSimilarity(corpusAggregates, documentAggregates, annotation)</span>
+       	);
+
+<span class="nc" id="L63">        return getMapper().writeValueAsString(retval);</span>
+	}
+    
+	protected Double calculateSimilarity(ObjectNode corpusAggregates, ObjectNode documentAggregates, String annotation) {
+<span class="nc" id="L67">		CosineSimilarity similarity = new CosineSimilarity();</span>
+<span class="nc" id="L68">		Map&lt;CharSequence,Integer&gt; corpusScores = new HashMap&lt;CharSequence, Integer&gt;();</span>
+<span class="nc" id="L69">		Map&lt;CharSequence,Integer&gt; documentScores = new HashMap&lt;CharSequence, Integer&gt;();</span>
+<span class="nc" id="L70">		Iterator&lt;String&gt; annotationNameIter = documentAggregates.fieldNames();</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">		while (annotationNameIter.hasNext()) {</span>
+<span class="nc" id="L72">			String annotationName = annotationNameIter.next();</span>
+<span class="nc bnc" id="L73" title="All 8 branches missed.">			if (annotationName.equals(annotation) &amp;&amp; documentAggregates.get(annotationName).isObject() &amp;&amp; corpusAggregates.has(annotationName) &amp;&amp; corpusAggregates.get(annotationName).isObject()) {</span>
+<span class="nc" id="L74">				ObjectNode documentAnnotationScoreStats = (ObjectNode) documentAggregates.get(annotationName);</span>
+<span class="nc" id="L75">				ArrayNode aggregatedScores = (ArrayNode) documentAnnotationScoreStats.get(&quot;aggregatedScores&quot;);</span>
+<span class="nc" id="L76">				Iterator&lt;JsonNode&gt; aggregatedScoreIter = aggregatedScores.iterator();</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">				while (aggregatedScoreIter.hasNext()) {</span>
+<span class="nc" id="L78">					ObjectNode documentAnnotationSubScoreStatsScore = (ObjectNode) aggregatedScoreIter.next();</span>
+<span class="nc" id="L79">					String subscoreName = documentAnnotationSubScoreStatsScore.get(&quot;name&quot;).asText();		</span>
+<span class="nc" id="L80">					ObjectNode corpusAnnotationSubScoreStats = (ObjectNode) getSubscoreFromCorpusAggregate(corpusAggregates, annotationName, subscoreName);</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">					if (corpusAnnotationSubScoreStats != null) {</span>
+<span class="nc" id="L82">						BigDecimal documentAnnotationScore = new BigDecimal(documentAnnotationSubScoreStatsScore.get(&quot;score&quot;).get(&quot;normalized&quot;).asText());</span>
+<span class="nc" id="L83">						BigDecimal corpusAnnotationScore = new BigDecimal(corpusAnnotationSubScoreStats.get(&quot;score&quot;).get(&quot;normalized&quot;).get(&quot;median&quot;).asText());</span>
+			    		
+<span class="nc" id="L85">				    	corpusScores.put(subscoreName, corpusAnnotationScore.multiply(new BigDecimal(10000)).intValue());</span>
+<span class="nc" id="L86">				    	documentScores.put(subscoreName, documentAnnotationScore.multiply(new BigDecimal(10000)).intValue());</span>
+					}
+<span class="nc" id="L88">				}</span>
+			}
+<span class="nc" id="L90">		}</span>
+<span class="nc" id="L91">		return similarity.cosineSimilarity(corpusScores, documentScores);</span>
+	}
+				
+	protected ObjectNode getSubscoreFromCorpusAggregate(ObjectNode corpusAggregates, String score, String subscore) {
+<span class="nc" id="L95">		ObjectNode corpusAnnotationScoreStats = (ObjectNode) corpusAggregates.get(score);</span>
+<span class="nc bnc" id="L96" title="All 2 branches missed.">		if (corpusAnnotationScoreStats.has(&quot;aggregatedScores&quot;)) {</span>
+<span class="nc" id="L97">			ArrayNode aggregatedScores = (ArrayNode) corpusAnnotationScoreStats.get(&quot;aggregatedScores&quot;);</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">			for (JsonNode aggregatedScore : aggregatedScores) {</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">				if (aggregatedScore.get(&quot;name&quot;).asText().equals(subscore)) {</span>
+<span class="nc" id="L100">					return (ObjectNode) aggregatedScore;</span>
+				}
+<span class="nc" id="L102">			}</span>
+		}
+
+<span class="nc" id="L105">		return null;</span>
+	}
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

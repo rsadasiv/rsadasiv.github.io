@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DocumentAggregateScore.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OOP Core NLP</a> &gt; <a href="index.source.html" class="el_package">io.outofprintmagazine.util</a> &gt; <span class="el_source">DocumentAggregateScore.java</span></div><h1>DocumentAggregateScore.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright (C) 2020 Ram Sadasiv
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ ******************************************************************************/
+package io.outofprintmagazine.util;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class DocumentAggregateScore {
+	
+	@SuppressWarnings(&quot;unused&quot;)
+<span class="fc" id="L28">	private static final Logger logger = LogManager.getLogger(DocumentAggregateScore.class);</span>
+	
+	public DocumentAggregateScore() {
+<span class="fc" id="L31">		super();</span>
+<span class="fc" id="L32">	}</span>
+	
+	public DocumentAggregateScore(String name) {
+<span class="fc" id="L35">		this();</span>
+<span class="fc" id="L36">		this.setName(name);</span>
+<span class="fc" id="L37">	}</span>
+	
+<span class="fc" id="L39">	private String name = &quot;&quot;;</span>
+<span class="fc" id="L40">	private List&lt;AggregatedScore&gt; aggregatedScores = new ArrayList&lt;AggregatedScore&gt;();</span>
+<span class="fc" id="L41">	private ScoreStats scoreStats =  new ScoreStats();</span>
+
+	
+	public String getName() {
+<span class="fc" id="L45">		return name;</span>
+	}
+	
+	public void setName(String name) {
+<span class="fc" id="L49">		this.name = name;</span>
+<span class="fc" id="L50">	}</span>
+	
+	public List&lt;AggregatedScore&gt; getAggregatedScores() {
+<span class="fc" id="L53">		return aggregatedScores;</span>
+	}
+	
+	public void setAggregatedScores(List&lt;AggregatedScore&gt; aggregatedScores) {
+<span class="nc" id="L57">		this.aggregatedScores = aggregatedScores;</span>
+<span class="nc" id="L58">	}</span>
+	
+	public ScoreStats getScoreStats() {
+<span class="fc" id="L61">		return scoreStats;</span>
+	}
+
+	public void setScoreStats(ScoreStats scoreStats) {
+<span class="nc" id="L65">		this.scoreStats = scoreStats;</span>
+<span class="nc" id="L66">	}</span>
+
+//	public DocumentAggregateScoreAnnotation(String name, Map&lt;String, BigDecimal&gt; rawScores, BigDecimal normalizer) {
+//		this(name);
+//		if (rawScores.size() == 0) {
+//			return;
+//		}
+//		double[] primitiveNormalizedScores = new double[rawScores.size()];
+//		BigDecimal rawSum = new BigDecimal(0);
+//		Iterator&lt;Entry&lt;String,BigDecimal&gt;&gt; rawScoresIter = rawScores.entrySet().iterator();
+//
+//		for (int i=0; i&lt;rawScores.size() &amp;&amp; rawScoresIter.hasNext(); i++) {
+//			Entry&lt;String,BigDecimal&gt; rawScore = rawScoresIter.next();
+//			rawSum = rawSum.add(rawScore.getValue());
+//			primitiveNormalizedScores[i] = rawScore.getValue().divide(normalizer, 10, BigDecimal.ROUND_HALF_UP).doubleValue();
+//			getAggregatedScores().add(new AggregatedScore(rawScore.getKey(), rawScore.getValue(), normalizer));
+//		}
+//		getScoreStats().getScore().setRaw(rawSum);
+//		getScoreStats().getScore().setNormalized(rawSum.divide(normalizer, 10, BigDecimal.ROUND_HALF_UP));
+//		getScoreStats().getScore().setCount(new BigDecimal(rawScores.size()));
+//		getScoreStats().getStats().setStddev(new BigDecimal(new StandardDeviation().evaluate(primitiveNormalizedScores)));
+//		getScoreStats().getStats().setMean(getScoreStats().getScore().getNormalized().divide(new BigDecimal(rawScores.size()), 10, BigDecimal.ROUND_HALF_UP));
+//		
+//		Collections.sort(getAggregatedScores());
+//		Iterator&lt;AggregatedScore&gt; aggregatedScoresIter = getAggregatedScores().iterator();
+//		for (int i=0; i&lt;getAggregatedScores().size() &amp;&amp; aggregatedScoresIter.hasNext(); i++) {
+//			AggregatedScore aggregatedScore = aggregatedScoresIter.next();
+//			if (aggregatedScore.getScore().getNormalized().compareTo(new BigDecimal(0)) &gt; 0) {
+//				aggregatedScore.getAggregateScore().setPercentage(aggregatedScore.getScore().getNormalized().divide(getScoreStats().getScore().getNormalized(), 10, BigDecimal.ROUND_HALF_UP));
+//			}
+//			else {
+//				aggregatedScore.getAggregateScore().setPercentage(new BigDecimal(0));
+//			}
+//			if (getScoreStats().getStats().getStddev().compareTo(new BigDecimal(0)) != 0) {
+//				aggregatedScore.getAggregateScore().setZ(aggregatedScore.getScore().getNormalized().subtract(getScoreStats().getStats().getMean()).divide(getScoreStats().getStats().getStddev(), 10, BigDecimal.ROUND_HALF_UP));
+//			}
+//			else {
+//				aggregatedScore.getAggregateScore().setZ(new BigDecimal(0));
+//			}
+//			aggregatedScore.getAggregateScore().setRank(new BigDecimal(i));
+//			aggregatedScore.getAggregateScore().setPercentile(new BigDecimal(1).subtract(new BigDecimal(i).divide(new BigDecimal(getAggregatedScores().size()), 10, BigDecimal.ROUND_HALF_UP)));
+//			if (getScoreStats().getStats().getMin().equals(new BigDecimal(0)) || getScoreStats().getStats().getMin().compareTo(aggregatedScore.getScore().getNormalized()) &gt; 0) {
+//				getScoreStats().getStats().setMin(aggregatedScore.getScore().getNormalized());
+//				
+//			}
+//			if (getScoreStats().getStats().getMax().compareTo(aggregatedScore.getScore().getNormalized()) &lt; 0) {
+//				getScoreStats().getStats().setMax(aggregatedScore.getScore().getNormalized());
+//			}
+//			if (getScoreStats().getStats().getMedian().equals(new BigDecimal(0)) &amp;&amp; (i &gt; getAggregatedScores().size()/2)) {
+//				getScoreStats().getStats().setMedian(aggregatedScore.getScore().getNormalized());
+//			}
+//
+//		}
+//	}
+	
+	public String toJsonString() {
+<span class="nc" id="L122">		return String.format(</span>
+<span class="nc" id="L123">				&quot;{%n\t\&quot;Name\&quot;: %s%n\t\&quot;ScoreStats\&quot;: %s%n\t\&quot;AggregatedScores\&quot;: %s%n}&quot;,</span>
+<span class="nc" id="L124">				getName(),</span>
+<span class="nc" id="L125">				getScoreStats().toJsonString(), </span>
+<span class="nc" id="L126">				getAggregatedScores().size()</span>
+		);
+	}
+	
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

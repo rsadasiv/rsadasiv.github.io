@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>S3BatchStorage.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OOP Corpus</a> &gt; <a href="index.source.html" class="el_package">io.outofprintmagazine.corpus.storage.s3</a> &gt; <span class="el_source">S3BatchStorage.java</span></div><h1>S3BatchStorage.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright (C) 2020 Ram Sadasiv
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ ******************************************************************************/
+package io.outofprintmagazine.corpus.storage.s3;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import io.outofprintmagazine.corpus.storage.IBatchStorage;
+import io.outofprintmagazine.util.IParameterStore;
+
+public class S3BatchStorage implements IBatchStorage {
+
+	//extends FileCorpora
+	//Path=//
+	//Bucket=
+
+	@SuppressWarnings(&quot;unused&quot;)
+<span class="nc" id="L45">	private static final Logger logger = LogManager.getLogger(S3BatchStorage.class);</span>
+	
+	protected Logger getLogger() {
+<span class="nc" id="L48">		return logger;</span>
+	}
+	
+	public S3BatchStorage() {
+<span class="nc" id="L52">		super();</span>
+<span class="nc" id="L53">		mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);</span>
+<span class="nc" id="L54">		mapper.configure(com.fasterxml.jackson.core.JsonGenerator.Feature.WRITE_BIGDECIMAL_AS_PLAIN, true);</span>
+<span class="nc" id="L55">	}</span>
+	
+	public S3BatchStorage(IParameterStore parameterStore) {
+<span class="nc" id="L58">		this();</span>
+<span class="nc" id="L59">		this.setParameterStore(parameterStore);</span>
+<span class="nc" id="L60">	}</span>
+
+	//public static final String defaultBucket = &quot;oop-corpora&quot;;
+	
+	protected ObjectMapper getMapper() {
+<span class="nc" id="L65">		return mapper; </span>
+	}
+	
+	protected ObjectMapper mapper;
+	
+	public String getDefaultPath() {
+<span class="nc" id="L71">		return &quot;Test&quot;;</span>
+	}
+
+	private IParameterStore parameterStore;
+	
+	public IParameterStore getParameterStore() {
+<span class="nc" id="L77">		return parameterStore;</span>
+	}
+	
+	@Override
+    public void setParameterStore(IParameterStore parameterStore) {
+<span class="nc" id="L82">		this.parameterStore = parameterStore;</span>
+<span class="nc" id="L83">	}</span>
+
+		
+	@Override
+	public void createCorpus(String corpus) throws Exception {
+		//pass
+<span class="nc" id="L89">	}</span>
+
+	@Override
+	public ObjectNode listCorpora() throws Exception  {
+
+<span class="nc" id="L94">		ObjectNode json = getMapper().createObjectNode();</span>
+<span class="nc" id="L95">		ArrayNode corporaNode = json.putArray(&quot;Corpora&quot;);</span>
+
+<span class="nc bnc" id="L97" title="All 2 branches missed.">		for (S3ObjectSummary objectSummary: S3Utils.getInstance(getParameterStore()).getS3Client().listObjects(</span>
+<span class="nc" id="L98">				getParameterStore().getProperty(&quot;s3_Bucket&quot;), </span>
+<span class="nc" id="L99">				getParameterStore().getProperty(&quot;s3_Path&quot;)</span>
+<span class="nc" id="L100">			).getObjectSummaries()) {</span>
+<span class="nc bnc" id="L101" title="All 2 branches missed.">			if (objectSummary.getKey().endsWith(&quot;/&quot;)) {</span>
+<span class="nc" id="L102">				corporaNode.add(objectSummary.getKey().substring(0, objectSummary.getKey().length() - 1));</span>
+			}
+<span class="nc" id="L104">		}</span>
+<span class="nc" id="L105">		return json;</span>
+	}
+	
+	protected String getCorpusPath(String corpus) throws IOException {
+<span class="nc" id="L109">		String path = (</span>
+<span class="nc" id="L110">				getParameterStore().getProperty(&quot;s3_Path&quot;)</span>
+				+ &quot;/&quot;	
+				+ corpus
+		);
+
+<span class="nc" id="L115">		return path;</span>
+		
+	}
+	
+	protected String getCorpusStagingBatchPath(String corpus, String stagingBatchName) throws IOException {
+<span class="nc" id="L120">		String path = (</span>
+<span class="nc" id="L121">				getCorpusPath(corpus) </span>
+				+ &quot;/&quot; 
+				+ stagingBatchName
+		);
+
+<span class="nc" id="L126">		return path;</span>
+	}
+	
+	protected String getCorpusStagingBatchItemPath(String corpus, String stagingBatchName, String stagingBatchItemName) throws IOException {
+<span class="nc" id="L130">		String path = (</span>
+<span class="nc" id="L131">				getCorpusPath(corpus) </span>
+				+ &quot;/&quot; 
+				+ stagingBatchName
+				+ &quot;/&quot; 
+				+ stagingBatchItemName
+		);
+
+<span class="nc" id="L138">		return path;</span>
+	}
+	
+
+	protected String getCorpusStagingBatchItemPropertiesPath(String corpus, String stagingBatchName, String stagingBatchItemName) throws IOException {
+<span class="nc" id="L143">		return (</span>
+<span class="nc" id="L144">				getCorpusStagingBatchItemPath(corpus, stagingBatchName, stagingBatchItemName)</span>
+				+ &quot;/&quot; 
+				+ stagingBatchItemName + &quot;BatchItem.json&quot;
+		);
+	}	
+	
+	protected String getCorpusStagingBatchScratchPath(String corpus, String stagingBatchName) throws IOException {
+<span class="nc" id="L151">		String path = (</span>
+<span class="nc" id="L152">				getCorpusStagingBatchPath(corpus, stagingBatchName) </span>
+				+ &quot;/&quot; 
+				+ &quot;Scratch&quot;
+		);
+
+<span class="nc" id="L157">		return path;</span>
+	}
+	
+	protected String getCorpusStagingBatchScratchFilePath(String corpus, String scratchFileName) throws IOException {
+<span class="nc" id="L161">		String path = (</span>
+<span class="nc" id="L162">				getCorpusPath(corpus) </span>
+				+ &quot;/&quot; 
+				+ scratchFileName
+		);
+<span class="nc" id="L166">		return path;</span>
+	}
+	
+	protected String getCorpusStagingBatchPropertiesPath(String corpus, String stagingBatchName) throws IOException {
+<span class="nc" id="L170">		return (</span>
+<span class="nc" id="L171">				getCorpusStagingBatchPath(corpus, stagingBatchName)</span>
+				+ &quot;/&quot; 
+				+ stagingBatchName + &quot;Batch.json&quot;
+		);
+	}
+	
+
+	/* (non-Javadoc)
+	 * @see io.outofprintmagazine.corpus.storage.CorpusStorage#storeStagingBatchJson(java.lang.String, java.lang.String, com.fasterxml.jackson.databind.node.ObjectNode)
+	 */
+	@Override
+	public void storeStagingBatchJson(String corpus, String stagingBatchName, ObjectNode properties) throws Exception {
+<span class="nc" id="L183">		storeStagingBatchString(corpus, stagingBatchName, getMapper().writeValueAsString(properties));</span>
+<span class="nc" id="L184">	}</span>
+	
+	/* (non-Javadoc)
+	 * @see io.outofprintmagazine.corpus.storage.CorpusStorage#storeStagingBatchString(java.lang.String, java.lang.String, java.lang.String)
+	 */
+	@Override
+	public void storeStagingBatchString(String corpus, String stagingBatchName, String in) throws Exception {
+<span class="nc" id="L191">        Long contentLength = Long.valueOf(in.getBytes(StandardCharsets.UTF_8.name()).length);</span>
+<span class="nc" id="L192">		ObjectMetadata metadata = new ObjectMetadata();</span>
+<span class="nc" id="L193">		metadata.setContentLength(contentLength);</span>
+<span class="nc" id="L194">		metadata.setContentType(&quot;application/json&quot;);</span>
+<span class="nc" id="L195">		metadata.setContentEncoding(StandardCharsets.UTF_8.name());</span>
+<span class="nc" id="L196">		S3Utils.getInstance(getParameterStore()).getS3Client().putObject(</span>
+				new PutObjectRequest(
+<span class="nc" id="L198">						getParameterStore().getProperty(&quot;s3_Bucket&quot;),</span>
+<span class="nc" id="L199">						getCorpusStagingBatchPropertiesPath(corpus, stagingBatchName),</span>
+<span class="nc" id="L200">						IOUtils.toInputStream(in, StandardCharsets.UTF_8.name()),</span>
+						metadata
+				)
+		);		
+<span class="nc" id="L204">	}</span>
+
+	@Override
+	public ObjectNode listStagingBatches(String corpus) throws Exception {
+<span class="nc" id="L208">		ObjectNode json = getMapper().createObjectNode();</span>
+<span class="nc" id="L209">		ArrayNode corporaNode = json.putArray(&quot;Corpora&quot;);</span>
+
+<span class="nc bnc" id="L211" title="All 2 branches missed.">		for (S3ObjectSummary objectSummary: S3Utils.getInstance(getParameterStore()).getS3Client().listObjects(</span>
+<span class="nc" id="L212">				getParameterStore().getProperty(&quot;s3_Bucket&quot;), </span>
+<span class="nc" id="L213">				getCorpusPath(corpus)</span>
+<span class="nc" id="L214">			).getObjectSummaries()) {</span>
+<span class="nc bnc" id="L215" title="All 2 branches missed.">			if (objectSummary.getKey().endsWith(&quot;/&quot;)) {</span>
+<span class="nc" id="L216">				corporaNode.add(objectSummary.getKey().substring(0, objectSummary.getKey().length() - 1));</span>
+			}
+<span class="nc" id="L218">		}</span>
+<span class="nc" id="L219">		return json;</span>
+	}
+
+	@Override
+	public ObjectNode getStagingBatch(String corpus, String stagingBatchName) throws Exception {
+<span class="nc" id="L224">		return (ObjectNode) getMapper().readTree(</span>
+<span class="nc" id="L225">				S3Utils.getInstance(getParameterStore()).getS3Client().getObject(</span>
+						new GetObjectRequest(
+<span class="nc" id="L227">								getParameterStore().getProperty(&quot;s3_Bucket&quot;), </span>
+<span class="nc" id="L228">								getCorpusStagingBatchPropertiesPath(</span>
+										corpus, 
+										stagingBatchName
+								)
+						)
+<span class="nc" id="L233">				).getObjectContent()</span>
+		);
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

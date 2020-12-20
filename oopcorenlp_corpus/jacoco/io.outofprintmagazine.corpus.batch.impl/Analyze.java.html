@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Analyze.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OOP Corpus</a> &gt; <a href="index.source.html" class="el_package">io.outofprintmagazine.corpus.batch.impl</a> &gt; <span class="el_source">Analyze.java</span></div><h1>Analyze.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright (C) 2020 Ram Sadasiv
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ ******************************************************************************/
+package io.outofprintmagazine.corpus.batch.impl;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import edu.stanford.nlp.ling.CoreAnnotations;
+import io.outofprintmagazine.corpus.batch.CorpusBatchStep;
+import io.outofprintmagazine.corpus.batch.ICorpusBatchStep;
+import io.outofprintmagazine.nlp.Analyzer;
+import io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPThumbnailAnnotation;
+
+public class Analyze extends CorpusBatchStep implements ICorpusBatchStep {
+	
+<span class="nc" id="L41">	private static final Logger logger = LogManager.getLogger(Analyze.class);</span>
+
+	@SuppressWarnings(&quot;unused&quot;)
+	private Logger getLogger() {
+<span class="nc" id="L45">		return logger;</span>
+	}
+	
+	@Override
+	public ObjectNode getDefaultProperties() {
+<span class="nc" id="L50">		ObjectNode properties = getMapper().createObjectNode();</span>
+<span class="nc" id="L51">		ArrayNode customAnnotators = getMapper().createArrayNode();</span>
+<span class="nc" id="L52">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.BiberAnnotator&quot;);</span>
+<span class="nc" id="L53">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.CoreNlpParagraphAnnotator&quot;);</span>
+<span class="nc" id="L54">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.CoreNlpGenderAnnotator&quot;);</span>
+<span class="nc" id="L55">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.GenderAnnotator&quot;);</span>
+<span class="nc" id="L56">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.PronounAnnotator&quot;);</span>
+<span class="nc" id="L57">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.count.CharCountAnnotator&quot;);</span>
+<span class="nc" id="L58">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.count.ParagraphCountAnnotator&quot;);</span>
+<span class="nc" id="L59">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.count.SentenceCountAnnotator&quot;);</span>
+<span class="nc" id="L60">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.count.SyllableCountAnnotator&quot;);</span>
+<span class="nc" id="L61">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.count.TokenCountAnnotator&quot;);</span>
+<span class="nc" id="L62">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.count.WordCountAnnotator&quot;);	    		</span>
+<span class="nc" id="L63">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.CoreNlpSentimentAnnotator&quot;);</span>
+<span class="nc" id="L64">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.VaderSentimentAnnotator&quot;);</span>
+<span class="nc" id="L65">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.VerbTenseAnnotator&quot;);</span>
+<span class="nc" id="L66">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.PunctuationMarkAnnotator&quot;);</span>
+<span class="nc" id="L67">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.AdjectivesAnnotator&quot;);</span>
+<span class="nc" id="L68">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.PointlessAdjectivesAnnotator&quot;);</span>
+<span class="nc" id="L69">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.AdjectiveCategoriesAnnotator&quot;);</span>
+<span class="nc" id="L70">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.AdverbsAnnotator&quot;);</span>
+<span class="nc" id="L71">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.PointlessAdverbsAnnotator&quot;);</span>
+<span class="nc" id="L72">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.AdverbCategoriesAnnotator&quot;);</span>
+<span class="nc" id="L73">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.PossessivesAnnotator&quot;);</span>
+<span class="nc" id="L74">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.PrepositionCategoriesAnnotator&quot;);</span>
+<span class="nc" id="L75">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.PrepositionsAnnotator&quot;);</span>
+<span class="nc" id="L76">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.VerbsAnnotator&quot;);</span>
+<span class="nc" id="L77">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.ActionlessVerbsAnnotator&quot;);</span>
+<span class="nc" id="L78">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.NounsAnnotator&quot;);</span>
+<span class="nc" id="L79">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.TopicsAnnotator&quot;);</span>
+<span class="nc" id="L80">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.SVOAnnotator&quot;);</span>
+<span class="nc" id="L81">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.NonAffirmativeAnnotator&quot;);	    		</span>
+<span class="nc" id="L82">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.simile.LikeAnnotator&quot;);</span>
+<span class="nc" id="L83">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.simile.AsAnnotator&quot;);</span>
+<span class="nc" id="L84">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.ColorsAnnotator&quot;);</span>
+<span class="nc" id="L85">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.FlavorsAnnotator&quot;);</span>
+<span class="nc" id="L86">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.VerblessSentencesAnnotator&quot;);</span>
+<span class="nc" id="L87">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.WordlessWordsAnnotator&quot;);</span>
+<span class="nc" id="L88">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.WordnetGlossAnnotator&quot;);</span>
+<span class="nc" id="L89">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.PerfecttenseAnnotator&quot;);</span>
+<span class="nc" id="L90">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.UncommonWordsAnnotator&quot;);</span>
+<span class="nc" id="L91">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.CommonWordsAnnotator&quot;);</span>
+<span class="nc" id="L92">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.FunctionWordsAnnotator&quot;);</span>
+<span class="nc" id="L93">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.AngliciseAnnotator&quot;);</span>
+<span class="nc" id="L94">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.AmericanizeAnnotator&quot;);</span>
+<span class="nc" id="L95">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.VerbGroupsAnnotator&quot;);</span>
+<span class="nc" id="L96">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.VerbnetGroupsAnnotator&quot;);</span>
+<span class="nc" id="L97">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.NounGroupsAnnotator&quot;);</span>
+<span class="nc" id="L98">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.TemporalNGramsAnnotator&quot;);</span>
+<span class="nc" id="L99">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.interrogative.WhoAnnotator&quot;);</span>
+<span class="nc" id="L100">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.interrogative.WhatAnnotator&quot;);</span>
+<span class="nc" id="L101">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.interrogative.WhenAnnotator&quot;);</span>
+<span class="nc" id="L102">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.interrogative.WhereAnnotator&quot;);</span>
+<span class="nc" id="L103">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.interrogative.WhyAnnotator&quot;);</span>
+<span class="nc" id="L104">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.interrogative.HowAnnotator&quot;);</span>
+<span class="nc" id="L105">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.LocationsAnnotator&quot;);</span>
+<span class="nc" id="L106">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.PeopleAnnotator&quot;);</span>
+<span class="nc" id="L107">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.MyersBriggsAnnotator&quot;);</span>
+<span class="nc" id="L108">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.BiberDimensionsAnnotator&quot;);</span>
+<span class="nc" id="L109">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.DatesAnnotator&quot;);</span>
+<span class="nc" id="L110">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.conditional.IfAnnotator&quot;);</span>
+<span class="nc" id="L111">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.conditional.BecauseAnnotator&quot;);</span>
+<span class="nc" id="L112">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.QuotesAnnotator&quot;);</span>
+<span class="nc" id="L113">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.WordsAnnotator&quot;);</span>
+<span class="nc" id="L114">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.FleschKincaidAnnotator&quot;);</span>
+<span class="nc" id="L115">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.VerbHypernymsAnnotator&quot;);</span>
+<span class="nc" id="L116">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.NounHypernymsAnnotator&quot;);</span>
+<span class="nc" id="L117">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.WikipediaGlossAnnotator&quot;);</span>
+<span class="nc" id="L118">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.WikipediaPageviewTopicsAnnotator&quot;);</span>
+<span class="nc" id="L119">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.WikipediaCategoriesAnnotator&quot;);</span>
+<span class="nc" id="L120">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.ActorsAnnotator&quot;);</span>
+<span class="nc" id="L121">		customAnnotators.add(&quot;io.outofprintmagazine.nlp.pipeline.annotators.SettingsAnnotator&quot;);</span>
+<span class="nc" id="L122">		properties.set(&quot;customAnnotators&quot;, customAnnotators);</span>
+<span class="nc" id="L123">		return properties;</span>
+	}
+	
+<span class="nc" id="L126">	private Analyzer ta = null;</span>
+	
+	public Analyze() {
+<span class="nc" id="L129">		super();</span>
+<span class="nc" id="L130">	}</span>
+	
+	@Override
+	public ArrayNode runOne(ObjectNode inputStepItem) throws Exception {
+<span class="nc bnc" id="L134" title="All 2 branches missed.">		if (ta == null) {</span>
+<span class="nc" id="L135">			List&lt;String&gt; customAnnotators = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L136">			Iterator&lt;JsonNode&gt; customAnnotatorsIter = ((ArrayNode) getData().getProperties().get(&quot;customAnnotators&quot;)).elements();</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">			while (customAnnotatorsIter.hasNext()){</span>
+<span class="nc" id="L138">			    customAnnotators.add(customAnnotatorsIter.next().asText());</span>
+			}
+<span class="nc" id="L140">			ta = new Analyzer(getParameterStore(), customAnnotators);</span>
+		}
+<span class="nc" id="L142">		ArrayNode retval = getMapper().createArrayNode();</span>
+		try {
+<span class="nc" id="L144">			String doc = getTextDocumentFromStorage(inputStepItem);</span>
+			
+<span class="nc" id="L146">			ObjectNode outputStepItem = copyInputToOutput(inputStepItem);</span>
+//			ObjectNode storageProperties = getMapper().createObjectNode();
+//			//&quot;Sun, 16 Feb 2020 23:17:38 GMT&quot;
+//			storageProperties.put(&quot;Content-Type&quot;, &quot;text/plain&quot;);
+//			storageProperties.put(&quot;mimeType&quot;, &quot;text/plain&quot;);
+//			storageProperties.put(&quot;charset&quot;,  &quot;us-ascii&quot;);
+//			storageProperties.put(&quot;Date&quot;, getDateFormat().format(new Date(System.currentTimeMillis())));
+	
+<span class="nc" id="L154">			Properties metadata = new Properties();</span>
+<span class="nc" id="L155">			metadata.put(CoreAnnotations.DocIDAnnotation.class.getSimpleName(), getDocID(inputStepItem));</span>
+<span class="nc" id="L156">			metadata.put(CoreAnnotations.DocTypeAnnotation.class.getSimpleName(), getData().getCorpusId());</span>
+<span class="nc" id="L157">			metadata.put(CoreAnnotations.AuthorAnnotation.class.getSimpleName(), getAuthor(inputStepItem));</span>
+<span class="nc" id="L158">			metadata.put(CoreAnnotations.DocDateAnnotation.class.getSimpleName(), getDate(inputStepItem));</span>
+<span class="nc" id="L159">			metadata.put(CoreAnnotations.DocTitleAnnotation.class.getSimpleName(), getTitle(inputStepItem));</span>
+<span class="nc" id="L160">			metadata.put(CoreAnnotations.DocSourceTypeAnnotation.class.getSimpleName(), getLink(inputStepItem));</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">			if (inputStepItem.has(&quot;oop_DocThumbnail&quot;)) {</span>
+<span class="nc" id="L162">				metadata.put(OOPThumbnailAnnotation.class.getSimpleName(), inputStepItem.get(&quot;oop_DocThumbnail&quot;).asText(&quot;blank.png&quot;));</span>
+			}
+<span class="nc" id="L164">			Iterator&lt;String&gt; fieldNamesIter = outputStepItem.fieldNames();</span>
+<span class="nc bnc" id="L165" title="All 2 branches missed.">			while (fieldNamesIter.hasNext()) {</span>
+<span class="nc" id="L166">				String fieldName = fieldNamesIter.next();</span>
+<span class="nc" id="L167">				metadata.put(fieldName, outputStepItem.get(fieldName).asText());</span>
+<span class="nc" id="L168">			}</span>
+			//this should read the list of custom annotators from the properties
+<span class="nc" id="L170">			Map&lt;String,ObjectNode&gt; json = ta.analyze(metadata, doc);</span>
+
+<span class="nc" id="L172">			outputStepItem.put(</span>
+					&quot;oopNLPTextStorage&quot;,
+<span class="nc" id="L174">					getStorage().storeScratchFileString(</span>
+<span class="nc" id="L175">						getData().getCorpusId(),</span>
+<span class="nc" id="L176">						getOutputScratchFilePath(&quot;TXT_&quot; + getDocID(inputStepItem), &quot;txt&quot;),</span>
+						doc
+					)
+				);
+			
+<span class="nc" id="L181">			outputStepItem.put(</span>
+				&quot;coreNLPStorage&quot;,
+<span class="nc" id="L183">				getStorage().storeScratchFileObject(</span>
+<span class="nc" id="L184">					getData().getCorpusId(),</span>
+<span class="nc" id="L185">					getOutputScratchFilePath(&quot;STANFORD_&quot; + getDocID(inputStepItem), &quot;json&quot;),</span>
+<span class="nc" id="L186">					json.get(&quot;STANFORD&quot;)</span>
+				)
+			);
+			
+<span class="nc" id="L190">			outputStepItem.put(</span>
+				&quot;oopNLPStorage&quot;,
+<span class="nc" id="L192">				getStorage().storeScratchFileObject(</span>
+<span class="nc" id="L193">					getData().getCorpusId(),</span>
+<span class="nc" id="L194">					getOutputScratchFilePath(&quot;OOP_&quot; + getDocID(inputStepItem), &quot;json&quot;),</span>
+<span class="nc" id="L195">					json.get(&quot;OOP&quot;)</span>
+				)
+			);
+			
+<span class="nc" id="L199">			outputStepItem.put(</span>
+					&quot;oopNLPAggregatesStorage&quot;,
+<span class="nc" id="L201">					getStorage().storeScratchFileObject(</span>
+<span class="nc" id="L202">						getData().getCorpusId(),</span>
+<span class="nc" id="L203">						getOutputScratchFilePath(&quot;AGGREGATES_&quot; + getDocID(inputStepItem), &quot;json&quot;),</span>
+<span class="nc" id="L204">						json.get(&quot;AGGREGATES&quot;)</span>
+				)
+			);
+			
+<span class="nc" id="L208">			outputStepItem.put(</span>
+				&quot;pipelineStorage&quot;,
+<span class="nc" id="L210">				getStorage().storeScratchFileObject(</span>
+<span class="nc" id="L211">					getData().getCorpusId(),</span>
+<span class="nc" id="L212">					getOutputScratchFilePath(&quot;PIPELINE_&quot; + getDocID(inputStepItem), &quot;json&quot;),</span>
+<span class="nc" id="L213">					json.get(&quot;PIPELINE&quot;)</span>
+				)
+			);
+	
+<span class="nc" id="L217">			retval.add(outputStepItem);</span>
+		}
+<span class="nc" id="L219">		catch (ClassNotFoundException e) {</span>
+<span class="nc" id="L220">			getLogger().error(e);</span>
+<span class="nc" id="L221">			throw new IOException(e);</span>
+		} 
+<span class="nc" id="L223">		catch (InstantiationException e) {</span>
+<span class="nc" id="L224">			getLogger().error(e);</span>
+<span class="nc" id="L225">			throw new IOException(e);</span>
+		} 
+<span class="nc" id="L227">		catch (IllegalAccessException e) {</span>
+<span class="nc" id="L228">			getLogger().error(e);</span>
+<span class="nc" id="L229">			throw new IOException(e);</span>
+<span class="nc" id="L230">		}</span>
+<span class="nc" id="L231">		return retval;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
