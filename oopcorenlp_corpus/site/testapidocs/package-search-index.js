@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"io.outofprintmagazine.corpus"},{"l":"io.outofprintmagazine.corpus.batch"},{"l":"io.outofprintmagazine.util"}]
