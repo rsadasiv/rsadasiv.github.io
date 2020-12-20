@@ -1,9 +1,0 @@
-io.outofprintmagazine.corpus.batch
-io.outofprintmagazine.corpus.batch.impl
-io.outofprintmagazine.corpus.batch.impl.ebook
-io.outofprintmagazine.corpus.batch.impl.gutenberg
-io.outofprintmagazine.corpus.batch.impl.wikisource
-io.outofprintmagazine.corpus.batch.model
-io.outofprintmagazine.corpus.storage
-io.outofprintmagazine.corpus.storage.file
-io.outofprintmagazine.corpus.storage.s3

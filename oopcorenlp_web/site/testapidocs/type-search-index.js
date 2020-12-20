@@ -1,1 +1,0 @@
-typeSearchIndex = [{"l":"All Classes","url":"allclasses-index.html"},{"p":"io.outofprintmagazine.web","l":"JsonSort_Test"},{"p":"io.outofprintmagazine.web","l":"OOPServlets_IT"}]

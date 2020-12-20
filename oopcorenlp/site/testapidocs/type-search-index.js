@@ -1,1 +1,0 @@
-typeSearchIndex = [{"l":"All Classes","url":"allclasses-index.html"},{"p":"io.outofprintmagazine.nlp","l":"AnalyzerIT"},{"p":"io.outofprintmagazine.nlp.pipeline.annotators","l":"Annotator_Test"},{"p":"io.outofprintmagazine.util","l":"ParameterStoreLocal"},{"p":"io.outofprintmagazine.nlp.utils","l":"WikimediaUtils_Test"}]

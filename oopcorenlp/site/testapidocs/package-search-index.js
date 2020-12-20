@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"io.outofprintmagazine.nlp"},{"l":"io.outofprintmagazine.nlp.pipeline.annotators"},{"l":"io.outofprintmagazine.nlp.utils"},{"l":"io.outofprintmagazine.util"}]
