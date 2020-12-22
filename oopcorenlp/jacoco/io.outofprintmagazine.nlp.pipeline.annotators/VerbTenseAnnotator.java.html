@@ -71,16 +71,16 @@ public class VerbTenseAnnotator extends AbstractPosAnnotator implements Annotato
 <span class="fc" id="L71">				Map&lt;String, BigDecimal&gt; scoreMap = new HashMap&lt;String, BigDecimal&gt;();</span>
 <span class="fc bfc" id="L72" title="All 2 branches covered.">				if (scoreLemma(token, past) != null) {</span>
 <span class="fc" id="L73">					addToScoreMap(scoreMap, &quot;past&quot;, new BigDecimal(1));</span>
-<span class="fc" id="L74">				}</span>
+				}
 <span class="fc bfc" id="L75" title="All 2 branches covered.">				else if (scoreLemma(token, present) != null) {</span>
 <span class="fc" id="L76">					addToScoreMap(scoreMap, &quot;present&quot;, new BigDecimal(1));</span>
-<span class="fc" id="L77">				}</span>
+				}
 <span class="fc bfc" id="L78" title="All 2 branches covered.">				else if (scoreLemma(token, progressive) != null) {</span>
 <span class="fc" id="L79">					addToScoreMap(scoreMap, &quot;progressive&quot;, new BigDecimal(1));</span>
-<span class="fc" id="L80">				}</span>
+				}
 <span class="fc bfc" id="L81" title="All 2 branches covered.">				else if (scoreLemma(token, future) != null) {</span>
 <span class="fc" id="L82">					addToScoreMap(scoreMap, &quot;future&quot;, new BigDecimal(1));</span>
-<span class="fc" id="L83">				}</span>
+				}
 <span class="fc bfc" id="L84" title="All 2 branches covered.">				else if (scoreLemma(token, infinitive) != null) {</span>
 <span class="pc bpc" id="L85" title="2 of 4 branches missed.">					if (i &lt; sentence.tokens().size() &amp;&amp; sentence.tokens().get(i).tag().equals(&quot;VB&quot;)) {</span>
 <span class="nc" id="L86">						addToScoreMap(scoreMap, &quot;infinitive&quot;, new BigDecimal(1));</span>
@@ -90,7 +90,7 @@ public class VerbTenseAnnotator extends AbstractPosAnnotator implements Annotato
 <span class="fc" id="L90">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
 			}
-		}
+<span class="fc" id="L93">		}</span>
 <span class="fc" id="L94">	}</span>
 
 	@Override

@@ -66,14 +66,14 @@ public class WordnetGlossAnnotator extends AbstractPosAnnotator implements Annot
 							}
 							//scoreMap.put(toAlphaNumeric(token.lemma()), Arrays.asList(gloss));
 <span class="fc" id="L68">							token.set(getAnnotationClass(), gloss);</span>
-<span class="fc" id="L69">						}</span>
+						}
 <span class="nc" id="L70">						catch (Exception e) {</span>
 <span class="nc" id="L71">							logger.error(e);</span>
-						}
+<span class="fc" id="L72">						}</span>
 					}
 				}
-			}
-		}
+<span class="fc" id="L75">			}</span>
+<span class="fc" id="L76">		}</span>
 <span class="fc" id="L77">	}</span>
 	
 	@Override

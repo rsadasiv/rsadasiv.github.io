@@ -158,8 +158,8 @@ public class HttpUtils {
 <span class="fc" id="L158">    	HttpGet http = new HttpGet(url);</span>
 <span class="fc" id="L159">    	http.setHeaders(headers);</span>
 <span class="fc" id="L160">        return getHttpClient().execute(</span>
-<span class="fc" id="L161">        		http, </span>
-<span class="fc" id="L162">        		new JsonResponseHandler()</span>
+        		http, 
+        		new JsonResponseHandler()
         );
 	}
 	
@@ -181,22 +181,22 @@ public class HttpUtils {
 <span class="nc" id="L181">    	HttpGet http = new HttpGet(url);</span>
 <span class="nc" id="L182">    	http.setHeaders(headers);</span>
 <span class="nc" id="L183">        return getHttpClient().execute(</span>
-<span class="nc" id="L184">        		http, </span>
-<span class="nc" id="L185">        		new StringResponseHandler()</span>
+        		http, 
+        		new StringResponseHandler()
         );
 	}
 	
 	public JsonNode httpPostJson(HttpPost http) throws IOException {
 <span class="nc" id="L190">        return getHttpClient().execute(</span>
-<span class="nc" id="L191">        		http, </span>
-<span class="nc" id="L192">        		new JsonResponseHandler()</span>
+        		http, 
+        		new JsonResponseHandler()
         );
 	}
 	
 	public String httpPostString(HttpPost http) throws IOException {
 <span class="nc" id="L197">        return getHttpClient().execute(</span>
-<span class="nc" id="L198">        		http, </span>
-<span class="nc" id="L199">        		new StringResponseHandler()</span>
+        		http, 
+        		new StringResponseHandler()
         );
 	}
 	
@@ -283,28 +283,28 @@ public class HttpUtils {
 <span class="fc bfc" id="L283" title="All 2 branches covered.">			if (gimcontinue.equals(&quot;init&quot;)) {</span>
 <span class="fc" id="L284">				rootNode = httpGetJson(</span>
 <span class="fc" id="L285">								buildUri(</span>
-<span class="fc" id="L286">										baseUri, </span>
-<span class="fc" id="L287">										parameters</span>
+										baseUri, 
+										parameters
 								),
-<span class="fc" id="L289">								headers</span>
+								headers
 						);
-<span class="fc" id="L291">			}</span>
+			}
 			else {
 <span class="fc" id="L293">				List&lt;NameValuePair&gt; mynvps = new ArrayList&lt;NameValuePair&gt;();</span>
 <span class="fc" id="L294">				mynvps.addAll(parameters);</span>
 <span class="fc" id="L295">				mynvps.add(new BasicNameValuePair(gimcontinueName, gimcontinue));</span>
 <span class="fc" id="L296">				rootNode = httpGetJson(</span>
 <span class="fc" id="L297">								buildUri(</span>
-<span class="fc" id="L298">										baseUri, </span>
-<span class="fc" id="L299">										mynvps</span>
+										baseUri, 
+										mynvps
 								),
-<span class="fc" id="L301">								headers</span>
+								headers
 						);
 			}
 <span class="fc bfc" id="L304" title="All 2 branches covered.">			if (rootNode.has(&quot;continue&quot;)) {</span>
 <span class="fc" id="L305">				gimcontinue = rootNode.get(&quot;continue&quot;).get(gimcontinueName).asText();</span>
 <span class="fc" id="L306">				gimcontinue = gimcontinue.replace(' ', '_');</span>
-<span class="fc" id="L307">			}</span>
+			}
 			else {
 <span class="fc" id="L309">				gimcontinue = null;</span>
 			}
@@ -313,17 +313,17 @@ public class HttpUtils {
 <span class="nc bnc" id="L313" title="All 2 branches missed.">					if (err.get(&quot;code&quot;).asText().equals(&quot;ratelimited&quot;)) {</span>
 						try {
 <span class="nc" id="L315">							Thread.sleep(1000);</span>
-<span class="nc" id="L316">						}</span>
+						}
 <span class="nc" id="L317">						catch (Exception e) {</span>
 <span class="nc" id="L318">							getLogger().error(e);</span>
-						}
+<span class="nc" id="L319">						}</span>
 					}
-				}
-<span class="nc" id="L322">			}</span>
+<span class="nc" id="L321">				}</span>
+			}
 			else {
 <span class="fc" id="L324">				handler.onPage(rootNode);</span>
 			}
-		}		
+<span class="fc" id="L326">		}		</span>
 <span class="fc" id="L327">	}</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

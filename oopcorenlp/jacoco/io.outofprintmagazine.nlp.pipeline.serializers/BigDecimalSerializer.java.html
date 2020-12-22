@@ -80,7 +80,7 @@ public class BigDecimalSerializer implements ISerializer {
 <span class="fc" id="L80">				BigDecimal rawScore = (BigDecimal) sentence.coreMap().get(getAnnotationClass());</span>
 <span class="fc" id="L81">				sentenceNode.put(getAnnotationClass().getSimpleName(), rawScore.toPlainString());</span>
 			}
-		}
+<span class="fc" id="L83">		}</span>
 <span class="fc" id="L84">	}</span>
 
 	protected void serializeTokens(CoreDocument coreNlpDocument, ObjectNode jsonDocument) {
@@ -96,8 +96,8 @@ public class BigDecimalSerializer implements ISerializer {
 <span class="fc" id="L96">					BigDecimal rawScore = (BigDecimal) token.get(getAnnotationClass());</span>
 <span class="fc" id="L97">					tokenNode.put(getAnnotationClass().getSimpleName(), rawScore.toPlainString());</span>
 				}
-			}
-		}
+<span class="fc" id="L99">			}</span>
+<span class="fc" id="L100">		}</span>
 <span class="fc" id="L101">	}</span>
 
 	@Override

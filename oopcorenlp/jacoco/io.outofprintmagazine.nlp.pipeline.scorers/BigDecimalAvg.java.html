@@ -58,7 +58,7 @@ public class BigDecimalAvg extends BigDecimalScorer implements IScorer {
 <span class="fc" id="L58">		BigDecimal score = new BigDecimal(0);</span>
 <span class="fc bfc" id="L59" title="All 2 branches covered.">		for (BigDecimal rawScore : allScores) {</span>
 <span class="fc" id="L60">			score = score.add(rawScore);</span>
-		}
+<span class="fc" id="L61">		}</span>
 <span class="pc bpc" id="L62" title="1 of 2 branches missed.">		if (allScores.size() &gt; 0) {</span>
 <span class="fc" id="L63">			return score.divide(new BigDecimal(allScores.size()), 10, RoundingMode.HALF_DOWN);</span>
 		}
@@ -91,55 +91,56 @@ public class BigDecimalAvg extends BigDecimalScorer implements IScorer {
 <span class="fc" id="L91">				primitiveNormalizedScores[i] = rawScore.getValue().doubleValue();</span>
 <span class="fc" id="L92">				retval.getAggregatedScores().add(new AggregatedScore(rawScore.getKey(), rawScore.getValue(), normalizer, rawScore.getValue()));</span>
 			}
-<span class="fc" id="L94">			retval.getScoreStats().getScore().setRaw(rawSum);</span>
-<span class="fc" id="L95">			retval.getScoreStats().getScore().setNormalized(rawSum.divide(normalizer, 10, RoundingMode.HALF_UP));</span>
-<span class="fc" id="L96">			retval.getScoreStats().getScore().setCount(new BigDecimal(rawScores.size()));</span>
-<span class="fc" id="L97">			retval.getScoreStats().getStats().setStddev(new BigDecimal(new StandardDeviation().evaluate(primitiveNormalizedScores)));</span>
-<span class="fc" id="L98">			retval.getScoreStats().getStats().setMean(retval.getScoreStats().getScore().getRaw().divide(new BigDecimal(rawScores.size()), 10, RoundingMode.HALF_UP));</span>
+<span class="fc" id="L94">			BigDecimal rawAvg = rawSum.divide(new BigDecimal(rawScores.size()), 10, RoundingMode.HALF_UP);</span>
+<span class="fc" id="L95">			retval.getScoreStats().getScore().setRaw(rawAvg);</span>
+<span class="fc" id="L96">			retval.getScoreStats().getScore().setNormalized(rawSum.divide(normalizer, 10, RoundingMode.HALF_UP));</span>
+<span class="fc" id="L97">			retval.getScoreStats().getScore().setCount(new BigDecimal(rawScores.size()));</span>
+<span class="fc" id="L98">			retval.getScoreStats().getStats().setStddev(new BigDecimal(new StandardDeviation().evaluate(primitiveNormalizedScores)));</span>
+<span class="fc" id="L99">			retval.getScoreStats().getStats().setMean(rawAvg);</span>
 			
-<span class="fc" id="L100">			Collections.sort(retval.getAggregatedScores());</span>
-<span class="fc" id="L101">			Iterator&lt;AggregatedScore&gt; aggregatedScoresIter = retval.getAggregatedScores().iterator();</span>
-<span class="pc bpc" id="L102" title="1 of 4 branches missed.">			for (int i=0; i&lt;retval.getAggregatedScores().size() &amp;&amp; aggregatedScoresIter.hasNext(); i++) {</span>
-<span class="fc" id="L103">				AggregatedScore aggregatedScore = aggregatedScoresIter.next();</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">				if (aggregatedScore.getScore().getRaw().compareTo(new BigDecimal(0)) &gt; 0) {</span>
-<span class="fc" id="L105">					aggregatedScore.getAggregateScore().setPercentage(aggregatedScore.getScore().getRaw().divide(retval.getScoreStats().getScore().getRaw(), 10, RoundingMode.HALF_UP));</span>
-<span class="fc" id="L106">				}</span>
-				else {
-<span class="fc" id="L108">					aggregatedScore.getAggregateScore().setPercentage(new BigDecimal(0));</span>
+<span class="fc" id="L101">			Collections.sort(retval.getAggregatedScores());</span>
+<span class="fc" id="L102">			Iterator&lt;AggregatedScore&gt; aggregatedScoresIter = retval.getAggregatedScores().iterator();</span>
+<span class="pc bpc" id="L103" title="1 of 4 branches missed.">			for (int i=0; i&lt;retval.getAggregatedScores().size() &amp;&amp; aggregatedScoresIter.hasNext(); i++) {</span>
+<span class="fc" id="L104">				AggregatedScore aggregatedScore = aggregatedScoresIter.next();</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">				if (aggregatedScore.getScore().getRaw().compareTo(new BigDecimal(0)) &gt; 0) {</span>
+<span class="fc" id="L106">					aggregatedScore.getAggregateScore().setPercentage(aggregatedScore.getScore().getRaw().divide(retval.getScoreStats().getScore().getRaw(), 10, RoundingMode.HALF_UP));</span>
 				}
-<span class="pc bpc" id="L110" title="1 of 2 branches missed.">				if (retval.getScoreStats().getStats().getStddev().compareTo(new BigDecimal(0)) != 0) {</span>
-<span class="fc" id="L111">					aggregatedScore.getAggregateScore().setZ(aggregatedScore.getScore().getRaw().subtract(retval.getScoreStats().getStats().getMean()).divide(retval.getScoreStats().getStats().getStddev(), 10, RoundingMode.HALF_UP));</span>
-<span class="fc" id="L112">				}</span>
 				else {
-<span class="nc" id="L114">					aggregatedScore.getAggregateScore().setZ(new BigDecimal(0));</span>
+<span class="fc" id="L109">					aggregatedScore.getAggregateScore().setPercentage(new BigDecimal(0));</span>
 				}
-<span class="fc" id="L116">				aggregatedScore.getAggregateScore().setRank(new BigDecimal(i));</span>
-<span class="fc" id="L117">				aggregatedScore.getAggregateScore().setPercentile(new BigDecimal(1).subtract(new BigDecimal(i).divide(new BigDecimal(retval.getAggregatedScores().size()), 10, RoundingMode.HALF_UP)));</span>
-<span class="fc bfc" id="L118" title="All 4 branches covered.">				if (retval.getScoreStats().getStats().getMin().equals(new BigDecimal(0)) || retval.getScoreStats().getStats().getMin().compareTo(aggregatedScore.getScore().getRaw()) &gt; 0) {</span>
-<span class="fc" id="L119">					retval.getScoreStats().getStats().setMin(aggregatedScore.getScore().getRaw());</span>
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">				if (retval.getScoreStats().getStats().getStddev().compareTo(new BigDecimal(0)) != 0) {</span>
+<span class="fc" id="L112">					aggregatedScore.getAggregateScore().setZ(aggregatedScore.getScore().getRaw().subtract(retval.getScoreStats().getStats().getMean()).divide(retval.getScoreStats().getStats().getStddev(), 10, RoundingMode.HALF_UP));</span>
+				}
+				else {
+<span class="nc" id="L115">					aggregatedScore.getAggregateScore().setZ(new BigDecimal(0));</span>
+				}
+<span class="fc" id="L117">				aggregatedScore.getAggregateScore().setRank(new BigDecimal(i));</span>
+<span class="fc" id="L118">				aggregatedScore.getAggregateScore().setPercentile(new BigDecimal(1).subtract(new BigDecimal(i).divide(new BigDecimal(retval.getAggregatedScores().size()), 10, RoundingMode.HALF_UP)));</span>
+<span class="fc bfc" id="L119" title="All 4 branches covered.">				if (retval.getScoreStats().getStats().getMin().equals(new BigDecimal(0)) || retval.getScoreStats().getStats().getMin().compareTo(aggregatedScore.getScore().getRaw()) &gt; 0) {</span>
+<span class="fc" id="L120">					retval.getScoreStats().getStats().setMin(aggregatedScore.getScore().getRaw());</span>
 					
 				}
-<span class="fc bfc" id="L122" title="All 2 branches covered.">				if (retval.getScoreStats().getStats().getMax().compareTo(aggregatedScore.getScore().getRaw()) &lt; 0) {</span>
-<span class="fc" id="L123">					retval.getScoreStats().getStats().setMax(aggregatedScore.getScore().getRaw());</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">				if (retval.getScoreStats().getStats().getMax().compareTo(aggregatedScore.getScore().getRaw()) &lt; 0) {</span>
+<span class="fc" id="L124">					retval.getScoreStats().getStats().setMax(aggregatedScore.getScore().getRaw());</span>
 				}
-<span class="fc bfc" id="L125" title="All 4 branches covered.">				if (retval.getScoreStats().getStats().getMedian().equals(new BigDecimal(0)) &amp;&amp; (i &gt; retval.getAggregatedScores().size()/2)) {</span>
-<span class="fc" id="L126">					retval.getScoreStats().getStats().setMedian(aggregatedScore.getScore().getRaw());</span>
+<span class="fc bfc" id="L126" title="All 4 branches covered.">				if (retval.getScoreStats().getStats().getMedian().equals(new BigDecimal(0)) &amp;&amp; (i &gt; retval.getAggregatedScores().size()/2)) {</span>
+<span class="fc" id="L127">					retval.getScoreStats().getStats().setMedian(aggregatedScore.getScore().getRaw());</span>
 				}
 			}
 		}
-<span class="fc" id="L130">		return retval;</span>
+<span class="fc" id="L131">		return retval;</span>
 	}
 
 	@Override
 	public Map&lt;String, BigDecimal&gt; getDocumentAggregatableScores(CoreDocument document) {
-<span class="fc" id="L135">		Map&lt;String, BigDecimal&gt; rawScores = new HashMap&lt;String, BigDecimal&gt;();</span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">		for (int i=0;i&lt;document.sentences().size();i++) {</span>
-<span class="fc" id="L137">			CoreSentence sentence = document.sentences().get(i);</span>
-<span class="pc bpc" id="L138" title="1 of 2 branches missed.">			if (sentence.coreMap().containsKey(getAnnotationClass())) {</span>
-<span class="fc" id="L139">				rawScores.put(Integer.toString(i), (BigDecimal) sentence.coreMap().get(getAnnotationClass()));</span>
+<span class="fc" id="L136">		Map&lt;String, BigDecimal&gt; rawScores = new HashMap&lt;String, BigDecimal&gt;();</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">		for (int i=0;i&lt;document.sentences().size();i++) {</span>
+<span class="fc" id="L138">			CoreSentence sentence = document.sentences().get(i);</span>
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">			if (sentence.coreMap().containsKey(getAnnotationClass())) {</span>
+<span class="fc" id="L140">				rawScores.put(Integer.toString(i), (BigDecimal) sentence.coreMap().get(getAnnotationClass()));</span>
 			}
 		}
-<span class="fc" id="L142">		return rawScores;</span>
+<span class="fc" id="L143">		return rawScores;</span>
 	}
 
 

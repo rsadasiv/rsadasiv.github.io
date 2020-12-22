@@ -66,12 +66,12 @@ public class NounHypernymsAnnotator extends AbstractPosAnnotator implements Anno
 	@Override
 	public Set&lt;Class&lt;? extends CoreAnnotation&gt;&gt; requires() {
 <span class="nc" id="L68">		return Collections.unmodifiableSet(</span>
-<span class="nc" id="L69">			new ArraySet&lt;&gt;(</span>
+			new ArraySet&lt;&gt;(
 <span class="nc" id="L70">				Arrays.asList(</span>
-<span class="nc" id="L71">					CoreAnnotations.TextAnnotation.class, </span>
-<span class="nc" id="L72">					CoreAnnotations.TokensAnnotation.class,</span>
-<span class="nc" id="L73">					CoreAnnotations.SentencesAnnotation.class, </span>
-<span class="nc" id="L74">					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPNounsAnnotation.class</span>
+					CoreAnnotations.TextAnnotation.class, 
+					CoreAnnotations.TokensAnnotation.class,
+					CoreAnnotations.SentencesAnnotation.class, 
+					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPNounsAnnotation.class
 				)
 			)
 		);
@@ -84,7 +84,7 @@ public class NounHypernymsAnnotator extends AbstractPosAnnotator implements Anno
 <span class="fc" id="L84">		Map&lt;String,BigDecimal&gt; allNouns = new HashMap&lt;String,BigDecimal&gt;();</span>
 <span class="pc bpc" id="L85" title="1 of 2 branches missed.">		if (annotation.containsKey(io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPNounsAnnotation.class)) {</span>
 <span class="fc" id="L86">			allNouns = annotation.get(io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPNounsAnnotation.class);</span>
-<span class="fc" id="L87">		}</span>
+		}
 		else {
 <span class="nc" id="L89">			logger.error(&quot;requires() not satisfied&quot;);</span>
 		}
@@ -94,20 +94,20 @@ public class NounHypernymsAnnotator extends AbstractPosAnnotator implements Anno
 <span class="fc bfc" id="L94" title="All 2 branches covered.">				if (score != null) {</span>
 					try {
 <span class="fc" id="L96">						Map&lt;String, BigDecimal&gt; scoreMap = WordnetUtils.getInstance(getParameterStore()).scoreTokenHypernym(</span>
-<span class="fc" id="L97">								token, </span>
+								token, 
 <span class="fc" id="L98">								getContextWords(document, token), </span>
-<span class="fc" id="L99">								allNouns</span>
+								allNouns
 						);
 <span class="pc bpc" id="L101" title="1 of 2 branches missed.">						if (scoreMap.size() &gt; 0) {</span>
 <span class="fc" id="L102">							token.set(getAnnotationClass(), scoreMap);</span>
 						}
-<span class="fc" id="L104">					} </span>
+					} 
 <span class="nc" id="L105">					catch (IOException e) {</span>
 <span class="nc" id="L106">						logger.error(e);</span>
-					}
+<span class="fc" id="L107">					}</span>
 				}
-			}
-		}
+<span class="fc" id="L109">			}</span>
+<span class="fc" id="L110">		}</span>
 <span class="fc" id="L111">	}</span>
 
 	@Override

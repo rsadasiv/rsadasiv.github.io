@@ -60,7 +60,7 @@ public class BigDecimalSum extends BigDecimalScorer implements IScorer {
 <span class="fc" id="L60">		BigDecimal score = new BigDecimal(0);</span>
 <span class="fc bfc" id="L61" title="All 2 branches covered.">		for (BigDecimal rawScore : allScores) {</span>
 <span class="fc" id="L62">			score = score.add(rawScore);</span>
-		}
+<span class="fc" id="L63">		}</span>
 <span class="fc" id="L64">		return score;</span>
 	}
 	
@@ -112,13 +112,13 @@ public class BigDecimalSum extends BigDecimalScorer implements IScorer {
 <span class="fc" id="L112">				AggregatedScore aggregatedScore = aggregatedScoresIter.next();</span>
 <span class="fc bfc" id="L113" title="All 2 branches covered.">				if (aggregatedScore.getScore().getRaw().compareTo(new BigDecimal(0)) &gt; 0) {</span>
 <span class="fc" id="L114">					aggregatedScore.getAggregateScore().setPercentage(aggregatedScore.getScore().getRaw().divide(retval.getScoreStats().getScore().getRaw(), 10, RoundingMode.HALF_UP));</span>
-<span class="fc" id="L115">				}</span>
+				}
 				else {
 <span class="fc" id="L117">					aggregatedScore.getAggregateScore().setPercentage(new BigDecimal(0));</span>
 				}
 <span class="fc bfc" id="L119" title="All 2 branches covered.">				if (retval.getScoreStats().getStats().getStddev().compareTo(new BigDecimal(0)) != 0) {</span>
 <span class="fc" id="L120">					aggregatedScore.getAggregateScore().setZ(aggregatedScore.getScore().getRaw().subtract(retval.getScoreStats().getStats().getMean()).divide(retval.getScoreStats().getStats().getStddev(), 10, RoundingMode.HALF_UP));</span>
-<span class="fc" id="L121">				}</span>
+				}
 				else {
 <span class="fc" id="L123">					aggregatedScore.getAggregateScore().setZ(new BigDecimal(0));</span>
 				}

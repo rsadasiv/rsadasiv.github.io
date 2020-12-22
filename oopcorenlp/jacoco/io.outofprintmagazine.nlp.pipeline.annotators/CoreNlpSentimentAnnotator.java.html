@@ -65,16 +65,16 @@ public class CoreNlpSentimentAnnotator extends AbstractAnnotator implements Anno
 <span class="fc" id="L65">			BigDecimal score = new BigDecimal(.5);</span>
 <span class="pc bpc" id="L66" title="1 of 2 branches missed.">			if (sentiment.equals(&quot;Very negative&quot;)) {</span>
 <span class="nc" id="L67">				score = new BigDecimal(0);</span>
-<span class="nc" id="L68">			}</span>
+			}
 <span class="fc bfc" id="L69" title="All 2 branches covered.">			else if (sentiment.equals(&quot;Negative&quot;)) {</span>
 <span class="fc" id="L70">				score = new BigDecimal(.25);</span>
-<span class="fc" id="L71">			}</span>
+			}
 <span class="fc bfc" id="L72" title="All 2 branches covered.">			else if (sentiment.equals(&quot;Neutral&quot;)) {</span>
 <span class="fc" id="L73">				score = new BigDecimal(.5);</span>
-<span class="fc" id="L74">			}</span>
+			}
 <span class="pc bpc" id="L75" title="1 of 2 branches missed.">			else if (sentiment.equals(&quot;Positive&quot;)) {</span>
 <span class="fc" id="L76">				score = new BigDecimal(.75);</span>
-<span class="fc" id="L77">			}</span>
+			}
 <span class="nc bnc" id="L78" title="All 2 branches missed.">			else if (sentiment.equals(&quot;Very positive&quot;)) {</span>
 <span class="nc" id="L79">				score = new BigDecimal(1);</span>
 			}
@@ -83,8 +83,8 @@ public class CoreNlpSentimentAnnotator extends AbstractAnnotator implements Anno
 <span class="pc bpc" id="L83" title="1 of 2 branches missed.">				if (token.containsKey(getAnnotationClass())) {</span>
 <span class="nc" id="L84">					token.set(getAnnotationClass(), score);</span>
 				}
-			}
-		}
+<span class="fc" id="L86">			}</span>
+<span class="fc" id="L87">		}</span>
 <span class="fc" id="L88">	}</span>
 	
 	@Override
@@ -102,18 +102,18 @@ public class CoreNlpSentimentAnnotator extends AbstractAnnotator implements Anno
 	@Override
 	public Set&lt;Class&lt;? extends CoreAnnotation&gt;&gt; requires() {
 <span class="nc" id="L104">		return Collections.unmodifiableSet(</span>
-<span class="nc" id="L105">			new ArraySet&lt;&gt;(</span>
+			new ArraySet&lt;&gt;(
 				//Arrays.asList(edu.stanford.nlp.sentiment.SentimentCoreAnnotations.SentimentClass.class)
 <span class="nc" id="L107">					Arrays.asList(</span>
-<span class="nc" id="L108">							CoreAnnotations.TextAnnotation.class, </span>
-<span class="nc" id="L109">							CoreAnnotations.TokensAnnotation.class,</span>
-<span class="nc" id="L110">							CoreAnnotations.LemmaAnnotation.class,</span>
-<span class="nc" id="L111">							CoreAnnotations.SentencesAnnotation.class,</span>
-<span class="nc" id="L112">							CoreAnnotations.NamedEntityTagAnnotation.class,</span>
-<span class="nc" id="L113">							CoreAnnotations.NormalizedNamedEntityTagAnnotation.class,</span>
-<span class="nc" id="L114">							CoreAnnotations.CanonicalEntityMentionIndexAnnotation.class,</span>
-<span class="nc" id="L115">							CorefCoreAnnotations.CorefChainAnnotation.class,</span>
-<span class="nc" id="L116">							SemanticGraphCoreAnnotations.BasicDependenciesAnnotation.class</span>
+							CoreAnnotations.TextAnnotation.class, 
+							CoreAnnotations.TokensAnnotation.class,
+							CoreAnnotations.LemmaAnnotation.class,
+							CoreAnnotations.SentencesAnnotation.class,
+							CoreAnnotations.NamedEntityTagAnnotation.class,
+							CoreAnnotations.NormalizedNamedEntityTagAnnotation.class,
+							CoreAnnotations.CanonicalEntityMentionIndexAnnotation.class,
+							CorefCoreAnnotations.CorefChainAnnotation.class,
+							SemanticGraphCoreAnnotations.BasicDependenciesAnnotation.class
 					)
 			)
 		);

@@ -4,7 +4,7 @@ OOP Core NLP Viewer,io.outofprintmagazine.web.servlets,OOPCorpusDocumentZScoresV
 OOP Core NLP Viewer,io.outofprintmagazine.web.servlets,OOPActorsViewer,618,0,30,0,110,0,24,0,9,0
 OOP Core NLP Viewer,io.outofprintmagazine.web.servlets,StanfordBratViewer,25,0,0,0,7,0,2,0,2,0
 OOP Core NLP Viewer,io.outofprintmagazine.web.servlets,TextOutOfPrintViewer,35,0,0,0,9,0,2,0,2,0
-OOP Core NLP Viewer,io.outofprintmagazine.web.servlets,OOPLexiconViewer,170,0,14,0,38,0,11,0,4,0
+OOP Core NLP Viewer,io.outofprintmagazine.web.servlets,OOPLexiconViewer,190,0,14,0,40,0,11,0,4,0
 OOP Core NLP Viewer,io.outofprintmagazine.web.servlets,OOPPullQuotesViewer,520,0,28,0,106,0,20,0,6,0
 OOP Core NLP Viewer,io.outofprintmagazine.web.servlets,OOPStoryArcViewer,437,0,12,0,66,0,12,0,6,0
 OOP Core NLP Viewer,io.outofprintmagazine.web.servlets,OOPCorpusDocumentAnnotationZScoresViewer,83,0,4,0,23,0,5,0,3,0
@@ -22,7 +22,7 @@ OOP Core NLP Viewer,io.outofprintmagazine.web.servlets,OOPStreamViewer,137,0,14,
 OOP Core NLP Viewer,io.outofprintmagazine.web.servlets,OOPCorpusDocumentAnnotationTfidfViewer,83,0,4,0,23,0,5,0,3,0
 OOP Core NLP Viewer,io.outofprintmagazine.web.servlets,TextMediumViewer,115,0,0,0,24,0,3,0,3,0
 OOP Core NLP Viewer,io.outofprintmagazine.web.servlets,TextViewer,33,0,0,0,9,0,2,0,2,0
-OOP Core NLP Viewer,io.outofprintmagazine.web.storage,FileStorage,1365,0,92,0,296,0,92,0,46,0
+OOP Core NLP Viewer,io.outofprintmagazine.web.storage,FileStorage,1507,0,106,0,329,0,101,0,48,0
 OOP Core NLP Viewer,io.outofprintmagazine.web.util,JsonSort.PhraseAnnotationComparator,20,35,8,6,5,8,7,2,0,2
 OOP Core NLP Viewer,io.outofprintmagazine.web.util,JsonSort.SimilarityComparator,57,0,14,0,13,0,9,0,2,0
 OOP Core NLP Viewer,io.outofprintmagazine.web.util,JsonSort.ActorsNodeComparator,57,0,14,0,13,0,9,0,2,0
@@ -36,8 +36,8 @@ OOP Core NLP Viewer,io.outofprintmagazine.web.rest.api,ActorAnnotation,110,0,12,
 OOP Core NLP Viewer,io.outofprintmagazine.web.rest.api,SentencesAnnotationSubannotationScalar,182,0,24,0,36,0,14,0,2,0
 OOP Core NLP Viewer,io.outofprintmagazine.web.rest.api,RestApp,12,0,0,0,3,0,1,0,1,0
 OOP Core NLP Viewer,io.outofprintmagazine.web.rest.api,Search,31,0,2,0,8,0,3,0,2,0
-OOP Core NLP Viewer,io.outofprintmagazine.web.rest.api,LexiconLemma,20,0,2,0,5,0,3,0,2,0
 OOP Core NLP Viewer,io.outofprintmagazine.web.rest.api,TokensAnnotationScalar,154,0,14,0,31,0,9,0,2,0
+OOP Core NLP Viewer,io.outofprintmagazine.web.rest.api,LexiconLemma,20,0,2,0,5,0,3,0,2,0
 OOP Core NLP Viewer,io.outofprintmagazine.web.rest.api,SentencesAnnotationScalarText,157,0,12,0,26,0,8,0,2,0
 OOP Core NLP Viewer,io.outofprintmagazine.web.rest.api,CorpusAnnotationsCVScores,154,0,16,0,27,0,11,0,3,0
 OOP Core NLP Viewer,io.outofprintmagazine.web.rest.api,DocumentAnnotation,134,0,18,0,29,0,11,0,2,0
@@ -70,6 +70,6 @@ OOP Core NLP Viewer,io.outofprintmagazine.web.rest.browse,CorpusDocumentOOPToken
 OOP Core NLP Viewer,io.outofprintmagazine.web.rest.browse,CorpusDocumentOOPSentencesIdxAnnotationSubannotation,112,0,22,0,26,0,13,0,2,0
 OOP Core NLP Viewer,io.outofprintmagazine.web.rest.browse,CorpusDocumentTXT,16,0,2,0,4,0,3,0,2,0
 OOP Core NLP Viewer,io.outofprintmagazine.web.rest.browse,CorpusDocument,39,0,2,0,10,0,3,0,2,0
-OOP Core NLP Viewer,io.outofprintmagazine.web.rest.browse,CorpusDocumentOOPSentencesIdxTokensIdxAnnotationSubannotation,132,0,26,0,29,0,15,0,2,0
 OOP Core NLP Viewer,io.outofprintmagazine.web.rest.browse,CorpusDocumentPIPELINEAnnotationSubannotation,92,0,20,0,23,0,12,0,2,0
+OOP Core NLP Viewer,io.outofprintmagazine.web.rest.browse,CorpusDocumentOOPSentencesIdxTokensIdxAnnotationSubannotation,132,0,26,0,29,0,15,0,2,0
 OOP Core NLP Viewer,io.outofprintmagazine.web.rest.browse,CorpusDocumentOOPSentencesIdxTokensIdx,71,0,12,0,14,0,8,0,2,0

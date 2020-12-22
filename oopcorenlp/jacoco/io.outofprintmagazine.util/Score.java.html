@@ -27,7 +27,7 @@ public class Score implements Serializable {
 	@SuppressWarnings(&quot;unused&quot;)
 <span class="fc" id="L28">	private static final Logger logger = LogManager.getLogger(Score.class);</span>
 
-<span class="fc" id="L30">	private static final long serialVersionUID = 1L;</span>
+	private static final long serialVersionUID = 1L;
 
 	public Score() {
 <span class="fc" id="L33">		super();</span>
@@ -79,7 +79,7 @@ public class Score implements Serializable {
 	
 	public String toJsonString() {
 <span class="nc" id="L81">		return String.format(</span>
-<span class="nc" id="L82">				&quot;{%n\t\&quot;Raw\&quot;: %f%n\t\&quot;Normalized\&quot;: %f%n\t\&quot;Count\&quot;: %f%n}&quot;,</span>
+				&quot;{%n\t\&quot;Raw\&quot;: %f%n\t\&quot;Normalized\&quot;: %f%n\t\&quot;Count\&quot;: %f%n}&quot;,
 <span class="nc" id="L83">				getRaw(), </span>
 <span class="nc" id="L84">				getNormalized(), </span>
 <span class="nc" id="L85">				getCount()</span>

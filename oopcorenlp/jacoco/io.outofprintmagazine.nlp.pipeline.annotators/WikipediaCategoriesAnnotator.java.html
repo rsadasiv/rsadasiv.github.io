@@ -61,13 +61,13 @@ public class WikipediaCategoriesAnnotator extends AbstractPosAnnotator implement
 	@Override
 	public Set&lt;Class&lt;? extends CoreAnnotation&gt;&gt; requires() {
 <span class="nc" id="L63">		return Collections.unmodifiableSet(</span>
-<span class="nc" id="L64">			new ArraySet&lt;&gt;(</span>
+			new ArraySet&lt;&gt;(
 <span class="nc" id="L65">				Arrays.asList(</span>
-<span class="nc" id="L66">					CoreAnnotations.TextAnnotation.class, </span>
-<span class="nc" id="L67">					CoreAnnotations.TokensAnnotation.class,</span>
-<span class="nc" id="L68">					CoreAnnotations.SentencesAnnotation.class, </span>
+					CoreAnnotations.TextAnnotation.class, 
+					CoreAnnotations.TokensAnnotation.class,
+					CoreAnnotations.SentencesAnnotation.class, 
 					//io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPNounsAnnotation.class,
-<span class="nc" id="L70">					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPTopicsAnnotation.class</span>
+					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPTopicsAnnotation.class
 				)
 			)
 		);
@@ -112,15 +112,15 @@ public class WikipediaCategoriesAnnotator extends AbstractPosAnnotator implement
 <span class="fc" id="L112">				Map&lt;String, BigDecimal&gt; categories = WikipediaUtils.getInstance(getParameterStore()).getWikipediaCategoriesForTopic(topic);</span>
 <span class="fc bfc" id="L113" title="All 2 branches covered.">				for (Entry&lt;String,BigDecimal&gt; categoryScore : categories.entrySet()) {</span>
 <span class="fc" id="L114">					addToScoreList(scoreList, new PhraseAnnotation(categoryScore.getKey(), categoryScore.getValue()));</span>
-				}
-<span class="fc" id="L116">			} </span>
+<span class="fc" id="L115">				}</span>
+			} 
 <span class="nc" id="L117">			catch (IOException e) {</span>
 <span class="nc" id="L118">				logger.debug(e);</span>
 			} 
 <span class="nc" id="L120">			catch (URISyntaxException e) {</span>
 <span class="nc" id="L121">				logger.debug(e);</span>
-			}
-		}
+<span class="pc" id="L122">			}</span>
+<span class="fc" id="L123">		}</span>
 		
 <span class="fc" id="L125">		document.annotation().set(getAnnotationClass(), scoreList);</span>
 <span class="fc" id="L126">	}</span>

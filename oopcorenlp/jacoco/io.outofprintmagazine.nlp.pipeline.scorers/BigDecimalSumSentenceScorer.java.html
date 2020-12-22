@@ -51,7 +51,7 @@ public class BigDecimalSumSentenceScorer extends BigDecimalSum implements IScore
 <span class="fc" id="L51">			CoreSentence sentence = document.sentences().get(i);</span>
 <span class="fc bfc" id="L52" title="All 2 branches covered.">			if (sentence.coreMap().containsKey(getAnnotationClass())) {</span>
 <span class="fc" id="L53">				rawScores.put(Integer.valueOf(i).toString(), (BigDecimal) sentence.coreMap().get(getAnnotationClass()));</span>
-<span class="fc" id="L54">			}</span>
+			}
 			else {
 <span class="fc" id="L56">				rawScores.put(Integer.valueOf(i).toString(), new BigDecimal(0));</span>
 			}

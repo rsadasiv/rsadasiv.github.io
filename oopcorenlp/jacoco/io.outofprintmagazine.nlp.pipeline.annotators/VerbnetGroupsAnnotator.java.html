@@ -75,17 +75,17 @@ public class VerbnetGroupsAnnotator extends AbstractPosAnnotator implements Anno
 <span class="fc" id="L75">								Map&lt;String,BigDecimal&gt; scoreMap = new HashMap&lt;String,BigDecimal&gt;();</span>
 <span class="fc bfc" id="L76" title="All 2 branches covered.">								for (String sense : WordnetUtils.getInstance(getParameterStore()).getVerbnetSenses(token, getContextWords(document, token))) {</span>
 <span class="fc" id="L77">									addToScoreMap(scoreMap, sense.split(&quot;-&quot;)[0], new BigDecimal(1));</span>
-								}
+<span class="fc" id="L78">								}</span>
 <span class="fc" id="L79">								token.set(getAnnotationClass(), scoreMap);</span>
 
-<span class="fc" id="L81">							} </span>
+							} 
 <span class="nc" id="L82">							catch (IOException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {</span>
 <span class="nc" id="L83">								logger.error(e);</span>
-							}
+<span class="fc" id="L84">							}</span>
 						}
 					}
 				}
-			}
+<span class="fc" id="L88">			}</span>
 		}
 <span class="fc" id="L90">	}</span>
 

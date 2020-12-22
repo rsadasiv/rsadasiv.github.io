@@ -69,12 +69,12 @@ public class VerbHypernymsAnnotator extends AbstractPosAnnotator implements Anno
 	@Override
 	public Set&lt;Class&lt;? extends CoreAnnotation&gt;&gt; requires() {
 <span class="nc" id="L71">		return Collections.unmodifiableSet(</span>
-<span class="nc" id="L72">			new ArraySet&lt;&gt;(</span>
+			new ArraySet&lt;&gt;(
 <span class="nc" id="L73">				Arrays.asList(</span>
-<span class="nc" id="L74">					CoreAnnotations.TextAnnotation.class, </span>
-<span class="nc" id="L75">					CoreAnnotations.TokensAnnotation.class,</span>
-<span class="nc" id="L76">					CoreAnnotations.SentencesAnnotation.class, </span>
-<span class="nc" id="L77">					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPVerbsAnnotation.class</span>
+					CoreAnnotations.TextAnnotation.class, 
+					CoreAnnotations.TokensAnnotation.class,
+					CoreAnnotations.SentencesAnnotation.class, 
+					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPVerbsAnnotation.class
 				)
 			)
 		);
@@ -86,7 +86,7 @@ public class VerbHypernymsAnnotator extends AbstractPosAnnotator implements Anno
 <span class="fc" id="L86">		Map&lt;String,BigDecimal&gt; allVerbs = new HashMap&lt;String,BigDecimal&gt;();</span>
 <span class="pc bpc" id="L87" title="1 of 2 branches missed.">		if (!annotation.containsKey(io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPVerbsAnnotation.class)) {</span>
 <span class="nc" id="L88">			logger.error(&quot;requires() not satisfied&quot;);</span>
-<span class="nc" id="L89">		}</span>
+		}
 		else {
 <span class="fc" id="L91">			allVerbs = annotation.get(io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPVerbsAnnotation.class);</span>
 		}
@@ -100,15 +100,15 @@ public class VerbHypernymsAnnotator extends AbstractPosAnnotator implements Anno
 <span class="fc bfc" id="L100" title="All 2 branches covered.">								if (scoreMap.size() &gt; 0) {</span>
 <span class="fc" id="L101">									token.set(getAnnotationClass(), scoreMap);</span>
 								}
-<span class="fc" id="L103">							} </span>
+							} 
 <span class="nc" id="L104">							catch (IOException e) {</span>
 <span class="nc" id="L105">								logger.error(e);</span>
-							}
+<span class="fc" id="L106">							}</span>
 						}
 					}
 				}
-			}
-		}
+<span class="fc" id="L110">			}</span>
+<span class="fc" id="L111">		}</span>
 <span class="fc" id="L112">	}</span>
 	
 	@Override

@@ -65,12 +65,12 @@ public class CharCountAnnotator extends AbstractAnnotator implements Annotator, 
 	@Override
 	public Set&lt;Class&lt;? extends CoreAnnotation&gt;&gt; requires() {
 <span class="nc" id="L67">		return Collections.unmodifiableSet(</span>
-<span class="nc" id="L68">			new ArraySet&lt;&gt;(</span>
+			new ArraySet&lt;&gt;(
 <span class="nc" id="L69">				Arrays.asList(</span>
-<span class="nc" id="L70">					CoreAnnotations.TextAnnotation.class, </span>
-<span class="nc" id="L71">					CoreAnnotations.TokensAnnotation.class,</span>
-<span class="nc" id="L72">					CoreAnnotations.SentencesAnnotation.class,</span>
-<span class="nc" id="L73">					CoreAnnotations.ParagraphIndexAnnotation.class</span>
+					CoreAnnotations.TextAnnotation.class, 
+					CoreAnnotations.TokensAnnotation.class,
+					CoreAnnotations.SentencesAnnotation.class,
+					CoreAnnotations.ParagraphIndexAnnotation.class
 				)
 			)
 		);
@@ -84,8 +84,8 @@ public class CharCountAnnotator extends AbstractAnnotator implements Annotator, 
 <span class="fc" id="L84">			sentence.coreMap().set(getAnnotationClass(), new BigDecimal(sentence.charOffsets().second().intValue()-sentence.charOffsets().first().intValue()));</span>
 <span class="fc bfc" id="L85" title="All 2 branches covered.">			for (CoreLabel token : sentence.tokens()) {</span>
 <span class="fc" id="L86">				token.set(getAnnotationClass(), new BigDecimal(token.endPosition()-token.beginPosition()));</span>
-			}
-		}
+<span class="fc" id="L87">			}</span>
+<span class="fc" id="L88">		}</span>
 <span class="fc" id="L89">		document.annotation().set(getAnnotationClass(), new BigDecimal(document.text().length()));</span>
 <span class="fc" id="L90">	}</span>
 

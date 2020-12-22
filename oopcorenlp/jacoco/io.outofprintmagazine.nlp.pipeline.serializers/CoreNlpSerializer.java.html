@@ -148,8 +148,8 @@ public class CoreNlpSerializer implements ISerializer {
 					// Arrays.stream(mention.position.elems()).boxed().collect(Collectors.toList()));
 <span class="fc bfc" id="L149" title="All 2 branches covered.">					mentionNode.put(&quot;isRepresentativeMention&quot;, mention == representative);</span>
 <span class="fc" id="L150">					mentionListNode.add(mentionNode);</span>
-				}
-			}
+<span class="fc" id="L151">				}</span>
+<span class="fc" id="L152">			}</span>
 		}		
 <span class="fc" id="L154">	}</span>
 	
@@ -174,7 +174,7 @@ public class CoreNlpSerializer implements ISerializer {
 <span class="nc" id="L174">							? quote.coreMap().get(QuoteAttributionAnnotator.CanonicalMentionAnnotation.class)</span>
 <span class="nc" id="L175">							: &quot;Unknown&quot;);</span>
 <span class="nc" id="L176">			quotesNode.add(quoteNode);</span>
-		}
+<span class="nc" id="L177">		}</span>
 <span class="fc" id="L178">	}</span>
 	
 	@Override
@@ -224,8 +224,8 @@ public class CoreNlpSerializer implements ISerializer {
 <span class="fc" id="L224">				coreNlpTokenAnnotationsNode.put(&quot;ner&quot;, token.ner());</span>
 <span class="fc" id="L225">				coreNlpTokenAnnotationsNode.put(&quot;before&quot;, token.get(CoreAnnotations.BeforeAnnotation.class));</span>
 <span class="fc" id="L226">				coreNlpTokenAnnotationsNode.put(&quot;after&quot;, token.get(CoreAnnotations.AfterAnnotation.class));</span>
-			}
-		}
+<span class="fc" id="L227">			}</span>
+<span class="fc" id="L228">		}</span>
 <span class="fc" id="L229">	}</span>
 
 

@@ -68,10 +68,10 @@ public class AdjectiveCategoriesAnnotator extends AbstractPosAnnotator implement
 <span class="fc" id="L68">				Map&lt;String, BigDecimal&gt; scoreMap = new HashMap&lt;String, BigDecimal&gt;();</span>
 <span class="fc bfc" id="L69" title="All 2 branches covered.">				if (scoreLemma(token, descriptive) != null) {</span>
 <span class="fc" id="L70">					addToScoreMap(scoreMap, &quot;descriptive&quot;, new BigDecimal(1));</span>
-<span class="fc" id="L71">				}</span>
+				}
 <span class="fc bfc" id="L72" title="All 2 branches covered.">				else if (scoreLemma(token, comparative) != null) {</span>
 <span class="fc" id="L73">					addToScoreMap(scoreMap, &quot;comparative&quot;, new BigDecimal(1));</span>
-<span class="fc" id="L74">				}</span>
+				}
 <span class="pc bpc" id="L75" title="1 of 2 branches missed.">				else if (scoreLemma(token, superlative) != null) {</span>
 <span class="nc" id="L76">					addToScoreMap(scoreMap, &quot;superlative&quot;, new BigDecimal(1));</span>
 				}
@@ -79,8 +79,8 @@ public class AdjectiveCategoriesAnnotator extends AbstractPosAnnotator implement
 <span class="fc" id="L79">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
 
-			}
-		}
+<span class="fc" id="L82">			}</span>
+<span class="fc" id="L83">		}</span>
 <span class="fc" id="L84">	}</span>
 
 	@Override

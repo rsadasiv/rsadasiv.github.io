@@ -128,16 +128,16 @@ public class TemporalNGramsAnnotator extends AbstractPosAnnotator implements Ann
 							}
 						}
 					}
-<span class="nc" id="L131">				}</span>
+				}
 <span class="nc" id="L132">				catch (Throwable t) {</span>
 <span class="nc" id="L133">					logger.error(&quot;wtf?&quot;, t);</span>
-				}
+<span class="nc" id="L134">				}</span>
 			}
 <span class="nc" id="L136">			NGramUtils.getInstance(getParameterStore()).pruneWordCache();</span>
-<span class="nc" id="L137">		}</span>
+		}
 <span class="nc" id="L138">		catch (Exception e) {</span>
 <span class="nc" id="L139">			logger.error(e);</span>
-		}
+<span class="nc" id="L140">		}</span>
 <span class="nc" id="L141">	}</span>
 	
 	@Override
@@ -148,11 +148,11 @@ public class TemporalNGramsAnnotator extends AbstractPosAnnotator implements Ann
 	@Override
 	public Set&lt;Class&lt;? extends CoreAnnotation&gt;&gt; requires() {
 <span class="nc" id="L150">		return Collections.unmodifiableSet(</span>
-<span class="nc" id="L151">			new ArraySet&lt;&gt;(</span>
+			new ArraySet&lt;&gt;(
 <span class="nc" id="L152">				Arrays.asList(</span>
-<span class="nc" id="L153">					CoreAnnotations.TextAnnotation.class, </span>
-<span class="nc" id="L154">					CoreAnnotations.TokensAnnotation.class,</span>
-<span class="nc" id="L155">					CoreAnnotations.SentencesAnnotation.class</span>
+					CoreAnnotations.TextAnnotation.class, 
+					CoreAnnotations.TokensAnnotation.class,
+					CoreAnnotations.SentencesAnnotation.class
 				)
 			)
 		);

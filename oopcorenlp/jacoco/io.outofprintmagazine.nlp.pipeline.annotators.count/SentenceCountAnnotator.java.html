@@ -61,12 +61,12 @@ public class SentenceCountAnnotator extends AbstractAnnotator implements Annotat
 	@Override
 	public Set&lt;Class&lt;? extends CoreAnnotation&gt;&gt; requires() {
 <span class="nc" id="L63">		return Collections.unmodifiableSet(</span>
-<span class="nc" id="L64">			new ArraySet&lt;&gt;(</span>
+			new ArraySet&lt;&gt;(
 <span class="nc" id="L65">				Arrays.asList(</span>
-<span class="nc" id="L66">					CoreAnnotations.TextAnnotation.class, </span>
-<span class="nc" id="L67">					CoreAnnotations.TokensAnnotation.class,</span>
-<span class="nc" id="L68">					CoreAnnotations.SentencesAnnotation.class,</span>
-<span class="nc" id="L69">					CoreAnnotations.ParagraphIndexAnnotation.class</span>
+					CoreAnnotations.TextAnnotation.class, 
+					CoreAnnotations.TokensAnnotation.class,
+					CoreAnnotations.SentencesAnnotation.class,
+					CoreAnnotations.ParagraphIndexAnnotation.class
 				)
 			)
 		);
@@ -78,7 +78,7 @@ public class SentenceCountAnnotator extends AbstractAnnotator implements Annotat
 <span class="fc" id="L78">		CoreDocument document = new CoreDocument(annotation);</span>
 <span class="fc" id="L79">		annotation.set(</span>
 <span class="fc" id="L80">				getAnnotationClass(), </span>
-<span class="fc" id="L81">				new BigDecimal(</span>
+				new BigDecimal(
 <span class="fc" id="L82">						document.sentences().size()</span>
 				)
 		);

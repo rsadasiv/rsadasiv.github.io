@@ -70,14 +70,14 @@ public class WordlessWordsAnnotator extends AbstractPosAnnotator implements Anno
 <span class="fc bfc" id="L70" title="All 2 branches covered.">							if (!WordnetUtils.getInstance(getParameterStore()).isIndexWord(token)) {</span>
 <span class="fc" id="L71">								queries.add(token.originalText().toLowerCase());</span>
 							}
-<span class="fc" id="L73">						}</span>
+						}
 <span class="nc" id="L74">						catch (Exception e) {</span>
 <span class="nc" id="L75">							queries.add(token.originalText().toLowerCase());</span>
-						}
+<span class="fc" id="L76">						}</span>
 					}
 				}
-			}
-		}
+<span class="fc" id="L79">			}</span>
+<span class="fc" id="L80">		}</span>
 		try {
 <span class="fc" id="L82">			WiktionaryUtils.getInstance(getParameterStore()).addToWordCache(queries);</span>
 <span class="fc bfc" id="L83" title="All 2 branches covered.">			for (int i=0;i&lt;document.tokens().size();i++) {</span>
@@ -95,16 +95,16 @@ public class WordlessWordsAnnotator extends AbstractPosAnnotator implements Anno
 							}
 						}
 					}
-<span class="fc" id="L98">				}</span>
+				}
 <span class="nc" id="L99">				catch (Throwable t) {</span>
 <span class="nc" id="L100">					logger.error(&quot;wtf?&quot;, t);</span>
-				}
+<span class="fc" id="L101">				}</span>
 			}
 <span class="fc" id="L103">			WiktionaryUtils.getInstance(getParameterStore()).pruneWordCache();</span>
-<span class="fc" id="L104">		}</span>
+		}
 <span class="nc" id="L105">		catch (Exception e) {</span>
 <span class="nc" id="L106">			logger.error(e);</span>
-		}
+<span class="fc" id="L107">		}</span>
 <span class="fc" id="L108">	}</span>
 
 	@Override

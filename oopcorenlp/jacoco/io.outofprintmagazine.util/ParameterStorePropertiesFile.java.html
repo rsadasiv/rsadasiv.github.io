@@ -97,7 +97,7 @@ public class ParameterStorePropertiesFile implements IParameterStore {
     	try {
 <span class="nc" id="L98">    		input = new FileInputStream(String.format(&quot;%s/%s&quot;, path, name));</span>
 <span class="nc" id="L99">    		props.load(input);</span>
-<span class="nc" id="L100">    	}</span>
+    	}
 <span class="nc" id="L101">    	catch (Exception e) {</span>
 <span class="nc" id="L102">    		logger.error(e);</span>
     	}

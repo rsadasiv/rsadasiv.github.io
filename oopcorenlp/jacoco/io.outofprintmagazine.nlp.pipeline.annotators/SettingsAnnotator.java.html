@@ -63,28 +63,28 @@ public class SettingsAnnotator extends AbstractContextualAnnotator implements An
 	@Override
 	public Set&lt;Class&lt;? extends CoreAnnotation&gt;&gt; requires() {
 <span class="nc" id="L65">		return Collections.unmodifiableSet(</span>
-<span class="nc" id="L66">			new ArraySet&lt;&gt;(</span>
+			new ArraySet&lt;&gt;(
 <span class="nc" id="L67">				Arrays.asList(</span>
-<span class="nc" id="L68">					CoreAnnotations.TextAnnotation.class, </span>
-<span class="nc" id="L69">					CoreAnnotations.TokensAnnotation.class,</span>
-<span class="nc" id="L70">					CoreAnnotations.LemmaAnnotation.class,</span>
-<span class="nc" id="L71">					CoreAnnotations.SentencesAnnotation.class,</span>
-<span class="nc" id="L72">					CoreAnnotations.NamedEntityTagAnnotation.class,</span>
-<span class="nc" id="L73">					CoreAnnotations.NormalizedNamedEntityTagAnnotation.class,</span>
-<span class="nc" id="L74">					CoreAnnotations.CanonicalEntityMentionIndexAnnotation.class,</span>
-<span class="nc" id="L75">					CorefCoreAnnotations.CorefChainAnnotation.class,</span>
-<span class="nc" id="L76">					SemanticGraphCoreAnnotations.BasicDependenciesAnnotation.class,</span>
-<span class="nc" id="L77">					CoreAnnotations.QuotationsAnnotation.class,</span>
-<span class="nc" id="L78">					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPLocationsAnnotation.class,</span>
-<span class="nc" id="L79">					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.VaderSentimentAnnotation.class,</span>
-<span class="nc" id="L80">					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.CoreNlpSentimentAnnotation.class,</span>
-<span class="nc" id="L81">					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.CoreNlpGenderAnnotation.class,</span>
-<span class="nc" id="L82">					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPGenderAnnotation.class,</span>
-<span class="nc" id="L83">					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPVerbGroupsAnnotation.class,</span>
-<span class="nc" id="L84">					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPVerbsAnnotation.class,</span>
-<span class="nc" id="L85">					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPNounsAnnotation.class,</span>
-<span class="nc" id="L86">					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPAdjectivesAnnotation.class,</span>
-<span class="nc" id="L87">					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPAdverbsAnnotation.class</span>
+					CoreAnnotations.TextAnnotation.class, 
+					CoreAnnotations.TokensAnnotation.class,
+					CoreAnnotations.LemmaAnnotation.class,
+					CoreAnnotations.SentencesAnnotation.class,
+					CoreAnnotations.NamedEntityTagAnnotation.class,
+					CoreAnnotations.NormalizedNamedEntityTagAnnotation.class,
+					CoreAnnotations.CanonicalEntityMentionIndexAnnotation.class,
+					CorefCoreAnnotations.CorefChainAnnotation.class,
+					SemanticGraphCoreAnnotations.BasicDependenciesAnnotation.class,
+					CoreAnnotations.QuotationsAnnotation.class,
+					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPLocationsAnnotation.class,
+					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.VaderSentimentAnnotation.class,
+					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.CoreNlpSentimentAnnotation.class,
+					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.CoreNlpGenderAnnotation.class,
+					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPGenderAnnotation.class,
+					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPVerbGroupsAnnotation.class,
+					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPVerbsAnnotation.class,
+					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPNounsAnnotation.class,
+					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPAdjectivesAnnotation.class,
+					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPAdverbsAnnotation.class
 					
 				)
 			)
@@ -104,10 +104,10 @@ public class SettingsAnnotator extends AbstractContextualAnnotator implements An
 		}
 <span class="nc bnc" id="L105" title="All 2 branches missed.">		if (getParameterStore().getProperty(&quot;azure_apiKey&quot;) != null) {</span>
 <span class="nc" id="L106">			annotation.getThumbnails().addAll(BingUtils.getInstance(getParameterStore()).getImagesByText(locationName));</span>
-<span class="nc" id="L107">		}</span>
+		}
 <span class="nc bnc" id="L108" title="All 2 branches missed.">		else if (getParameterStore().getProperty(&quot;flickr_apiKey&quot;) != null) {</span>
 <span class="nc" id="L109">			annotation.getThumbnails().addAll(FlickrUtils.getInstance(getParameterStore()).getImagesByText(locationName));</span>
-<span class="nc" id="L110">		}</span>
+		}
 		else {
 <span class="nc" id="L112">			annotation.getThumbnails().addAll(WikimediaUtils.getInstance(getParameterStore()).getImagesByText(locationName));</span>
 		}

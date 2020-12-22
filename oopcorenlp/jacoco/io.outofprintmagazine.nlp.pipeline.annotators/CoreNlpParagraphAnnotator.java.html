@@ -73,9 +73,9 @@ public class CoreNlpParagraphAnnotator extends edu.stanford.nlp.paragraphs.Parag
 	@Override
 	public Set&lt;Class&lt;? extends CoreAnnotation&gt;&gt; requires() {
 <span class="nc" id="L75">		return Collections.unmodifiableSet(</span>
-<span class="nc" id="L76">			new ArraySet&lt;&gt;(</span>
+			new ArraySet&lt;&gt;(
 <span class="nc" id="L77">				Arrays.asList(</span>
-<span class="nc" id="L78">					CoreAnnotations.ParagraphIndexAnnotation.class</span>
+					CoreAnnotations.ParagraphIndexAnnotation.class
 				)
 			)
 		);
@@ -96,7 +96,7 @@ public class CoreNlpParagraphAnnotator extends edu.stanford.nlp.paragraphs.Parag
 <span class="pc bpc" id="L96" title="1 of 2 branches missed.">			if (sentence.coreMap().containsKey(getAnnotationClass())) {</span>
 <span class="fc" id="L97">				sentenceNode.put(CoreAnnotations.ParagraphIndexAnnotation.class.getSimpleName(), sentence.coreMap().get(CoreAnnotations.ParagraphIndexAnnotation.class));</span>
 			}
-		}
+<span class="fc" id="L99">		}</span>
 <span class="fc" id="L100">	}</span>
 
 	@Override

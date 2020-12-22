@@ -56,7 +56,7 @@ public class FlickrUtils {
 <span class="nc" id="L56">		flickr = new Flickr(</span>
 <span class="nc" id="L57">				parameterStore.getProperty(&quot;flickr_apiKey&quot;),</span>
 <span class="nc" id="L58">				parameterStore.getProperty(&quot;flickr_secret&quot;),</span>
-<span class="nc" id="L59">				new REST()</span>
+				new REST()
 		);
 <span class="nc" id="L61">	}</span>
 	
@@ -118,17 +118,17 @@ public class FlickrUtils {
 	        try {
 <span class="nc bnc" id="L119" title="All 2 branches missed.">		        if (nfo.getOriginalSecret().isEmpty()) {</span>
 <span class="nc" id="L120">		        	retval.add(p.getSmallUrl());</span>
-<span class="nc" id="L121">		        } </span>
+		        } 
 		        else {
 <span class="nc" id="L123">	                p.setOriginalSecret(nfo.getOriginalSecret());</span>
 <span class="nc" id="L124">		        	retval.add(p.getSmallUrl());</span>
 		        }
-<span class="nc" id="L126">	        }</span>
+	        }
 <span class="nc" id="L127">	    	catch (Exception e) {</span>
 <span class="nc" id="L128">	    		logger.error(e);</span>
 <span class="nc" id="L129">	    		logger.error(searchParameters);</span>
-	    	}
-		}
+<span class="nc" id="L130">	    	}</span>
+<span class="nc" id="L131">		}</span>
 <span class="nc" id="L132">	    return retval;</span>
     }
     
@@ -153,19 +153,19 @@ public class FlickrUtils {
 <span class="nc bnc" id="L153" title="All 2 branches missed.">		        	if (FacePlusPlusUtils.getInstance(parameterStore).imageHasOneFace(p.getSmallUrl()) != null) {</span>
 <span class="nc" id="L154">		        		retval.add(p.getSmallUrl());</span>
 		        	}
-<span class="nc" id="L156">		        } </span>
+		        } 
 		        else {
 <span class="nc" id="L158">	                p.setOriginalSecret(nfo.getOriginalSecret());</span>
 <span class="nc bnc" id="L159" title="All 2 branches missed.">		        	if (FacePlusPlusUtils.getInstance(parameterStore).imageHasOneFace(p.getSmallUrl()) != null) {</span>
 <span class="nc" id="L160">		        		retval.add(p.getSmallUrl());</span>
 		        	}
 		        }
-<span class="nc" id="L163">	        }</span>
+	        }
 <span class="nc" id="L164">	    	catch (Exception e) {</span>
 <span class="nc" id="L165">	    		logger.error(e);</span>
 <span class="nc" id="L166">	    		logger.error(searchParameters);</span>
-	    	}
-		}
+<span class="nc" id="L167">	    	}</span>
+<span class="nc" id="L168">		}</span>
 <span class="nc" id="L169">	    return retval;</span>
     }
 
@@ -217,16 +217,16 @@ public class FlickrUtils {
 <span class="nc" id="L217">	            System.out.println(nfo.getStats());</span>
 <span class="nc bnc" id="L218" title="All 2 branches missed.">	            if (nfo.getOriginalSecret().isEmpty()) {</span>
 <span class="nc" id="L219">	                System.out.println(p.getTitle() + &quot;\t&quot; + p.getSmallUrl());</span>
-<span class="nc" id="L220">	            } else {</span>
+	            } else {
 <span class="nc" id="L221">	                p.setOriginalSecret(nfo.getOriginalSecret());</span>
 <span class="nc" id="L222">	                System.out.println(p.getTitle() + &quot;\t&quot; + p.getSmallUrl());</span>
 	            }
-<span class="nc" id="L224">	        } </span>
+	        } 
 <span class="nc" id="L225">	        catch (FlickrException e) {</span>
 <span class="nc" id="L226">	            e.printStackTrace();</span>
-	        }
+<span class="nc" id="L227">	        }</span>
 <span class="nc" id="L228">	    	System.out.println(&quot;-----------------------------------&quot;);</span>
-		}
+<span class="nc" id="L229">		}</span>
 <span class="nc" id="L230">	}</span>
 
 }

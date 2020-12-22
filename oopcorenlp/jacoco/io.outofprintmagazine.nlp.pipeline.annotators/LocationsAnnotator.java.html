@@ -64,11 +64,11 @@ public class LocationsAnnotator extends AbstractPosAnnotator implements Annotato
 	@Override
 	public Set&lt;Class&lt;? extends CoreAnnotation&gt;&gt; requires() {
 <span class="nc" id="L66">		return Collections.unmodifiableSet(</span>
-<span class="nc" id="L67">			new ArraySet&lt;&gt;(</span>
+			new ArraySet&lt;&gt;(
 <span class="nc" id="L68">				Arrays.asList(</span>
-<span class="nc" id="L69">					CoreAnnotations.NamedEntityTagAnnotation.class, </span>
-<span class="nc" id="L70">					CoreAnnotations.NormalizedNamedEntityTagAnnotation.class,</span>
-<span class="nc" id="L71">					CoreAnnotations.CanonicalEntityMentionIndexAnnotation.class</span>
+					CoreAnnotations.NamedEntityTagAnnotation.class, 
+					CoreAnnotations.NormalizedNamedEntityTagAnnotation.class,
+					CoreAnnotations.CanonicalEntityMentionIndexAnnotation.class
 				)
 			)
 		);
@@ -86,14 +86,14 @@ public class LocationsAnnotator extends AbstractPosAnnotator implements Annotato
 <span class="fc" id="L86">					List&lt;PhraseAnnotation&gt; scoreList = new ArrayList&lt;PhraseAnnotation&gt;();</span>
 <span class="pc bpc" id="L87" title="1 of 2 branches missed.">					if (mention.canonicalEntityMention().isPresent()) {</span>
 <span class="fc" id="L88">						addToScoreList(scoreList, new PhraseAnnotation(mention.canonicalEntityMention().get().toString(), new BigDecimal(1)));</span>
-<span class="fc" id="L89">					}</span>
+					}
 					else {
 <span class="nc" id="L91">						addToScoreList(scoreList, new PhraseAnnotation(mention.tokens().get(0).originalText(), new BigDecimal(1)));</span>
 					}
 <span class="fc" id="L93">					mention.tokens().get(0).set(getAnnotationClass(), scoreList);</span>
 				}
-			}
-		}
+<span class="fc" id="L95">			}</span>
+<span class="fc" id="L96">		}</span>
 <span class="fc" id="L97">	}</span>
 
 	@Override

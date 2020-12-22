@@ -59,12 +59,12 @@ public class WikipediaPageviewTopicsAnnotator extends AbstractPosAnnotator imple
 	@Override
 	public Set&lt;Class&lt;? extends CoreAnnotation&gt;&gt; requires() {
 <span class="nc" id="L61">		return Collections.unmodifiableSet(</span>
-<span class="nc" id="L62">			new ArraySet&lt;&gt;(</span>
+			new ArraySet&lt;&gt;(
 <span class="nc" id="L63">				Arrays.asList(</span>
-<span class="nc" id="L64">					CoreAnnotations.TextAnnotation.class, </span>
-<span class="nc" id="L65">					CoreAnnotations.TokensAnnotation.class,</span>
-<span class="nc" id="L66">					CoreAnnotations.SentencesAnnotation.class, </span>
-<span class="nc" id="L67">					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPTopicsAnnotation.class</span>
+					CoreAnnotations.TextAnnotation.class, 
+					CoreAnnotations.TokensAnnotation.class,
+					CoreAnnotations.SentencesAnnotation.class, 
+					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPTopicsAnnotation.class
 				)
 			)
 		);
@@ -90,11 +90,11 @@ public class WikipediaPageviewTopicsAnnotator extends AbstractPosAnnotator imple
 <span class="fc bfc" id="L90" title="All 2 branches covered.">		for (String topic : topics.keySet()) {</span>
 			try {
 <span class="fc" id="L92">				addToScoreMap(scoreMap, topic, WikipediaUtils.getInstance(getParameterStore()).getWikipediaPageviewsForTopic(topic).multiply(topics.get(topic)));</span>
-<span class="fc" id="L93">			} </span>
+			} 
 <span class="nc" id="L94">			catch (IOException | URISyntaxException e) {</span>
 <span class="nc" id="L95">				logger.error(e);</span>
-			}
-		} 
+<span class="fc" id="L96">			}</span>
+<span class="fc" id="L97">		} </span>
 <span class="fc" id="L98">		document.annotation().set(getAnnotationClass(), scoreMap);</span>
 <span class="fc" id="L99">	}</span>
 

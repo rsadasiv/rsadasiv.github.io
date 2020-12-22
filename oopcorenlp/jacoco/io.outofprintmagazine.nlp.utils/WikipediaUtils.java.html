@@ -139,17 +139,17 @@ public class WikipediaUtils {
 <span class="fc bfc" id="L139" title="All 2 branches covered.">		for (String title : getWikipediaPagesForTopic(topic)) {</span>
 <span class="fc" id="L140">			title = title.replace(' ', '_');</span>
 <span class="fc" id="L141">			JsonNode obj = mapper.readTree(</span>
-<span class="fc" id="L142">					new URL(</span>
-<span class="fc" id="L143">							&quot;https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia.org/all-access/all-agents/&quot; </span>
+					new URL(
+							&quot;https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia.org/all-access/all-agents/&quot; 
 <span class="fc" id="L144">							+ URLEncoder.encode(title,StandardCharsets.UTF_8.name()) </span>
-<span class="fc" id="L145">							+ &quot;/monthly/&quot;</span>
-<span class="fc" id="L146">							+ startDate</span>
-<span class="fc" id="L147">							+ &quot;/&quot;</span>
-<span class="fc" id="L148">							+ endDate</span>
+							+ &quot;/monthly/&quot;
+							+ startDate
+							+ &quot;/&quot;
+							+ endDate
 							)
 					);
 <span class="fc" id="L151">			retval = retval.add(new BigDecimal(obj.get(&quot;items&quot;).get(0).get(&quot;views&quot;).asInt()));</span>
-		}
+<span class="fc" id="L152">		}</span>
 <span class="fc" id="L153">		putPageviewCache(topic, retval);</span>
 <span class="fc" id="L154">		return retval;</span>
 	
@@ -215,7 +215,7 @@ public class WikipediaUtils {
 <span class="pc bpc" id="L215" title="1 of 2 branches missed.">									&amp;&amp; !categoryName.startsWith(&quot;Names&quot;)</span>
 <span class="pc bpc" id="L216" title="1 of 2 branches missed.">									&amp;&amp; !categoryName.startsWith(&quot;Harv and Sfn&quot;)</span>
 <span class="pc bpc" id="L217" title="1 of 2 branches missed.">									&amp;&amp; !categoryName.startsWith(&quot;Engvar&quot;)</span>
-<span class="fc bfc" id="L218" title="All 2 branches covered.">									&amp;&amp; !categoryName.startsWith(&quot;Short description is different from Wikidata&quot;)</span>
+<span class="fc bfc" id="L218" title="All 2 branches covered.">									&amp;&amp; !categoryName.contains(&quot; Wikidata&quot;)</span>
 <span class="pc bpc" id="L219" title="1 of 2 branches missed.">									&amp;&amp; !categoryName.contains(&quot; ISO &quot;)) {</span>
 								//System.out.println(categoryName);
 <span class="fc" id="L221">								BigDecimal existingScore = scoreMap.get(categoryName);</span>
@@ -224,9 +224,9 @@ public class WikipediaUtils {
 								}
 <span class="fc" id="L225">								scoreMap.put(categoryName, existingScore.add(new BigDecimal(1)));</span>
 							}
-						}
+<span class="fc" id="L227">						}</span>
 					}
-				}
+<span class="fc" id="L229">				}</span>
 	    	}
 <span class="fc" id="L231">	    }</span>
     }
@@ -248,12 +248,12 @@ public class WikipediaUtils {
 <span class="fc" id="L248">			headers.add(new BasicHeader(&quot;User-Agent&quot;, parameterStore.getProperty(&quot;wikipedia_apikey&quot;)));</span>
 <span class="fc" id="L249">			HttpUtils.getInstance(parameterStore).httpGetJsonPaginated(</span>
 <span class="fc" id="L250">					HttpUtils.getInstance(parameterStore).getWikipediaApi(), </span>
-<span class="fc" id="L251">					params, </span>
-<span class="fc" id="L252">					headers, </span>
-<span class="fc" id="L253">					&quot;clcontinue&quot;,</span>
-<span class="fc" id="L254">					handler</span>
+					params, 
+					headers, 
+					&quot;clcontinue&quot;,
+					handler
 			);
-		}
+<span class="fc" id="L256">		}</span>
 <span class="fc" id="L257">		putCategoryCache(topic, handler.getValues());</span>
 <span class="fc" id="L258">		return handler.getValues();</span>
 	
@@ -280,7 +280,7 @@ public class WikipediaUtils {
 <span class="pc bpc" id="L280" title="3 of 4 branches missed.">						if (!pageNode.has(&quot;missing&quot;) || !pageNode.get(&quot;missing&quot;).asBoolean()) {</span>
 <span class="fc" id="L281">							retval.add(pageNode.get(&quot;title&quot;).asText());</span>
 						}
-					}
+<span class="fc" id="L283">					}</span>
 				}
 			}   		
 <span class="fc" id="L286">    	}</span>
@@ -295,10 +295,10 @@ public class WikipediaUtils {
 <span class="fc" id="L295">		headers.add(new BasicHeader(&quot;User-Agent&quot;, parameterStore.getProperty(&quot;wikipedia_apikey&quot;)));</span>
 <span class="fc" id="L296">		HttpUtils.getInstance(parameterStore).httpGetJsonPaginated(</span>
 <span class="fc" id="L297">				HttpUtils.getInstance(parameterStore).getWikipediaApi(), </span>
-<span class="fc" id="L298">				params, </span>
-<span class="fc" id="L299">				headers, </span>
-<span class="fc" id="L300">				&quot;clcontinue&quot;,</span>
-<span class="fc" id="L301">				handler</span>
+				params, 
+				headers, 
+				&quot;clcontinue&quot;,
+				handler
 		);
     	
 <span class="fc" id="L304">		return handler.getValues();</span>
@@ -341,11 +341,11 @@ public class WikipediaUtils {
 <span class="fc bfc" id="L341" title="All 2 branches covered.">					for (String key : scores.keySet()) {</span>
 <span class="fc" id="L342">						mruWordList.push(key);</span>
 <span class="fc" id="L343">						wordCache.put(key, scores.get(key));</span>
-					}
-<span class="fc" id="L345">				}</span>
+<span class="fc" id="L344">					}</span>
+				}
 <span class="nc" id="L346">				catch (Exception e) {</span>
 <span class="nc" id="L347">					logger.error(&quot;wikipedia error&quot;, e);</span>
-				}
+<span class="fc" id="L348">				}</span>
 <span class="fc" id="L349">				queries.clear();</span>
 			}
 		}
@@ -355,11 +355,11 @@ public class WikipediaUtils {
 <span class="fc bfc" id="L355" title="All 2 branches covered.">				for (String key : scores.keySet()) {</span>
 <span class="fc" id="L356">					mruWordList.push(key);</span>
 <span class="fc" id="L357">					wordCache.put(key, scores.get(key));</span>
-				}
-<span class="fc" id="L359">			}</span>
+<span class="fc" id="L358">				}</span>
+			}
 <span class="nc" id="L360">			catch (Exception e) {</span>
 <span class="nc" id="L361">				logger.error(&quot;wikipedia error&quot;, e);</span>
-			}
+<span class="fc" id="L362">			}</span>
 		}
 <span class="fc" id="L364">		logger.debug(&quot;wordCache length: &quot; + wordCache.size());</span>
 <span class="fc" id="L365">    }</span>
@@ -372,10 +372,10 @@ public class WikipediaUtils {
 <span class="fc" id="L372">		headers.add(new BasicHeader(&quot;User-Agent&quot;, parameterStore.getProperty(&quot;wikipedia_apikey&quot;)));</span>
 <span class="fc" id="L373">		HttpUtils.getInstance(parameterStore).httpGetJsonPaginated(</span>
 <span class="fc" id="L374">				HttpUtils.getInstance(parameterStore).getWikipediaApi(), </span>
-<span class="fc" id="L375">				params, </span>
-<span class="fc" id="L376">				headers, </span>
-<span class="fc" id="L377">				&quot;clcontinue&quot;,</span>
-<span class="fc" id="L378">				handler</span>
+				params, 
+				headers, 
+				&quot;clcontinue&quot;,
+				handler
 		);
     	
 <span class="fc" id="L381">		return handler.getValues();</span>
@@ -400,7 +400,7 @@ public class WikipediaUtils {
 <span class="fc" id="L400">				Iterator&lt;Entry&lt;String, JsonNode&gt;&gt; pagesIter = pagesNode.fields();</span>
 <span class="fc bfc" id="L401" title="All 2 branches covered.">				while (pagesIter.hasNext()) {</span>
 <span class="fc" id="L402">					Entry&lt;String, JsonNode&gt; x = pagesIter.next();</span>
-					if (
+<span class="fc" id="L403">					if (</span>
 <span class="pc bpc" id="L404" title="1 of 2 branches missed.">							x.getValue().has(&quot;pageid&quot;) </span>
 <span class="pc bpc" id="L405" title="1 of 2 branches missed.">							&amp;&amp; x.getValue().has(&quot;extract&quot;) </span>
 							&amp;&amp; !(
@@ -417,7 +417,7 @@ public class WikipediaUtils {
 <span class="fc" id="L417">								).trim()</span>
 						);
 					}
-				}
+<span class="fc" id="L420">				}</span>
 			}   		
 <span class="fc" id="L422">    	}</span>
     }    

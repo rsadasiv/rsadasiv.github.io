@@ -120,7 +120,7 @@ public class DocumentAggregateScore {
 	
 	public String toJsonString() {
 <span class="nc" id="L122">		return String.format(</span>
-<span class="nc" id="L123">				&quot;{%n\t\&quot;Name\&quot;: %s%n\t\&quot;ScoreStats\&quot;: %s%n\t\&quot;AggregatedScores\&quot;: %s%n}&quot;,</span>
+				&quot;{%n\t\&quot;Name\&quot;: %s%n\t\&quot;ScoreStats\&quot;: %s%n\t\&quot;AggregatedScores\&quot;: %s%n}&quot;,
 <span class="nc" id="L124">				getName(),</span>
 <span class="nc" id="L125">				getScoreStats().toJsonString(), </span>
 <span class="nc" id="L126">				getAggregatedScores().size()</span>

@@ -53,106 +53,106 @@ public class BiberDimensionsAnnotator extends AbstractPosAnnotator implements An
 	 * Involved vs Informational production
 	 */
 <span class="fc" id="L55">	public List&lt;String&gt; dimensionOnePositiveNames = Arrays.asList(</span>
-<span class="fc" id="L56">		&quot;PRIV&quot;,</span>
-<span class="fc" id="L57">		&quot;THATD&quot;,</span>
-<span class="fc" id="L58">		&quot;CONT&quot;,</span>
-<span class="fc" id="L59">		&quot;VPRT&quot;,</span>
-<span class="fc" id="L60">		&quot;SPP2&quot;,</span>
-<span class="fc" id="L61">		&quot;PROD&quot;,</span>
-<span class="fc" id="L62">		&quot;XX0&quot;,</span>
-<span class="fc" id="L63">		&quot;DEMP&quot;,</span>
-<span class="fc" id="L64">		&quot;EMPH&quot;,</span>
-<span class="fc" id="L65">		&quot;FPP1&quot;,</span>
-<span class="fc" id="L66">		&quot;PIT&quot;,</span>
-<span class="fc" id="L67">		&quot;BEMA&quot;,</span>
-<span class="fc" id="L68">		&quot;CAUS&quot;,</span>
-<span class="fc" id="L69">		&quot;DPAR&quot;,</span>
-<span class="fc" id="L70">		&quot;INPR&quot;,</span>
-<span class="fc" id="L71">		&quot;HDG&quot;,</span>
-<span class="fc" id="L72">		&quot;AMP&quot;,</span>
-<span class="fc" id="L73">		&quot;SERE&quot;,</span>
-<span class="fc" id="L74">		&quot;WHQU&quot;,</span>
-<span class="fc" id="L75">		&quot;POMD&quot;,</span>
-<span class="fc" id="L76">		&quot;PHC&quot;,</span>
-<span class="fc" id="L77">		&quot;WHCL&quot;,</span>
-<span class="fc" id="L78">		&quot;RB&quot;</span>
+		&quot;PRIV&quot;,
+		&quot;THATD&quot;,
+		&quot;CONT&quot;,
+		&quot;VPRT&quot;,
+		&quot;SPP2&quot;,
+		&quot;PROD&quot;,
+		&quot;XX0&quot;,
+		&quot;DEMP&quot;,
+		&quot;EMPH&quot;,
+		&quot;FPP1&quot;,
+		&quot;PIT&quot;,
+		&quot;BEMA&quot;,
+		&quot;CAUS&quot;,
+		&quot;DPAR&quot;,
+		&quot;INPR&quot;,
+		&quot;HDG&quot;,
+		&quot;AMP&quot;,
+		&quot;SERE&quot;,
+		&quot;WHQU&quot;,
+		&quot;POMD&quot;,
+		&quot;PHC&quot;,
+		&quot;WHCL&quot;,
+		&quot;RB&quot;
 	);
 	
 <span class="fc" id="L81">	public List&lt;String&gt; dimensionOneNegativeNames = Arrays.asList(</span>
-<span class="fc" id="L82">		&quot;NN&quot;,</span>
-<span class="fc" id="L83">		&quot;AWL&quot;,</span>
-<span class="fc" id="L84">		&quot;TTR&quot;,</span>
-<span class="fc" id="L85">		&quot;PIN&quot;,</span>
-<span class="fc" id="L86">		&quot;JJ&quot;</span>
+		&quot;NN&quot;,
+		&quot;AWL&quot;,
+		&quot;TTR&quot;,
+		&quot;PIN&quot;,
+		&quot;JJ&quot;
 	);
 
 	/*
 	 * Narrative vs Non-Narrative concerns
 	 */
 <span class="fc" id="L92">	public List&lt;String&gt; dimensionTwoPositiveNames = Arrays.asList(</span>
-<span class="fc" id="L93">		&quot;VBD&quot;,</span>
-<span class="fc" id="L94">		&quot;TPP3&quot;,</span>
-<span class="fc" id="L95">		&quot;PEAS&quot;,</span>
-<span class="fc" id="L96">		&quot;PUBV&quot;,</span>
-<span class="fc" id="L97">		&quot;SYNE&quot;,</span>
-<span class="fc" id="L98">		&quot;PRESP&quot;</span>
+		&quot;VBD&quot;,
+		&quot;TPP3&quot;,
+		&quot;PEAS&quot;,
+		&quot;PUBV&quot;,
+		&quot;SYNE&quot;,
+		&quot;PRESP&quot;
 	);
 
 	/*
 	 * Explicit vs Situational dependent reference
 	 */
 <span class="fc" id="L104">	public List&lt;String&gt; dimensionThreePositiveNames = Arrays.asList(</span>
-<span class="fc" id="L105">		&quot;WHOBJ&quot;,</span>
-<span class="fc" id="L106">		&quot;PIRE&quot;,</span>
-<span class="fc" id="L107">		&quot;WHSUB&quot;,</span>
-<span class="fc" id="L108">		&quot;PHC&quot;,</span>
-<span class="fc" id="L109">		&quot;NOMZ&quot;</span>
+		&quot;WHOBJ&quot;,
+		&quot;PIRE&quot;,
+		&quot;WHSUB&quot;,
+		&quot;PHC&quot;,
+		&quot;NOMZ&quot;
 	);
 	
 
 <span class="fc" id="L113">	public List&lt;String&gt; dimensionThreeNegativeNames = Arrays.asList(</span>
-<span class="fc" id="L114">		&quot;TIME&quot;,</span>
-<span class="fc" id="L115">		&quot;PLACE&quot;,</span>
-<span class="fc" id="L116">		&quot;RB&quot;</span>
+		&quot;TIME&quot;,
+		&quot;PLACE&quot;,
+		&quot;RB&quot;
 	);
 	
 	/*
 	 * Overt expression of persuasion
 	 */
 <span class="fc" id="L122">	public List&lt;String&gt; dimensionFourPositiveNames = Arrays.asList(</span>
-<span class="fc" id="L123">		&quot;TO&quot;,</span>
-<span class="fc" id="L124">		&quot;PRMD&quot;,</span>
-<span class="fc" id="L125">		&quot;SUAV&quot;,</span>
-<span class="fc" id="L126">		&quot;COND&quot;,</span>
-<span class="fc" id="L127">		&quot;NEMD&quot;,</span>
-<span class="fc" id="L128">		&quot;SPAU&quot;</span>
+		&quot;TO&quot;,
+		&quot;PRMD&quot;,
+		&quot;SUAV&quot;,
+		&quot;COND&quot;,
+		&quot;NEMD&quot;,
+		&quot;SPAU&quot;
 	);
 
 	/*
 	 * Abstract vs Non-abstract information
 	 */
 <span class="fc" id="L134">	public List&lt;String&gt; dimensionFivePositiveNames = Arrays.asList(</span>
-<span class="fc" id="L135">		&quot;CONJ&quot;,</span>
-<span class="fc" id="L136">		&quot;PASS&quot;,</span>
-<span class="fc" id="L137">		&quot;PASTP&quot;,</span>
-<span class="fc" id="L138">		&quot;BYPA&quot;,</span>
-<span class="fc" id="L139">		&quot;WZPAST&quot;,</span>
-<span class="fc" id="L140">		&quot;WZPRES&quot;,</span>
-<span class="fc" id="L141">		&quot;CAUS&quot;,</span>
-<span class="fc" id="L142">		&quot;CONC&quot;,</span>
-<span class="fc" id="L143">		&quot;COND&quot;,</span>
-<span class="fc" id="L144">		&quot;OSUB&quot;</span>
+		&quot;CONJ&quot;,
+		&quot;PASS&quot;,
+		&quot;PASTP&quot;,
+		&quot;BYPA&quot;,
+		&quot;WZPAST&quot;,
+		&quot;WZPRES&quot;,
+		&quot;CAUS&quot;,
+		&quot;CONC&quot;,
+		&quot;COND&quot;,
+		&quot;OSUB&quot;
 	);
 
 	/*
 	 * On-line informational elaboration
 	 */
 <span class="fc" id="L150">	public List&lt;String&gt; dimensionSixPositiveNames = Arrays.asList(</span>
-<span class="fc" id="L151">		&quot;THVC&quot;,</span>
-<span class="fc" id="L152">		&quot;DEMO&quot;,</span>
-<span class="fc" id="L153">		&quot;THAC&quot;,</span>
-<span class="fc" id="L154">		&quot;TOBJ&quot;,</span>
-<span class="fc" id="L155">		&quot;TSUB&quot;</span>
+		&quot;THVC&quot;,
+		&quot;DEMO&quot;,
+		&quot;THAC&quot;,
+		&quot;TOBJ&quot;,
+		&quot;TSUB&quot;
 	);	
 	
 	public BiberDimensionsAnnotator() {
@@ -168,15 +168,15 @@ public class BiberDimensionsAnnotator extends AbstractPosAnnotator implements An
 	
 	@Override
 	public String getDescription() {
-<span class="fc" id="L171">		return &quot;Biber: Variation across speech and writing, Dimensions 1-6. https://sites.google.com/site/multidimensionaltagger/MAT%20v%201.2%20-%20Manual.pdf.&quot;;</span>
+<span class="fc" id="L171">		return &quot;Biber: Variation across speech and writing, Dimensions 1-6. https://drive.google.com/file/d/11BAw-Dl5FDLTJFXqixc2uIgQQtU0g0no/view.&quot;;</span>
 	}
 
 	@Override
 	public Set&lt;Class&lt;? extends CoreAnnotation&gt;&gt; requires() {
 <span class="nc" id="L176">		return Collections.unmodifiableSet(</span>
-<span class="nc" id="L177">			new ArraySet&lt;&gt;(</span>
+			new ArraySet&lt;&gt;(
 <span class="nc" id="L178">				Arrays.asList(</span>
-<span class="nc" id="L179">						io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPBiberAnnotation.class</span>
+						io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPBiberAnnotation.class
 					)
 				)
 			);
@@ -257,11 +257,11 @@ public class BiberDimensionsAnnotator extends AbstractPosAnnotator implements An
 <span class="fc" id="L257">							dimensionMap.put(&quot;DimensionSixPositive&quot;, existingScore.add(scoreMap.get(key)));</span>
 						}
 
-					}
+<span class="fc" id="L260">					}</span>
 <span class="fc" id="L261">					token.set(getAnnotationClass(), dimensionMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L263">			}</span>
+<span class="fc" id="L264">		}</span>
 <span class="fc" id="L265">	}</span>
 	
 }

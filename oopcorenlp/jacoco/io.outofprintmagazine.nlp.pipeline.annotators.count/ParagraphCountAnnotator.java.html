@@ -62,12 +62,12 @@ public class ParagraphCountAnnotator extends AbstractAnnotator implements Annota
 	@Override
 	public Set&lt;Class&lt;? extends CoreAnnotation&gt;&gt; requires() {
 <span class="nc" id="L64">		return Collections.unmodifiableSet(</span>
-<span class="nc" id="L65">			new ArraySet&lt;&gt;(</span>
+			new ArraySet&lt;&gt;(
 <span class="nc" id="L66">				Arrays.asList(</span>
-<span class="nc" id="L67">					CoreAnnotations.TextAnnotation.class, </span>
-<span class="nc" id="L68">					CoreAnnotations.TokensAnnotation.class,</span>
-<span class="nc" id="L69">					CoreAnnotations.SentencesAnnotation.class,</span>
-<span class="nc" id="L70">					CoreAnnotations.ParagraphIndexAnnotation.class</span>
+					CoreAnnotations.TextAnnotation.class, 
+					CoreAnnotations.TokensAnnotation.class,
+					CoreAnnotations.SentencesAnnotation.class,
+					CoreAnnotations.ParagraphIndexAnnotation.class
 				)
 			)
 		);
@@ -79,7 +79,7 @@ public class ParagraphCountAnnotator extends AbstractAnnotator implements Annota
 <span class="fc" id="L79">		CoreDocument document = new CoreDocument(annotation);</span>
 <span class="fc" id="L80">		annotation.set(</span>
 <span class="fc" id="L81">				getAnnotationClass(), </span>
-<span class="fc" id="L82">				new BigDecimal(</span>
+				new BigDecimal(
 <span class="fc" id="L83">						document.sentences().get(document.sentences().size()-1).coreMap().get(ParagraphIndexAnnotation.class)+1</span>
 				)
 		);

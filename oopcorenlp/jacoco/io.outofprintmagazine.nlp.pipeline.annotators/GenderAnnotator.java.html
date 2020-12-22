@@ -64,9 +64,9 @@ public class GenderAnnotator extends edu.stanford.nlp.pipeline.GenderAnnotator i
 	private static Properties getProperties() {
 <span class="fc" id="L65">		Properties props = new Properties();</span>
 <span class="fc" id="L66">		props.setProperty(&quot;gender.maleNamesFile&quot;,</span>
-<span class="fc" id="L67">				&quot;io/outofprintmagazine/nlp/models/MaleNames.txt&quot;);</span>
+				&quot;io/outofprintmagazine/nlp/models/MaleNames.txt&quot;);
 <span class="fc" id="L68">		props.setProperty(&quot;gender.femaleNamesFile&quot;,</span>
-<span class="fc" id="L69">				&quot;io/outofprintmagazine/nlp/models/FemaleNames.txt&quot;);</span>
+				&quot;io/outofprintmagazine/nlp/models/FemaleNames.txt&quot;);
 <span class="fc" id="L70">		return props;</span>
 	}
 
@@ -110,7 +110,7 @@ public class GenderAnnotator extends edu.stanford.nlp.pipeline.GenderAnnotator i
 <span class="fc" id="L110">			Map&lt;String, BigDecimal&gt; scoreMap = new HashMap&lt;String, BigDecimal&gt;();</span>
 <span class="fc" id="L111">			scoreMap.put(gender, new BigDecimal(1));</span>
 <span class="fc" id="L112">			token.set(getAnnotationClass(), scoreMap);</span>
-		}
+<span class="fc" id="L113">		}</span>
 <span class="fc" id="L114">	}</span>
 
 

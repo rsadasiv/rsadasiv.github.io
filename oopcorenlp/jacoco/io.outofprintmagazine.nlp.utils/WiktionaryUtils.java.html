@@ -102,11 +102,11 @@ public class WiktionaryUtils {
 <span class="fc bfc" id="L102" title="All 2 branches covered.">					for (String key : scores.keySet()) {</span>
 <span class="fc" id="L103">						mruWordList.push(key);</span>
 <span class="fc" id="L104">						wordCache.put(key, scores.get(key));</span>
-					}
-<span class="fc" id="L106">				}</span>
+<span class="fc" id="L105">					}</span>
+				}
 <span class="nc" id="L107">				catch (Exception e) {</span>
 <span class="nc" id="L108">					logger.error(&quot;wiktionary error&quot;, e);</span>
-				}
+<span class="fc" id="L109">				}</span>
 <span class="fc" id="L110">				queries.clear();</span>
 			}
 		}
@@ -116,11 +116,11 @@ public class WiktionaryUtils {
 <span class="fc bfc" id="L116" title="All 2 branches covered.">				for (String key : scores.keySet()) {</span>
 <span class="fc" id="L117">					mruWordList.push(key);</span>
 <span class="fc" id="L118">					wordCache.put(key, scores.get(key));</span>
-				}
-<span class="fc" id="L120">			}</span>
+<span class="fc" id="L119">				}</span>
+			}
 <span class="nc" id="L121">			catch (Exception e) {</span>
 <span class="nc" id="L122">				logger.error(&quot;wiktionary error&quot;, e);</span>
-			}
+<span class="fc" id="L123">			}</span>
 		}
 <span class="fc" id="L125">		logger.debug(&quot;wordCache length: &quot; + wordCache.size());</span>
 <span class="fc" id="L126">    }</span>
@@ -136,10 +136,10 @@ public class WiktionaryUtils {
 <span class="fc" id="L136">						HttpUtils.getInstance(parameterStore)</span>
 <span class="fc" id="L137">						.buildUri(</span>
 <span class="fc" id="L138">								HttpUtils.getInstance(parameterStore).getWikipediaApi(), </span>
-<span class="fc" id="L139">								nvps</span>
+								nvps
 						),
-<span class="fc" id="L141">						headers,</span>
-<span class="fc" id="L142">						handler</span>
+						headers,
+						handler
 				);
 <span class="fc" id="L144">		return handler.getValues();</span>
 
@@ -167,7 +167,7 @@ public class WiktionaryUtils {
 <span class="fc bfc" id="L167" title="All 2 branches covered.">					if (result.has(&quot;pageid&quot;)) {</span>
 <span class="fc" id="L168">						retval.put(result.get(&quot;title&quot;).asText(),result.get(&quot;pageid&quot;).asText() );</span>
 					}
-		    	}
+<span class="fc" id="L170">		    	}</span>
 			}   		
 <span class="fc" id="L172">    	}</span>
     }

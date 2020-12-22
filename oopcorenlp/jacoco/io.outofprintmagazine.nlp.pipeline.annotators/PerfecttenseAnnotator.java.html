@@ -99,7 +99,7 @@ public class PerfecttenseAnnotator extends AbstractPosAnnotator implements Annot
 <span class="nc bnc" id="L99" title="All 2 branches missed.">										for (JsonNode appliedRule : option.get(&quot;appliedRules&quot;)) {</span>
 <span class="nc bnc" id="L100" title="All 2 branches missed.">											if (glosses == null) {</span>
 <span class="nc" id="L101">												glosses = appliedRule.get(&quot;message&quot;).asText();</span>
-<span class="nc" id="L102">											}</span>
+											}
 											else {
 <span class="nc" id="L104">												glosses = glosses + &quot;/n&quot; + appliedRule.get(&quot;message&quot;).asText();</span>
 											}
@@ -108,21 +108,21 @@ public class PerfecttenseAnnotator extends AbstractPosAnnotator implements Annot
 <span class="nc" id="L108">												score = new BigDecimal(.5);</span>
 											}
 <span class="nc" id="L110">											scoreMap.put(appliedRule.get(&quot;ruleId&quot;).asText().replace('.', '_'), score);</span>
-										}
-									}
+<span class="nc" id="L111">										}</span>
+<span class="nc" id="L112">									}</span>
 <span class="nc" id="L113">									token.set(getGlossClass(), glosses);</span>
 <span class="nc" id="L114">									token.set(getAnnotationClass(), scoreMap);</span>
 <span class="nc" id="L115">									break;</span>
 								}
-							}
-						}
+<span class="nc" id="L117">							}</span>
+<span class="nc" id="L118">						}</span>
 					}
 				}
-			}
-<span class="nc" id="L122">		}</span>
+<span class="nc" id="L121">			}</span>
+		}
 <span class="nc" id="L123">		catch (Exception e) {</span>
 <span class="nc" id="L124">			logger.error(e);</span>
-		}
+<span class="nc" id="L125">		}</span>
 <span class="nc" id="L126">	}</span>
 	
 	@Override
@@ -144,8 +144,8 @@ public class PerfecttenseAnnotator extends AbstractPosAnnotator implements Annot
 <span class="nc bnc" id="L144" title="All 2 branches missed.">				if (token.containsKey(getGlossClass())) {</span>
 <span class="nc" id="L145">					tokenNode.put(getGlossClass().getSimpleName(), (String)token.get(getGlossClass()));</span>
 				}
-			}
-		}
+<span class="nc" id="L147">			}</span>
+<span class="nc" id="L148">		}</span>
 <span class="nc" id="L149">	}</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

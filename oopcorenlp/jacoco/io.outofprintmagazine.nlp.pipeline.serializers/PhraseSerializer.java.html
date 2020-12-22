@@ -95,7 +95,7 @@ public class PhraseSerializer implements ISerializer {
 <span class="fc" id="L95">				List&lt;PhraseAnnotation&gt; rawScores = (List&lt;PhraseAnnotation&gt;) sentence.coreMap().get(getAnnotationClass());</span>
 <span class="fc" id="L96">				sentenceNode.set(getAnnotationClass().getSimpleName(), mapper.valueToTree(rawScores));</span>
 			}
-		}
+<span class="fc" id="L98">		}</span>
 
 <span class="fc" id="L100">	}</span>
 
@@ -115,8 +115,8 @@ public class PhraseSerializer implements ISerializer {
 <span class="fc" id="L115">					List&lt;PhraseAnnotation&gt; rawScores = (List&lt;PhraseAnnotation&gt;) token.get(getAnnotationClass());</span>
 <span class="fc" id="L116">					tokenNode.set(getAnnotationClass().getSimpleName(), mapper.valueToTree(rawScores));</span>
 				}
-			}
-		}
+<span class="fc" id="L118">			}</span>
+<span class="fc" id="L119">		}</span>
 <span class="fc" id="L120">	}</span>
 	
 	@Override

@@ -52,8 +52,8 @@ public class BigDecimalSumTokenScorer extends BigDecimalSum implements IScorer {
 <span class="fc bfc" id="L52" title="All 2 branches covered.">		for (CoreSentence sentence : document.sentences()) {</span>
 <span class="fc bfc" id="L53" title="All 2 branches covered.">			for (CoreLabel token : sentence.tokens()) {</span>
 <span class="fc" id="L54">				rawScores.put(Integer.valueOf(tokenIdx++).toString(), (BigDecimal) token.get(getAnnotationClass()));</span>
-			}
-		}
+<span class="fc" id="L55">			}</span>
+<span class="fc" id="L56">		}</span>
 <span class="fc" id="L57">		return rawScores;</span>
 	}
 

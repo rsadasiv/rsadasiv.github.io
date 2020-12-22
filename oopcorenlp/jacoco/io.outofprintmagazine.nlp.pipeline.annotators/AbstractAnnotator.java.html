@@ -73,34 +73,34 @@ public abstract class AbstractAnnotator implements Annotator, IOOPAnnotator {
 <span class="fc" id="L73">	protected List&lt;String&gt; punctuationMarks = Arrays.asList(&quot;``&quot;, &quot;''&quot;,&quot;?&quot;, &quot;??&quot;, &quot;!&quot;, &quot;:&quot;, &quot;;&quot;, &quot;,&quot;, &quot;--&quot;, &quot;-&quot;, &quot;.&quot;, &quot;\&quot;&quot;, &quot;`&quot;, &quot;'&quot;, &quot;‘&quot;, &quot;’&quot;, &quot;“&quot;, &quot;”&quot;, &quot;.&quot;, &quot;*&quot;, &quot;[&quot;, &quot;]&quot;, &quot;{&quot;, &quot;}&quot;);</span>
 	//protected List&lt;String&gt; nonDictionaryPOS = Arrays.asList(&quot;NNP&quot;, &quot;NNPS&quot;, &quot;CD&quot;, &quot;LS&quot;, &quot;SYM&quot;, &quot;POS&quot;, &quot;FW&quot;);
 <span class="fc" id="L75">	protected List&lt;String&gt; dictionaryPOS = Arrays.asList(</span>
-<span class="fc" id="L76">			&quot;CC&quot;,</span>
-<span class="fc" id="L77">			&quot;DT&quot;,</span>
-<span class="fc" id="L78">			&quot;EX&quot;,</span>
-<span class="fc" id="L79">			&quot;IN&quot;,</span>
-<span class="fc" id="L80">			&quot;JJ&quot;,</span>
-<span class="fc" id="L81">			&quot;JJR&quot;,</span>
-<span class="fc" id="L82">			&quot;JJS&quot;,</span>
-<span class="fc" id="L83">			&quot;MD&quot;,</span>
-<span class="fc" id="L84">			&quot;NN&quot;,</span>
-<span class="fc" id="L85">			&quot;NNS&quot;,</span>
-<span class="fc" id="L86">			&quot;PRP&quot;,</span>
-<span class="fc" id="L87">			&quot;PRP$&quot;,</span>
-<span class="fc" id="L88">			&quot;RB&quot;,</span>
-<span class="fc" id="L89">			&quot;RBR&quot;,</span>
-<span class="fc" id="L90">			&quot;RBS&quot;,</span>
-<span class="fc" id="L91">			&quot;RP&quot;,</span>
-<span class="fc" id="L92">			&quot;TO&quot;,</span>
-<span class="fc" id="L93">			&quot;UH&quot;,</span>
-<span class="fc" id="L94">			&quot;VB&quot;,</span>
-<span class="fc" id="L95">			&quot;VBD&quot;,</span>
-<span class="fc" id="L96">			&quot;VBG&quot;,</span>
-<span class="fc" id="L97">			&quot;VBN&quot;,</span>
-<span class="fc" id="L98">			&quot;VBP&quot;,</span>
-<span class="fc" id="L99">			&quot;VBZ&quot;,</span>
-<span class="fc" id="L100">			&quot;WDT&quot;,</span>
-<span class="fc" id="L101">			&quot;WP&quot;,</span>
-<span class="fc" id="L102">			&quot;WP$&quot;,</span>
-<span class="fc" id="L103">			&quot;WRB&quot;</span>
+			&quot;CC&quot;,
+			&quot;DT&quot;,
+			&quot;EX&quot;,
+			&quot;IN&quot;,
+			&quot;JJ&quot;,
+			&quot;JJR&quot;,
+			&quot;JJS&quot;,
+			&quot;MD&quot;,
+			&quot;NN&quot;,
+			&quot;NNS&quot;,
+			&quot;PRP&quot;,
+			&quot;PRP$&quot;,
+			&quot;RB&quot;,
+			&quot;RBR&quot;,
+			&quot;RBS&quot;,
+			&quot;RP&quot;,
+			&quot;TO&quot;,
+			&quot;UH&quot;,
+			&quot;VB&quot;,
+			&quot;VBD&quot;,
+			&quot;VBG&quot;,
+			&quot;VBN&quot;,
+			&quot;VBP&quot;,
+			&quot;VBZ&quot;,
+			&quot;WDT&quot;,
+			&quot;WP&quot;,
+			&quot;WP$&quot;,
+			&quot;WRB&quot;
 	);
 	
 	public AbstractAnnotator() {
@@ -178,7 +178,7 @@ public abstract class AbstractAnnotator implements Annotator, IOOPAnnotator {
 <span class="fc bfc" id="L178" title="All 2 branches covered.">			if (token.lemma().contains(punctuationMark)) {</span>
 <span class="fc" id="L179">				return true;</span>
 			}
-		}
+<span class="fc" id="L181">		}</span>
 <span class="fc" id="L182">		return false;</span>
 	}
 	
@@ -199,7 +199,7 @@ public abstract class AbstractAnnotator implements Annotator, IOOPAnnotator {
 <span class="fc" id="L199">			BigDecimal existingScore = scoreMap.get(strippedKey);</span>
 <span class="pc bpc" id="L200" title="1 of 2 branches missed.">			if (existingScore != null) {</span>
 <span class="nc" id="L201">				scoreMap.put(strippedKey, existingScore.add(score));</span>
-<span class="nc" id="L202">			}</span>
+			}
 			else {
 <span class="fc" id="L204">				scoreMap.put(strippedKey, score);</span>
 			}
@@ -214,7 +214,7 @@ public abstract class AbstractAnnotator implements Annotator, IOOPAnnotator {
 <span class="nc" id="L214">				updatedExisting = true;</span>
 <span class="nc" id="L215">				break;</span>
 			}
-		}
+<span class="fc" id="L217">		}</span>
 <span class="pc bpc" id="L218" title="1 of 2 branches missed.">		if (!updatedExisting) {</span>
 <span class="fc" id="L219">			scoreMap.add(new PhraseAnnotation(p));</span>
 		}
@@ -228,7 +228,7 @@ public abstract class AbstractAnnotator implements Annotator, IOOPAnnotator {
 <span class="fc bfc" id="L228" title="All 2 branches covered.">			if (isDictionaryWord(sentenceToken)) {</span>
 <span class="fc" id="L229">				retval.add(sentenceToken);</span>
 			}
-		}
+<span class="fc" id="L231">		}</span>
 <span class="fc" id="L232">		return retval;</span>
 	}
 }

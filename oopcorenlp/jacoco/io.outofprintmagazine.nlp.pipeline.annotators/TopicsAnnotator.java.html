@@ -72,12 +72,12 @@ public class TopicsAnnotator extends AbstractPosAnnotator implements Annotator, 
 	@Override
 	public Set&lt;Class&lt;? extends CoreAnnotation&gt;&gt; requires() {
 <span class="nc" id="L74">		return Collections.unmodifiableSet(</span>
-<span class="nc" id="L75">			new ArraySet&lt;&gt;(</span>
+			new ArraySet&lt;&gt;(
 <span class="nc" id="L76">				Arrays.asList(</span>
-<span class="nc" id="L77">					CoreAnnotations.TokensAnnotation.class,</span>
-<span class="nc" id="L78">					CoreAnnotations.SentencesAnnotation.class, </span>
-<span class="nc" id="L79">					CoreAnnotations.PartOfSpeechAnnotation.class,</span>
-<span class="nc" id="L80">					CoreAnnotations.LemmaAnnotation.class</span>
+					CoreAnnotations.TokensAnnotation.class,
+					CoreAnnotations.SentencesAnnotation.class, 
+					CoreAnnotations.PartOfSpeechAnnotation.class,
+					CoreAnnotations.LemmaAnnotation.class
 				)
 			)
 		);
@@ -98,8 +98,8 @@ public class TopicsAnnotator extends AbstractPosAnnotator implements Annotator, 
 <span class="fc bfc" id="L98" title="All 2 branches covered.">				if (scoreMap.size() &gt; 0) {	</span>
 <span class="fc" id="L99">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L101">			}</span>
+<span class="fc" id="L102">		}</span>
 <span class="fc" id="L103">	}</span>
 	
 	@Override

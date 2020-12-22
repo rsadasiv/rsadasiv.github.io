@@ -141,13 +141,13 @@ public abstract class AbstractTreeAnnotator extends AbstractPosAnnotator impleme
 				}
 <span class="nc bnc" id="L142" title="All 2 branches missed.">				if (buf.length() == 0) {</span>
 <span class="nc" id="L143">					buf.append(label.value().toLowerCase());</span>
-<span class="nc" id="L144">				}</span>
+				}
 				else {
 <span class="nc" id="L146">					buf.append(label.value());</span>
 				}
 <span class="nc" id="L148">				buf.append(&quot; &quot;);</span>
 			}
-		}
+<span class="nc" id="L150">		}</span>
 <span class="nc" id="L151">		return buf.toString().trim();</span>
 	}
 	
@@ -167,14 +167,14 @@ public abstract class AbstractTreeAnnotator extends AbstractPosAnnotator impleme
 					}
 <span class="fc bfc" id="L168" title="All 2 branches covered.">					if (buf.length() == 0) {</span>
 <span class="fc" id="L169">						buf.append(label.value().toLowerCase());</span>
-<span class="fc" id="L170">					}</span>
+					}
 					else {
 <span class="fc" id="L172">						buf.append(label.value());</span>
 					}
 <span class="fc" id="L174">					buf.append(&quot; &quot;);</span>
 				}
 			}
-		}
+<span class="fc" id="L177">		}</span>
 <span class="fc" id="L178">		return buf.toString().trim();</span>
 	}
 

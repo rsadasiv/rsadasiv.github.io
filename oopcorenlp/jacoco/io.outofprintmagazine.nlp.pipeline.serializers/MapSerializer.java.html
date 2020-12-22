@@ -37,8 +37,8 @@ public class MapSerializer implements ISerializer {
 	@SuppressWarnings(&quot;unused&quot;)
 <span class="fc" id="L38">	private static final Logger logger = LogManager.getLogger(MapSerializer.class);</span>
 
-	@SuppressWarnings(&quot;rawtypes&quot;)
-<span class="pc" id="L41">	protected Class annotationClass = null;</span>
+<span class="pc" id="L40">	@SuppressWarnings(&quot;rawtypes&quot;)</span>
+	protected Class annotationClass = null;
 
 	public MapSerializer() {
 <span class="nc" id="L44">		super();</span>
@@ -86,7 +86,7 @@ public class MapSerializer implements ISerializer {
 <span class="fc" id="L86">			Map&lt;String, BigDecimal&gt; rawScores = (Map&lt;String, BigDecimal&gt;) coreNlpDocument.annotation().get(getAnnotationClass());</span>
 <span class="fc bfc" id="L87" title="All 2 branches covered.">			for (String key : rawScores.keySet()) {</span>
 <span class="fc" id="L88">				score.put(key, rawScores.get(key).toPlainString());</span>
-			}
+<span class="fc" id="L89">			}</span>
 <span class="fc" id="L90">			jsonDocument.set(getAnnotationClass().getSimpleName(), score);</span>
 		}
 <span class="fc" id="L92">	}</span>
@@ -109,15 +109,15 @@ public class MapSerializer implements ISerializer {
 <span class="fc bfc" id="L109" title="All 2 branches covered.">				for (String key : rawScores.keySet()) {</span>
 					try {
 <span class="fc" id="L111">						score.put(key, rawScores.get(key).toPlainString());</span>
-<span class="fc" id="L112">					}</span>
+					}
 <span class="nc" id="L113">					catch (Throwable t) {</span>
 <span class="nc" id="L114">						logger.error(getAnnotationClass());</span>
 <span class="nc" id="L115">						logger.error(key, t);</span>
-					}
-				}
+<span class="fc" id="L116">					}</span>
+<span class="fc" id="L117">				}</span>
 <span class="fc" id="L118">				sentenceNode.set(getAnnotationClass().getSimpleName(), score);</span>
 			}
-		}
+<span class="fc" id="L120">		}</span>
 
 <span class="fc" id="L122">	}</span>
 
@@ -144,16 +144,16 @@ public class MapSerializer implements ISerializer {
 						//Exception in thread &quot;main&quot; java.lang.ClassCastException: java.util.Arrays$ArrayList cannot be cast to java.math.BigDecimal
 						try {
 <span class="fc" id="L146">							score.put(key, rawScores.get(key).toPlainString());</span>
-<span class="fc" id="L147">						}</span>
+						}
 <span class="nc" id="L148">						catch (Throwable t) {</span>
 <span class="nc" id="L149">							logger.error(getAnnotationClass());</span>
 <span class="nc" id="L150">							logger.error(key, t);</span>
-						}
-					}
+<span class="fc" id="L151">						}</span>
+<span class="fc" id="L152">					}</span>
 <span class="fc" id="L153">					tokenNode.set(getAnnotationClass().getSimpleName(), score);</span>
 				}
-			}
-		}
+<span class="fc" id="L155">			}</span>
+<span class="fc" id="L156">		}</span>
 
 <span class="fc" id="L158">	}</span>
 

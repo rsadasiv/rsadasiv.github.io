@@ -112,12 +112,14 @@ public class OOPLexiconViewer extends AbstractOOPServlet {
         	//request.setAttribute(&quot;SubannotationIsWord&quot;, new Boolean(true));
 <span class="nc" id="L113">        	request.setAttribute(&quot;Lexicon&quot;, getStorage().getCorpusDocumentLexiconLemma(corpus, document, request.getParameter(&quot;Subannotation&quot;)));</span>
 <span class="nc" id="L114">        	request.setAttribute(&quot;TopicModelLemma&quot;, getStorage().getCorpusDocumentTopicModelLemma(corpus, document, request.getParameter(&quot;Subannotation&quot;)));</span>
-<span class="nc" id="L115">        	request.setAttribute(&quot;TopicModelLemmaPOS&quot;, getStorage().getCorpusDocumentTopicModelLemmaPOS(corpus, document, request.getParameter(&quot;Subannotation&quot;)));        	</span>
+<span class="nc" id="L115">        	request.setAttribute(&quot;TopicModelLemmaPOS&quot;, getStorage().getCorpusDocumentTopicModelLemmaPOS(corpus, document, request.getParameter(&quot;Subannotation&quot;)));  </span>
+<span class="nc" id="L116">        	request.setAttribute(&quot;CorpusTopicModelLemma&quot;, getStorage().getCorpusTopicModelLemma(corpus, request.getParameter(&quot;Subannotation&quot;)));</span>
+<span class="nc" id="L117">        	request.setAttribute(&quot;CorpusTopicModelLemmaPOS&quot;, getStorage().getCorpusTopicModelLemmaPOS(corpus, request.getParameter(&quot;Subannotation&quot;)));</span>
         //}
         //else {
         //	request.setAttribute(&quot;SubannotationIsWord&quot;, new Boolean(false));
         //}
-<span class="nc" id="L120">        request.getSession().getServletContext().getRequestDispatcher(&quot;/jsp/OOPLexiconViewer.jsp&quot;).forward(request, response);</span>
-<span class="nc" id="L121">	}</span>
+<span class="nc" id="L122">        request.getSession().getServletContext().getRequestDispatcher(&quot;/jsp/OOPLexiconViewer.jsp&quot;).forward(request, response);</span>
+<span class="nc" id="L123">	}</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

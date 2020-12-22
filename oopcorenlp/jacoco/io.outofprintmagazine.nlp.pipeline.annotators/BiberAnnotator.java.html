@@ -69,18 +69,18 @@ public class BiberAnnotator extends AbstractPosAnnotator implements Annotator, I
 	
 	@Override
 	public String getDescription() {
-<span class="fc" id="L72">		return &quot;Biber: Variation across speech and writing. https://sites.google.com/site/multidimensionaltagger/MAT%20v%201.2%20-%20Manual.pdf.&quot;;</span>
+<span class="fc" id="L72">		return &quot;Biber: Variation across speech and writing. https://drive.google.com/file/d/11BAw-Dl5FDLTJFXqixc2uIgQQtU0g0no/view.&quot;;</span>
 	}
 
 
 	@Override
 	public Set&lt;Class&lt;? extends CoreAnnotation&gt;&gt; requires() {
 <span class="nc" id="L78">		return Collections.unmodifiableSet(</span>
-<span class="nc" id="L79">			new ArraySet&lt;&gt;(</span>
+			new ArraySet&lt;&gt;(
 <span class="nc" id="L80">				Arrays.asList(</span>
-<span class="nc" id="L81">					CoreAnnotations.TextAnnotation.class, </span>
-<span class="nc" id="L82">					CoreAnnotations.TokensAnnotation.class,</span>
-<span class="nc" id="L83">					CoreAnnotations.SentencesAnnotation.class</span>
+					CoreAnnotations.TextAnnotation.class, 
+					CoreAnnotations.TokensAnnotation.class,
+					CoreAnnotations.SentencesAnnotation.class
 					)
 				)
 			);
@@ -166,10 +166,10 @@ public class BiberAnnotator extends AbstractPosAnnotator implements Annotator, I
 <span class="fc" id="L166">		Map&lt;String,BigDecimal&gt; retval = null;</span>
 		try {
 <span class="fc" id="L168">			retval = (Map&lt;String,BigDecimal&gt;) coreMap.get(getAnnotationClass());</span>
-<span class="fc" id="L169">		}</span>
+		}
 <span class="nc" id="L170">		catch (Throwable t) {</span>
 <span class="nc" id="L171">			logger.error(t);</span>
-		}
+<span class="fc" id="L172">		}</span>
 <span class="fc bfc" id="L173" title="All 2 branches covered.">		if (retval == null) {</span>
 <span class="fc" id="L174">			retval = new HashMap&lt;String, BigDecimal&gt;();</span>
 		}
@@ -186,8 +186,8 @@ public class BiberAnnotator extends AbstractPosAnnotator implements Annotator, I
 <span class="fc" id="L186">					addToScoreMap(scoreMap, &quot;VBD&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L187">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L189">			}</span>
+<span class="fc" id="L190">		}</span>
 <span class="fc" id="L191">	}</span>
 	
 
@@ -221,7 +221,7 @@ or negations.
 					}					
 				}
 			}
-		}
+<span class="fc" id="L224">		}</span>
 <span class="fc" id="L225">	}</span>
 	
 	public void annotate_VPRT(Annotation annotation) {
@@ -234,8 +234,8 @@ or negations.
 <span class="fc" id="L234">					addToScoreMap(scoreMap, &quot;VPRT&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L235">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L237">			}</span>
+<span class="fc" id="L238">		}</span>
 <span class="fc" id="L239">	}</span>
 	
 	public void annotate_PLACE(Annotation annotation) {
@@ -252,12 +252,12 @@ or negations.
 <span class="fc" id="L252">							token.set(getAnnotationClass(), scoreMap);</span>
 						}
 					}
-				}
-			}
-<span class="fc" id="L257">		}</span>
+<span class="fc" id="L255">				}</span>
+<span class="fc" id="L256">			}</span>
+		}
 <span class="nc" id="L258">		catch (Exception e) {</span>
 <span class="nc" id="L259">			logger.error(e);</span>
-		}
+<span class="fc" id="L260">		}</span>
 <span class="fc" id="L261">	}</span>
 	
 	
@@ -275,16 +275,16 @@ or negations.
 					}
 <span class="pc bpc" id="L276" title="1 of 2 branches missed.">					if (token.lemma().equals(&quot;soon&quot;)) {</span>
 <span class="nc" id="L277">						soonAs = true;</span>
-<span class="nc" id="L278">					}</span>
+					}
 					else {
 <span class="fc" id="L280">						soonAs = false;</span>
 					}
-				}
-			}
-<span class="fc" id="L284">		}</span>
+<span class="fc" id="L282">				}</span>
+<span class="fc" id="L283">			}</span>
+		}
 <span class="nc" id="L285">		catch (Exception e) {</span>
 <span class="nc" id="L286">			logger.error(e);</span>
-		}
+<span class="fc" id="L287">		}</span>
 <span class="fc" id="L288">	}</span>
 	
 	public void annotate_FPP1(Annotation annotation) {
@@ -297,8 +297,8 @@ or negations.
 <span class="fc" id="L297">					addToScoreMap(scoreMap, &quot;FPP1&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L298">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L300">			}</span>
+<span class="fc" id="L301">		}</span>
 <span class="fc" id="L302">	}</span>
 	
 	public void annotate_SPP2(Annotation annotation) {
@@ -311,8 +311,8 @@ or negations.
 <span class="fc" id="L311">					addToScoreMap(scoreMap, &quot;SPP2&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L312">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L314">			}</span>
+<span class="fc" id="L315">		}</span>
 <span class="fc" id="L316">	}</span>
 	
 	public void annotate_TPP3(Annotation annotation) {
@@ -325,8 +325,8 @@ or negations.
 <span class="fc" id="L325">					addToScoreMap(scoreMap, &quot;TPP3&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L326">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L328">			}</span>
+<span class="fc" id="L329">		}</span>
 <span class="fc" id="L330">	}</span>
 	
 	public void annotate_PIT(Annotation annotation) {
@@ -339,8 +339,8 @@ or negations.
 <span class="fc" id="L339">					addToScoreMap(scoreMap, &quot;PIT&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L340">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L342">			}</span>
+<span class="fc" id="L343">		}</span>
 <span class="fc" id="L344">	}</span>
 	
 	//TODO
@@ -365,8 +365,8 @@ been already tagged as a TOBJ, TSUB, THAC or THVC.
 <span class="fc" id="L365">					addToScoreMap(scoreMap, &quot;INPR&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L366">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L368">			}</span>
+<span class="fc" id="L369">		}</span>
 <span class="fc" id="L370">	}</span>
 	
 
@@ -391,7 +391,7 @@ list of WH pronouns is in Biber (1988)).
 					}					
 				}
 			}
-		}
+<span class="fc" id="L394">		}</span>
 <span class="fc" id="L395">	}</span>
 	
 
@@ -414,7 +414,7 @@ improved by excluding WH words such as however or whatever that do not introduce
 <span class="fc bfc" id="L414" title="All 2 branches covered.">			for (CoreLabel token : sentence.tokens()) {</span>
 <span class="fc bfc" id="L415" title="All 2 branches covered.">				if (posTags.contains(token.tag())) {</span>
 <span class="fc" id="L416">					whToken = token;</span>
-<span class="fc" id="L417">				}</span>
+				}
 <span class="fc bfc" id="L418" title="All 8 branches covered.">				else if (whToken != null &amp;&amp; (token.tag().equals(&quot;MD&quot;) || token.lemma().equals(&quot;do&quot;) || token.lemma().equals(&quot;have&quot;))) {</span>
 <span class="fc" id="L419">					Map&lt;String, BigDecimal&gt; scoreMap = getBiberAnnotation(token);</span>
 <span class="fc" id="L420">					addToScoreMap(scoreMap, &quot;WHQU&quot;, new BigDecimal(1));</span>
@@ -423,8 +423,8 @@ improved by excluding WH words such as however or whatever that do not introduce
 				else {
 <span class="fc" id="L424">					whToken = null;</span>
 				}
-			}
-		}
+<span class="fc" id="L426">			}</span>
+<span class="fc" id="L427">		}</span>
 
 <span class="fc" id="L429">	}</span>
 	
@@ -440,9 +440,9 @@ improved by excluding WH words such as however or whatever that do not introduce
 <span class="fc" id="L440">						addToScoreMap(scoreMap, &quot;NOMZ&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L441">						token.set(getAnnotationClass(), scoreMap);</span>
 					}
-				}
-			}
-		}
+<span class="fc" id="L443">				}</span>
+<span class="fc" id="L444">			}</span>
+<span class="fc" id="L445">		}</span>
 <span class="fc" id="L446">	}</span>
 	
 
@@ -459,8 +459,8 @@ improved by excluding WH words such as however or whatever that do not introduce
 <span class="fc" id="L459">					addToScoreMap(scoreMap, &quot;GER&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L460">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L462">			}</span>
+<span class="fc" id="L463">		}</span>
 <span class="fc" id="L464">	}</span>
 	
 	//DONE - Must run after GER and NOMZ
@@ -476,8 +476,8 @@ improved by excluding WH words such as however or whatever that do not introduce
 <span class="fc" id="L476">						token.set(getAnnotationClass(), scoreMap);</span>
 					}
 				}
-			}
-		}
+<span class="fc" id="L479">			}</span>
+<span class="fc" id="L480">		}</span>
 <span class="fc" id="L481">	}</span>
 	
 
@@ -504,12 +504,12 @@ which a negation precedes the nominal form of pattern (b).
 				}
 <span class="fc bfc" id="L505" title="All 2 branches covered.">				if (token.lemma().equals(&quot;be&quot;)) {</span>
 <span class="fc" id="L506">					wasBe = true;</span>
-<span class="fc" id="L507">				}</span>
+				}
 				else {
 <span class="fc" id="L509">					wasBe = false;</span>
 				}
-			}
-		}
+<span class="fc" id="L511">			}</span>
+<span class="fc" id="L512">		}</span>
 <span class="fc" id="L513">	}</span>
 	
 	//DONE - Must run after PASS
@@ -526,12 +526,12 @@ which a negation precedes the nominal form of pattern (b).
 				}
 <span class="fc bfc" id="L527" title="All 2 branches covered.">				if (getBiberAnnotation(token).get(&quot;PASS&quot;) != null) {</span>
 <span class="fc" id="L528">					wasPASS = true;</span>
-<span class="fc" id="L529">				}</span>
+				}
 				else {
 <span class="fc" id="L531">					wasPASS = false;</span>
 				}
-			}
-		}
+<span class="fc" id="L533">			}</span>
+<span class="fc" id="L534">		}</span>
 <span class="fc" id="L535">	}</span>
 	
 
@@ -558,7 +558,7 @@ not appear before the pattern; (b) the cardinal numbers (CD) tag and the persona
 					}					
 				}
 			}
-		}
+<span class="fc" id="L561">		}</span>
 <span class="fc" id="L562">	}</span>
 	
 	public void annotate_EX(Annotation annotation) {
@@ -571,8 +571,8 @@ not appear before the pattern; (b) the cardinal numbers (CD) tag and the persona
 <span class="fc" id="L571">					addToScoreMap(scoreMap, &quot;EX&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L572">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L574">			}</span>
+<span class="fc" id="L575">		}</span>
 <span class="fc" id="L576">	}</span>
 	
 
@@ -597,14 +597,14 @@ four words that are not nouns (N).
 <span class="fc" id="L597">				CoreMap token = null;</span>
 <span class="fc bfc" id="L598" title="All 2 branches covered.">				for (CoreMap t : matchedTokens) {</span>
 <span class="fc" id="L599">					token = t;</span>
-				}
+<span class="fc" id="L600">				}</span>
 <span class="pc bpc" id="L601" title="1 of 2 branches missed.">				if (token != null) {</span>
 <span class="fc" id="L602">					Map&lt;String, BigDecimal&gt; scoreMap = getBiberAnnotation(token);</span>
 <span class="fc" id="L603">					addToScoreMap(scoreMap, &quot;THVC&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L604">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L606">			}</span>
+<span class="fc" id="L607">		}</span>
 <span class="fc" id="L608">	}</span>
 
 	
@@ -622,12 +622,12 @@ four words that are not nouns (N).
 <span class="fc" id="L622">				}</span>
 <span class="fc bfc" id="L623" title="All 2 branches covered.">				else if (token.tag().equals(&quot;JJ&quot;)) {</span>
 <span class="fc" id="L624">					wasJJ = true;</span>
-<span class="fc" id="L625">				}</span>
+				}
 				else {
 <span class="fc" id="L627">					wasJJ = false;</span>
 				}
-			}
-		}
+<span class="fc" id="L629">			}</span>
+<span class="fc" id="L630">		}</span>
 <span class="fc" id="L631">	}</span>
 
 
@@ -649,14 +649,14 @@ verbs, or a form of DO, or a form of HAVE, or a form of BE).
 <span class="fc" id="L649">				CoreMap token = null;</span>
 <span class="fc bfc" id="L650" title="All 2 branches covered.">				for (CoreMap t : matchedTokens) {</span>
 <span class="fc" id="L651">					token = t;</span>
-				}
+<span class="fc" id="L652">				}</span>
 <span class="pc bpc" id="L653" title="1 of 2 branches missed.">				if (token != null) {</span>
 <span class="fc" id="L654">					Map&lt;String, BigDecimal&gt; scoreMap = getBiberAnnotation(token);</span>
 <span class="fc" id="L655">					addToScoreMap(scoreMap, &quot;WHCL&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L656">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L658">			}</span>
+<span class="fc" id="L659">		}</span>
 <span class="fc" id="L660">	}</span>
 
 
@@ -683,14 +683,14 @@ therefore identifying occurrences of infinitive clauses.
 <span class="fc" id="L683">				CoreMap token = null;</span>
 <span class="fc bfc" id="L684" title="All 2 branches covered.">				for (CoreMap t : matchedTokens) {</span>
 <span class="fc" id="L685">					token = t;</span>
-				}
+<span class="fc" id="L686">				}</span>
 <span class="pc bpc" id="L687" title="1 of 2 branches missed.">				if (token != null) {</span>
 <span class="fc" id="L688">					Map&lt;String, BigDecimal&gt; scoreMap = getBiberAnnotation(token);</span>
 <span class="fc" id="L689">					addToScoreMap(scoreMap, &quot;TO&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L690">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L692">			}</span>
+<span class="fc" id="L693">		}</span>
 <span class="fc" id="L694">	}</span>
 	
 
@@ -711,8 +711,8 @@ QUAN, CD), a WH pronoun, a WH possessive pronoun (WP$), any WH word, any pronoun
 <span class="fc" id="L711">					addToScoreMap(scoreMap, &quot;PRESP&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L712">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L714">			}</span>
+<span class="fc" id="L715">		}</span>
 <span class="fc" id="L716">	}</span>
 
 	
@@ -731,8 +731,8 @@ past participial form of a verb (VBN) followed by a preposition (PIN) or an adve
 <span class="fc" id="L731">					addToScoreMap(scoreMap, &quot;PASTP&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L732">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L734">			}</span>
+<span class="fc" id="L735">		}</span>
 <span class="fc" id="L736">	}</span>
 	
 
@@ -756,8 +756,8 @@ or an adverb (RB) or a form of BE.
 <span class="fc" id="L756">					addToScoreMap(scoreMap, &quot;WZPAST&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L757">					matchedTokens.get(1).set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L759">			}</span>
+<span class="fc" id="L760">		}</span>
 <span class="fc" id="L761">	}</span>
 	
 
@@ -776,14 +776,14 @@ This tag is assigned a present participial form of a verb (VBG) is preceded by a
 <span class="fc" id="L776">				CoreMap token = null;</span>
 <span class="fc bfc" id="L777" title="All 2 branches covered.">				for (CoreMap t : matchedTokens) {</span>
 <span class="fc" id="L778">					token = t;</span>
-				}
+<span class="fc" id="L779">				}</span>
 <span class="pc bpc" id="L780" title="1 of 2 branches missed.">				if (token != null) {</span>
 <span class="fc" id="L781">					Map&lt;String, BigDecimal&gt; scoreMap = getBiberAnnotation(token);</span>
 <span class="fc" id="L782">					addToScoreMap(scoreMap, &quot;WZPRES&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L783">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L785">			}</span>
+<span class="fc" id="L786">		}</span>
 <span class="fc" id="L787">	}</span>
 	
 
@@ -806,14 +806,14 @@ verb (V), with the possibility of an intervening adverb (RB) or negation (XX0).
 <span class="fc bfc" id="L806" title="All 2 branches covered.">				for (CoreMap t : matchedTokens) {</span>
 <span class="fc" id="L807">					thatToken = token;</span>
 <span class="fc" id="L808">					token = t;</span>
-				}
+<span class="fc" id="L809">				}</span>
 <span class="pc bpc" id="L810" title="1 of 2 branches missed.">				if (token != null) {</span>
 <span class="fc" id="L811">					Map&lt;String, BigDecimal&gt; scoreMap = getBiberAnnotation(thatToken);</span>
 <span class="fc" id="L812">					addToScoreMap(scoreMap, &quot;TSUB&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L813">					thatToken.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L815">			}</span>
+<span class="fc" id="L816">		}</span>
 <span class="fc" id="L817">	}</span>
 	
 
@@ -839,14 +839,14 @@ distinguish between simple complements to nouns and true relative clauses.
 <span class="fc bfc" id="L839" title="All 2 branches covered.">				for (CoreMap t : matchedTokens) {</span>
 <span class="fc" id="L840">					thatToken = token;</span>
 <span class="fc" id="L841">					token = t;</span>
-				}
+<span class="fc" id="L842">				}</span>
 <span class="pc bpc" id="L843" title="1 of 2 branches missed.">				if (token != null) {</span>
 <span class="fc" id="L844">					Map&lt;String, BigDecimal&gt; scoreMap = getBiberAnnotation(thatToken);</span>
 <span class="fc" id="L845">					addToScoreMap(scoreMap, &quot;TOBJ&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L846">					thatToken.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L848">			}</span>
+<span class="fc" id="L849">		}</span>
 <span class="fc" id="L850">	}</span>
 	
 
@@ -871,8 +871,8 @@ between the WH pronoun and the verb.
 <span class="fc" id="L871">					addToScoreMap(scoreMap, &quot;WHSUB&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L872">					matchedTokens.get(1).set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L874">			}</span>
+<span class="fc" id="L875">		}</span>
 <span class="fc" id="L876">	}</span>
 	
 
@@ -895,14 +895,14 @@ HAVE, BE or DO).
 <span class="fc" id="L895">				CoreMap token = null;</span>
 <span class="fc bfc" id="L896" title="All 2 branches covered.">				for (CoreMap t : matchedTokens) {</span>
 <span class="fc" id="L897">					token = t;</span>
-				}
+<span class="fc" id="L898">				}</span>
 <span class="pc bpc" id="L899" title="1 of 2 branches missed.">				if (token != null) {</span>
 <span class="fc" id="L900">					Map&lt;String, BigDecimal&gt; scoreMap = getBiberAnnotation(token);</span>
 <span class="fc" id="L901">					addToScoreMap(scoreMap, &quot;WHOBJ&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L902">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L904">			}</span>
+<span class="fc" id="L905">		}</span>
 <span class="fc" id="L906">	}</span>
 
 	public void annotate_PIRE(Annotation annotation) {
@@ -920,16 +920,16 @@ HAVE, BE or DO).
 					}
 <span class="fc bfc" id="L921" title="All 2 branches covered.">					if (tags.contains(token.lemma())) {</span>
 <span class="fc" id="L922">						wasPIN = true;</span>
-<span class="fc" id="L923">					}</span>
+					}
 					else {
 <span class="fc" id="L925">						wasPIN = false;</span>
 					}
-				}
-			}
-<span class="fc" id="L929">		}</span>
+<span class="fc" id="L927">				}</span>
+<span class="fc" id="L928">			}</span>
+		}
 <span class="nc" id="L930">		catch (Throwable t) {</span>
 <span class="nc" id="L931">			logger.error(t);</span>
-		}
+<span class="fc" id="L932">		}</span>
 <span class="fc" id="L933">	}</span>
 	
 	public void annotate_SERE(Annotation annotation) {
@@ -946,12 +946,12 @@ HAVE, BE or DO).
 				}
 <span class="fc bfc" id="L947" title="All 2 branches covered.">				if (isPunctuationMark(token)) {</span>
 <span class="fc" id="L948">					wasPunct = true;</span>
-<span class="fc" id="L949">				}</span>
+				}
 				else {
 <span class="fc" id="L951">					wasPunct = false;</span>
 				}
-			}
-		}
+<span class="fc" id="L953">			}</span>
+<span class="fc" id="L954">		}</span>
 <span class="fc" id="L955">	}</span>
 	
 	public void annotate_CAUS(Annotation annotation) {
@@ -964,8 +964,8 @@ HAVE, BE or DO).
 <span class="fc" id="L964">					addToScoreMap(scoreMap, &quot;CAUS&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L965">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L967">			}</span>
+<span class="fc" id="L968">		}</span>
 <span class="fc" id="L969">	}</span>
 	
 	public void annotate_CONC(Annotation annotation) {
@@ -978,8 +978,8 @@ HAVE, BE or DO).
 <span class="fc" id="L978">					addToScoreMap(scoreMap, &quot;CONC&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L979">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L981">			}</span>
+<span class="fc" id="L982">		}</span>
 <span class="fc" id="L983">	}</span>
 	
 	public void annotate_COND(Annotation annotation) {
@@ -992,8 +992,8 @@ HAVE, BE or DO).
 <span class="fc" id="L992">					addToScoreMap(scoreMap, &quot;COND&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L993">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L995">			}</span>
+<span class="fc" id="L996">		}</span>
 <span class="fc" id="L997">	}</span>
 	
 
@@ -1023,7 +1023,7 @@ as, only the first word is tagged as OSUB and the other words are tagged with th
 					}					
 				}
 			}
-		}
+<span class="fc" id="L1026">		}</span>
 <span class="fc" id="L1027">	}</span>
 	
 	public void annotate_PIN(Annotation annotation) {
@@ -1037,12 +1037,12 @@ as, only the first word is tagged as OSUB and the other words are tagged with th
 <span class="fc" id="L1037">						addToScoreMap(scoreMap, &quot;PIN&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L1038">						token.set(getAnnotationClass(), scoreMap);</span>
 					}
-				}
-			}
-<span class="fc" id="L1042">		}</span>
+<span class="fc" id="L1040">				}</span>
+<span class="fc" id="L1041">			}</span>
+		}
 <span class="nc" id="L1043">		catch (Throwable t) {</span>
 <span class="nc" id="L1044">			logger.error(t);</span>
-		}
+<span class="fc" id="L1045">		}</span>
 <span class="fc" id="L1046">	}</span>
 	
 	public void annotate_JJ(Annotation annotation) {
@@ -1055,8 +1055,8 @@ as, only the first word is tagged as OSUB and the other words are tagged with th
 <span class="fc" id="L1055">					addToScoreMap(scoreMap, &quot;JJ&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L1056">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L1058">			}</span>
+<span class="fc" id="L1059">		}</span>
 <span class="fc" id="L1060">	}</span>
 	
 
@@ -1083,12 +1083,12 @@ coordinator (see below). This pattern accounts for cases such as: the horse is b
 				}
 <span class="fc bfc" id="L1084" title="All 2 branches covered.">				if (token.lemma().equals(&quot;be&quot;)) {</span>
 <span class="fc" id="L1085">					wasBe = true;</span>
-<span class="fc" id="L1086">				}</span>
+				}
 				else {
 <span class="fc" id="L1088">					wasBe = false;</span>
 				}
-			}
-		}
+<span class="fc" id="L1090">			}</span>
+<span class="fc" id="L1091">		}</span>
 <span class="fc" id="L1092">	}</span>
 	
 	public void annotate_RB(Annotation annotation) {
@@ -1101,8 +1101,8 @@ coordinator (see below). This pattern accounts for cases such as: the horse is b
 <span class="fc" id="L1101">					addToScoreMap(scoreMap, &quot;RB&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L1102">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L1104">			}</span>
+<span class="fc" id="L1105">		}</span>
 <span class="fc" id="L1106">	}</span>
 	
 	public void annotate_AWL(Annotation annotation) {
@@ -1115,18 +1115,18 @@ coordinator (see below). This pattern accounts for cases such as: the horse is b
 <span class="fc" id="L1115">					words++;</span>
 <span class="fc" id="L1116">					characters += token.originalText().length();</span>
 				}
-			}
-		}
+<span class="fc" id="L1118">			}</span>
+<span class="fc" id="L1119">		}</span>
 		try {
 <span class="pc bpc" id="L1121" title="2 of 4 branches missed.">			if (characters &gt; 0 &amp;&amp; words &gt; 0) {</span>
 <span class="fc" id="L1122">				Map&lt;String, BigDecimal&gt; scoreMap = getBiberAnnotation(annotation);</span>
 <span class="fc" id="L1123">				addToScoreMap(scoreMap, &quot;AWL&quot;, new BigDecimal(characters/words));</span>
 <span class="fc" id="L1124">				annotation.set(getAnnotationClass(), scoreMap);</span>
 			}
-<span class="fc" id="L1126">		}</span>
+		}
 <span class="nc" id="L1127">		catch (Exception e) {</span>
 <span class="nc" id="L1128">			logger.error(e);</span>
-		}
+<span class="fc" id="L1129">		}</span>
 <span class="fc" id="L1130">	}</span>
 	
 	public void annotate_TTR(Annotation annotation) {
@@ -1146,20 +1146,20 @@ coordinator (see below). This pattern accounts for cases such as: the horse is b
 <span class="fc" id="L1146">							typeCount.add(key);</span>
 						}
 						
-					}
+<span class="fc" id="L1149">					}</span>
 				}
-			}
-		}
+<span class="fc" id="L1151">			}</span>
+<span class="fc" id="L1152">		}</span>
 		try {
 <span class="pc bpc" id="L1154" title="1 of 2 branches missed.">			if (words &gt; 0) {</span>
 <span class="fc" id="L1155">				Map&lt;String, BigDecimal&gt; scoreMap = getBiberAnnotation(annotation);</span>
 <span class="fc" id="L1156">				addToScoreMap(scoreMap, &quot;TTR&quot;, new BigDecimal(typeCount.size()/words));</span>
 <span class="fc" id="L1157">				annotation.set(getAnnotationClass(), scoreMap);</span>
 			}
-<span class="fc" id="L1159">		}</span>
+		}
 <span class="nc" id="L1160">		catch (Exception e) {</span>
 <span class="nc" id="L1161">			logger.error(e);</span>
-		}
+<span class="fc" id="L1162">		}</span>
 <span class="fc" id="L1163">	}</span>
 	
 
@@ -1187,12 +1187,12 @@ words are tagged with the tag NULL.
 <span class="fc" id="L1187">						addToScoreMap(scoreMap, &quot;CONJ&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L1188">						token.set(getAnnotationClass(), scoreMap);</span>
 					}
-				}
-			}
-<span class="fc" id="L1192">		}</span>
+<span class="fc" id="L1190">				}</span>
+<span class="fc" id="L1191">			}</span>
+		}
 <span class="nc" id="L1193">		catch (Exception e) {</span>
 <span class="nc" id="L1194">			logger.error(e);</span>
-		}
+<span class="fc" id="L1195">		}</span>
 <span class="fc" id="L1196">	}</span>
 	
 	public void annotate_DWNT(Annotation annotation) {
@@ -1205,8 +1205,8 @@ words are tagged with the tag NULL.
 <span class="fc" id="L1205">					addToScoreMap(scoreMap, &quot;DWNT&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L1206">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L1208">			}</span>
+<span class="fc" id="L1209">		}</span>
 <span class="fc" id="L1210">	}</span>
 	
 
@@ -1252,7 +1252,7 @@ word is tagged as HDG and the other words are tagged with the tag NULL.
 					}
 				}
 			}
-		}
+<span class="fc" id="L1255">		}</span>
 <span class="fc" id="L1256">	}</span>
 	
 	public void annotate_AMP(Annotation annotation) {
@@ -1265,8 +1265,8 @@ word is tagged as HDG and the other words are tagged with the tag NULL.
 <span class="fc" id="L1265">					addToScoreMap(scoreMap, &quot;AMP&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L1266">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L1268">			}</span>
+<span class="fc" id="L1269">		}</span>
 <span class="fc" id="L1270">	}</span>
 	
 
@@ -1286,7 +1286,7 @@ tagged with the tag NULL.
 <span class="fc" id="L1286">					sentence.tokens().get(i).set(getAnnotationClass(), scoreMap);</span>
 				}
 <span class="fc bfc" id="L1288" title="All 2 branches covered.">				if (i&lt;sentence.tokens().size()-1) {</span>
-					if (
+<span class="fc" id="L1289">					if (</span>
 <span class="pc bpc" id="L1290" title="1 of 4 branches missed.">							(sentence.tokens().get(i).lemma().equals(&quot;for&quot;) &amp;&amp; sentence.tokens().get(i+1).lemma().equals(&quot;sure&quot;))</span>
 							||
 <span class="pc bpc" id="L1292" title="1 of 4 branches missed.">							(sentence.tokens().get(i).lemma().equals(&quot;a&quot;) &amp;&amp; sentence.tokens().get(i+1).lemma().equals(&quot;lot&quot;))</span>
@@ -1305,7 +1305,7 @@ tagged with the tag NULL.
 					}
 				}
 			}
-		}
+<span class="fc" id="L1308">		}</span>
 
 <span class="fc" id="L1310">	}</span>
 	
@@ -1322,12 +1322,12 @@ tagged with the tag NULL.
 				}
 <span class="fc bfc" id="L1323" title="All 2 branches covered.">				if (isPunctuationMark(token)) {</span>
 <span class="fc" id="L1324">					wasPunct = true;</span>
-<span class="fc" id="L1325">				}</span>
+				}
 				else {
 <span class="fc" id="L1327">					wasPunct = false;</span>
 				}
-			}
-		}
+<span class="fc" id="L1329">			}</span>
+<span class="fc" id="L1330">		}</span>
 <span class="fc" id="L1331">	}</span>
 	
 	//DONE - Must run after DEMP, TOBJ, TSUB, THAC, THVC
@@ -1343,8 +1343,8 @@ tagged with the tag NULL.
 <span class="fc" id="L1343">						token.set(getAnnotationClass(), scoreMap);</span>
 					}
 				}
-			}
-		}
+<span class="fc" id="L1346">			}</span>
+<span class="fc" id="L1347">		}</span>
 <span class="fc" id="L1348">	}</span>
 	
 	public void annotate_POMD(Annotation annotation) {
@@ -1357,8 +1357,8 @@ tagged with the tag NULL.
 <span class="fc" id="L1357">					addToScoreMap(scoreMap, &quot;POMD&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L1358">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L1360">			}</span>
+<span class="fc" id="L1361">		}</span>
 <span class="fc" id="L1362">	}</span>
 	
 	public void annotate_NEMD(Annotation annotation) {
@@ -1371,8 +1371,8 @@ tagged with the tag NULL.
 <span class="fc" id="L1371">					addToScoreMap(scoreMap, &quot;NEMD&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L1372">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L1374">			}</span>
+<span class="fc" id="L1375">		}</span>
 <span class="fc" id="L1376">	}</span>
 	
 	public void annotate_PRMD(Annotation annotation) {
@@ -1385,8 +1385,8 @@ tagged with the tag NULL.
 <span class="fc" id="L1385">					addToScoreMap(scoreMap, &quot;PRMD&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L1386">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L1388">			}</span>
+<span class="fc" id="L1389">		}</span>
 <span class="fc" id="L1390">	}</span>
 	
 	public void annotate_PUBV(Annotation annotation) {
@@ -1401,12 +1401,12 @@ tagged with the tag NULL.
 <span class="fc" id="L1401">						addToScoreMap(scoreMap, &quot;PUBV&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L1402">						token.set(getAnnotationClass(), scoreMap);</span>
 					}
-				}
-			}
-<span class="fc" id="L1406">		}</span>
+<span class="fc" id="L1404">				}</span>
+<span class="fc" id="L1405">			}</span>
+		}
 <span class="nc" id="L1407">		catch (Throwable t) {</span>
 <span class="nc" id="L1408">			logger.error(t);</span>
-		}
+<span class="fc" id="L1409">		}</span>
 <span class="fc" id="L1410">	}</span>
 	
 	public void annotate_PRIV(Annotation annotation) {
@@ -1421,12 +1421,12 @@ tagged with the tag NULL.
 <span class="fc" id="L1421">						addToScoreMap(scoreMap, &quot;PRIV&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L1422">						token.set(getAnnotationClass(), scoreMap);</span>
 					}
-				}
-			}
-<span class="fc" id="L1426">		}</span>
+<span class="fc" id="L1424">				}</span>
+<span class="fc" id="L1425">			}</span>
+		}
 <span class="nc" id="L1427">		catch (Throwable t) {</span>
 <span class="nc" id="L1428">			logger.error(t);</span>
-		}
+<span class="fc" id="L1429">		}</span>
 <span class="fc" id="L1430">	}</span>
 	
 	public void annotate_SUAV(Annotation annotation) {
@@ -1441,12 +1441,12 @@ tagged with the tag NULL.
 <span class="fc" id="L1441">						addToScoreMap(scoreMap, &quot;SUAV&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L1442">						token.set(getAnnotationClass(), scoreMap);</span>
 					}
-				}
-			}
-<span class="fc" id="L1446">		}</span>
+<span class="fc" id="L1444">				}</span>
+<span class="fc" id="L1445">			}</span>
+		}
 <span class="nc" id="L1447">		catch (Throwable t) {</span>
 <span class="nc" id="L1448">			logger.error(t);</span>
-		}
+<span class="fc" id="L1449">		}</span>
 <span class="fc" id="L1450">	}</span>
 	
 	
@@ -1462,12 +1462,12 @@ tagged with the tag NULL.
 <span class="fc" id="L1462">						addToScoreMap(scoreMap, &quot;SEMP&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L1463">						token.set(getAnnotationClass(), scoreMap);</span>
 					}
-				}
-			}
-<span class="fc" id="L1467">		}</span>
+<span class="fc" id="L1465">				}</span>
+<span class="fc" id="L1466">			}</span>
+		}
 <span class="nc" id="L1468">		catch (Throwable t) {</span>
 <span class="nc" id="L1469">			logger.error(t);</span>
-		}
+<span class="fc" id="L1470">		}</span>
 <span class="fc" id="L1471">	}</span>
 	
 
@@ -1484,8 +1484,8 @@ word OR any instance of the item n’t.
 <span class="fc" id="L1484">					addToScoreMap(scoreMap, &quot;CONT&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L1485">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L1487">			}</span>
+<span class="fc" id="L1488">		}</span>
 <span class="fc" id="L1489">	}</span>
 	
 	
@@ -1515,17 +1515,17 @@ an intervening adjective (JJ or PRED) between the noun and its preceding word.
 <span class="pc bpc" id="L1515" title="1 of 2 branches missed.">					if (pinToken != null) {</span>
 <span class="fc" id="L1516">						pinToken.set(getAnnotationClass(), scoreMap);</span>
 					}
-<span class="fc" id="L1518">					break;</span>
+					break;
 				}
 <span class="fc bfc" id="L1520" title="All 2 branches covered.">				if (posTags.contains(token.tag())) {</span>
 <span class="fc" id="L1521">					pinToken = token;</span>
 <span class="fc" id="L1522">					wasPIN = true;</span>
-<span class="fc" id="L1523">				}</span>
+				}
 				else {
 <span class="fc" id="L1525">					wasPIN = false;</span>
 				}
-			}
-		}
+<span class="fc" id="L1527">			}</span>
+<span class="fc" id="L1528">		}</span>
 <span class="fc" id="L1529">	}</span>
 	
 
@@ -1546,14 +1546,14 @@ adverbs and a verb base form.
 <span class="fc" id="L1546">				CoreMap token = null;</span>
 <span class="fc bfc" id="L1547" title="All 2 branches covered.">				for (CoreMap t : matchedTokens) {</span>
 <span class="fc" id="L1548">					token = t;</span>
-				}
+<span class="fc" id="L1549">				}</span>
 <span class="pc bpc" id="L1550" title="1 of 2 branches missed.">				if (token != null) {</span>
 <span class="fc" id="L1551">					Map&lt;String, BigDecimal&gt; scoreMap = getBiberAnnotation(token);</span>
 <span class="fc" id="L1552">					addToScoreMap(scoreMap, &quot;SPIN&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L1553">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L1555">			}</span>
+<span class="fc" id="L1556">		}</span>
 <span class="fc" id="L1557">	}</span>
 	
 
@@ -1576,14 +1576,14 @@ base form.
 <span class="fc" id="L1576">				CoreMap token = null;</span>
 <span class="fc bfc" id="L1577" title="All 2 branches covered.">				for (CoreMap t : matchedTokens) {</span>
 <span class="fc" id="L1578">					token = t;</span>
-				}
+<span class="fc" id="L1579">				}</span>
 <span class="pc bpc" id="L1580" title="1 of 2 branches missed.">				if (token != null) {</span>
 <span class="fc" id="L1581">					Map&lt;String, BigDecimal&gt; scoreMap = getBiberAnnotation(token);</span>
 <span class="fc" id="L1582">					addToScoreMap(scoreMap, &quot;SPAU&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L1583">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L1585">			}</span>
+<span class="fc" id="L1586">		}</span>
 <span class="fc" id="L1587">	}</span>
 	
 
@@ -1600,7 +1600,7 @@ base form.
 					}					
 				}
 			}
-		}
+<span class="fc" id="L1603">		}</span>
 <span class="fc" id="L1604">	}</span>
 	
 
@@ -1628,16 +1628,16 @@ punctuation; (3) followed by a WH pronoun or any WH word, an adverbial subordina
 <span class="fc" id="L1628">				}</span>
 <span class="fc bfc" id="L1629" title="All 4 branches covered.">				else if (wasNot &amp;&amp; token.tag().equals(&quot;JJ&quot;)) {</span>
 <span class="fc" id="L1630">					wasJJ = true;</span>
-<span class="fc" id="L1631">				}</span>
+				}
 <span class="pc bpc" id="L1632" title="1 of 6 branches missed.">				else if (token.lemma().equals(&quot;no&quot;) || token.lemma().equals(&quot;not&quot;) || token.lemma().equals(&quot;neither&quot;)) {</span>
 <span class="fc" id="L1633">					wasNot = true;</span>
-<span class="fc" id="L1634">				}</span>
+				}
 				else {
 <span class="fc" id="L1636">					wasNot = false;</span>
 <span class="fc" id="L1637">					wasJJ = false;</span>
 				}
-			}
-		}
+<span class="fc" id="L1639">			}</span>
+<span class="fc" id="L1640">		}</span>
 <span class="fc" id="L1641">	}</span>
 	
 	public void annotate_XX0(Annotation annotation) {
@@ -1649,8 +1649,8 @@ punctuation; (3) followed by a WH pronoun or any WH word, an adverbial subordina
 <span class="fc" id="L1649">					addToScoreMap(scoreMap, &quot;XX0&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L1650">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L1652">			}</span>
+<span class="fc" id="L1653">		}</span>
 <span class="fc" id="L1654">	}</span>
 
 	

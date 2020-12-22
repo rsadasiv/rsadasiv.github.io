@@ -60,14 +60,14 @@ public abstract class AbstractPosAnnotator extends AbstractAnnotator implements 
 <span class="fc" id="L60">	    	String[] nameValue = nameCSV.split(&quot; &quot;);</span>
 <span class="fc bfc" id="L61" title="All 2 branches covered.">	    	if (nameValue.length &gt; 1) {</span>
 <span class="fc" id="L62">	    		getTags().add(nameValue[0].toLowerCase());</span>
-<span class="fc" id="L63">	    	}</span>
+	    	}
 	    	else {
 <span class="fc" id="L65">	    		String[] namesForThisLine = nameCSV.split(&quot;,&quot;);</span>
 <span class="fc bfc" id="L66" title="All 2 branches covered.">	    		for (String name : namesForThisLine) {</span>
 <span class="fc" id="L67">	    			getTags().add(name.trim().toLowerCase());</span>
 	    		}
 	    	}
-	    }
+<span class="fc" id="L70">	    }</span>
 <span class="fc" id="L71">	}</span>
 	
 	//is this right generally?
@@ -76,13 +76,13 @@ public abstract class AbstractPosAnnotator extends AbstractAnnotator implements 
 	@Override
 	public Set&lt;Class&lt;? extends CoreAnnotation&gt;&gt; requires() {
 <span class="nc" id="L78">		return Collections.unmodifiableSet(</span>
-<span class="nc" id="L79">			new ArraySet&lt;&gt;(</span>
+			new ArraySet&lt;&gt;(
 <span class="nc" id="L80">				Arrays.asList(</span>
-<span class="nc" id="L81">					CoreAnnotations.TextAnnotation.class, </span>
-<span class="nc" id="L82">					CoreAnnotations.TokensAnnotation.class,</span>
-<span class="nc" id="L83">					CoreAnnotations.SentencesAnnotation.class,</span>
-<span class="nc" id="L84">					CoreAnnotations.PartOfSpeechAnnotation.class,</span>
-<span class="nc" id="L85">					CoreAnnotations.LemmaAnnotation.class</span>
+					CoreAnnotations.TextAnnotation.class, 
+					CoreAnnotations.TokensAnnotation.class,
+					CoreAnnotations.SentencesAnnotation.class,
+					CoreAnnotations.PartOfSpeechAnnotation.class,
+					CoreAnnotations.LemmaAnnotation.class
 				)
 			)
 		);

@@ -87,14 +87,14 @@ public class BingUtils {
 <span class="nc" id="L87">        JsonNode doc = </span>
 <span class="nc" id="L88">        		HttpUtils.getInstance(parameterStore).httpGetJson(</span>
 <span class="nc" id="L89">        				HttpUtils.getInstance(parameterStore).buildUri(uri, nvps), </span>
-<span class="nc" id="L90">        				headers</span>
+        				headers
         		);
 <span class="nc bnc" id="L92" title="All 4 branches missed.">    	if (doc.has(&quot;value&quot;) &amp;&amp; doc.get(&quot;value&quot;).size() &gt; 0) {</span>
 <span class="nc" id="L93">    		List&lt;String&gt; retval = new ArrayList&lt;String&gt;();</span>
 <span class="nc bnc" id="L94" title="All 2 branches missed.">        	for (JsonNode val : doc.get(&quot;value&quot;)) {</span>
 <span class="nc" id="L95">        		retval.add(val.get(&quot;thumbnailUrl&quot;).asText()+&quot;&amp;w=240&amp;h=240&quot;);</span>
         		//getImageTags(text, val.get(&quot;imageInsightsToken&quot;).asText());
-        	}
+<span class="nc" id="L97">        	}</span>
 <span class="nc" id="L98">        	return retval;</span>
     	}
     	else {
@@ -114,7 +114,7 @@ public class BingUtils {
 <span class="nc" id="L114">        JsonNode doc = </span>
 <span class="nc" id="L115">        		HttpUtils.getInstance(parameterStore).httpGetJson(</span>
 <span class="nc" id="L116">        				HttpUtils.getInstance(parameterStore).buildUri(uri, nvps), </span>
-<span class="nc" id="L117">        				headers</span>
+        				headers
         		);
 <span class="nc bnc" id="L119" title="All 6 branches missed.">    	if (doc.has(&quot;imageTags&quot;) &amp;&amp; doc.get(&quot;imageTags&quot;).has(&quot;value&quot;) &amp;&amp; doc.get(&quot;imageTags&quot;).get(&quot;value&quot;).size() &gt; 0) {</span>
 <span class="nc" id="L120">    		List&lt;String&gt; retval = new ArrayList&lt;String&gt;();</span>
@@ -123,8 +123,8 @@ public class BingUtils {
 <span class="nc bnc" id="L123" title="All 2 branches missed.">        		while (fieldNameIter.hasNext()) {</span>
 <span class="nc" id="L124">        			String fieldName = fieldNameIter.next();</span>
 <span class="nc" id="L125">        			getLogger().debug(fieldName + &quot;: &quot; + val.get(fieldName).asText());</span>
-        		}
-        	}
+<span class="nc" id="L126">        		}</span>
+<span class="nc" id="L127">        	}</span>
 <span class="nc" id="L128">        	return retval;</span>
     	}
     	else {

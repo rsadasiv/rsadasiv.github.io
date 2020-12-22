@@ -50,11 +50,11 @@ public class MapSum extends MapScorer implements IScorer {
 <span class="fc" id="L50">				BigDecimal existingScore = scoreMap.get(key);</span>
 <span class="fc bfc" id="L51" title="All 2 branches covered.">				if (existingScore == null) {</span>
 <span class="fc" id="L52">					scoreMap.put(key, rawScore.get(key));</span>
-<span class="fc" id="L53">				} else {</span>
+				} else {
 <span class="fc" id="L54">					scoreMap.put(key, existingScore.add(rawScore.get(key)));</span>
 				}
-			}
-		}
+<span class="fc" id="L56">			}</span>
+<span class="fc" id="L57">		}</span>
 <span class="fc" id="L58">		return scoreMap;</span>
 	}
 

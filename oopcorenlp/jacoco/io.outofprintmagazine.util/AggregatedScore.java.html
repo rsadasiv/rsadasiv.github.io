@@ -88,7 +88,7 @@ public class AggregatedScore implements Comparable&lt;AggregatedScore&gt;{
 	
 	public String toJsonString() {
 <span class="nc" id="L90">		return String.format(</span>
-<span class="nc" id="L91">				&quot;{%n\t\&quot;Name\&quot;: %s%n\t\&quot;Score\&quot;: %s%n\t\&quot;AggregateScore\&quot;: %s%n}&quot;,</span>
+				&quot;{%n\t\&quot;Name\&quot;: %s%n\t\&quot;Score\&quot;: %s%n\t\&quot;AggregateScore\&quot;: %s%n}&quot;,
 <span class="nc" id="L92">				getName(),</span>
 <span class="nc" id="L93">				getScore().toJsonString(), </span>
 <span class="nc" id="L94">				getAggregateScore().toJsonString()</span>

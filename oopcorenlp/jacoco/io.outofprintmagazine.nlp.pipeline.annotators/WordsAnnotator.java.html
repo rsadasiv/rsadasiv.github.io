@@ -70,18 +70,18 @@ public class WordsAnnotator extends AbstractPosAnnotator implements Annotator, I
 <span class="fc" id="L70">					addToScoreMap(scoreMap, token.lemma(), new BigDecimal(1));</span>
 <span class="fc" id="L71">					token.set(getAnnotationClass(), scoreMap);</span>
 				}
-			}
-		}
+<span class="fc" id="L73">			}</span>
+<span class="fc" id="L74">		}</span>
 <span class="fc" id="L75">	}</span>
 	
 	@Override
 	public Set&lt;Class&lt;? extends CoreAnnotation&gt;&gt; requires() {
 <span class="nc" id="L79">		return Collections.unmodifiableSet(</span>
-<span class="nc" id="L80">			new ArraySet&lt;&gt;(</span>
+			new ArraySet&lt;&gt;(
 <span class="nc" id="L81">				Arrays.asList(</span>
-<span class="nc" id="L82">					CoreAnnotations.TextAnnotation.class, </span>
-<span class="nc" id="L83">					CoreAnnotations.TokensAnnotation.class,</span>
-<span class="nc" id="L84">					CoreAnnotations.SentencesAnnotation.class</span>
+					CoreAnnotations.TextAnnotation.class, 
+					CoreAnnotations.TokensAnnotation.class,
+					CoreAnnotations.SentencesAnnotation.class
 				)
 			)
 		);

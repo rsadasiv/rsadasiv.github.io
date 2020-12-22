@@ -87,10 +87,10 @@ public class Analyzer {
 <span class="fc" id="L87">						oopAnnotator.init(parameterStore);</span>
 <span class="fc" id="L88">						customAnnotators.add(oopAnnotator);</span>
 					}
-				}
+<span class="fc" id="L90">				}</span>
 				continue;
 			}
-		}
+<span class="fc" id="L93">		}</span>
 <span class="fc" id="L94">	}</span>
 	
 	public ArrayList&lt;IOOPAnnotator&gt; getCustomAnnotators() {
@@ -101,127 +101,127 @@ public class Analyzer {
 	 * 
 	 */
 <span class="fc" id="L103">	public static List&lt;String&gt; customAnnotatorClassNames = Arrays.asList(</span>
-<span class="fc" id="L104">			&quot;io.outofprintmagazine.nlp.pipeline.annotators.BiberAnnotator&quot;</span>
-<span class="fc" id="L105">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.CoreNlpParagraphAnnotator&quot;</span>
-<span class="fc" id="L106">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.CoreNlpGenderAnnotator&quot;</span>
-<span class="fc" id="L107">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.GenderAnnotator&quot;</span>
-<span class="fc" id="L108">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.PronounAnnotator&quot;</span>
-<span class="fc" id="L109">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.count.CharCountAnnotator&quot;</span>
-<span class="fc" id="L110">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.count.ParagraphCountAnnotator&quot;</span>
-<span class="fc" id="L111">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.count.SentenceCountAnnotator&quot;</span>
-<span class="fc" id="L112">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.count.SyllableCountAnnotator&quot;</span>
-<span class="fc" id="L113">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.count.TokenCountAnnotator&quot;</span>
-<span class="fc" id="L114">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.count.WordCountAnnotator&quot;	    		</span>
-<span class="fc" id="L115">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.CoreNlpSentimentAnnotator&quot;</span>
-<span class="fc" id="L116">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.VaderSentimentAnnotator&quot;</span>
-<span class="fc" id="L117">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.VerbTenseAnnotator&quot;</span>
-<span class="fc" id="L118">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.PunctuationMarkAnnotator&quot;</span>
-<span class="fc" id="L119">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.AdjectivesAnnotator&quot;</span>
-<span class="fc" id="L120">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.PointlessAdjectivesAnnotator&quot;</span>
-<span class="fc" id="L121">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.AdjectiveCategoriesAnnotator&quot;</span>
-<span class="fc" id="L122">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.AdverbsAnnotator&quot;</span>
-<span class="fc" id="L123">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.PointlessAdverbsAnnotator&quot;</span>
-<span class="fc" id="L124">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.AdverbCategoriesAnnotator&quot;</span>
-<span class="fc" id="L125">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.PossessivesAnnotator&quot;</span>
-<span class="fc" id="L126">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.PrepositionCategoriesAnnotator&quot;</span>
-<span class="fc" id="L127">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.PrepositionsAnnotator&quot;</span>
-<span class="fc" id="L128">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.VerbsAnnotator&quot;</span>
-<span class="fc" id="L129">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.ActionlessVerbsAnnotator&quot;</span>
-<span class="fc" id="L130">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.NounsAnnotator&quot;</span>
-<span class="fc" id="L131">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.TopicsAnnotator&quot;</span>
-<span class="fc" id="L132">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.SVOAnnotator&quot;</span>
-<span class="fc" id="L133">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.NonAffirmativeAnnotator&quot;	    		</span>
-<span class="fc" id="L134">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.simile.LikeAnnotator&quot;</span>
-<span class="fc" id="L135">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.simile.AsAnnotator&quot;</span>
-<span class="fc" id="L136">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.ColorsAnnotator&quot;</span>
-<span class="fc" id="L137">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.FlavorsAnnotator&quot;</span>
-<span class="fc" id="L138">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.VerblessSentencesAnnotator&quot;</span>
-<span class="fc" id="L139">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.WordlessWordsAnnotator&quot;</span>
-<span class="fc" id="L140">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.WordnetGlossAnnotator&quot;</span>
-<span class="fc" id="L141">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.PerfecttenseAnnotator&quot;</span>
-<span class="fc" id="L142">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.UncommonWordsAnnotator&quot;</span>
-<span class="fc" id="L143">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.CommonWordsAnnotator&quot;</span>
-<span class="fc" id="L144">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.FunctionWordsAnnotator&quot;</span>
-<span class="fc" id="L145">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.AngliciseAnnotator&quot;</span>
-<span class="fc" id="L146">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.AmericanizeAnnotator&quot;</span>
-<span class="fc" id="L147">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.VerbGroupsAnnotator&quot;</span>
-<span class="fc" id="L148">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.VerbnetGroupsAnnotator&quot;</span>
-<span class="fc" id="L149">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.NounGroupsAnnotator&quot;</span>
-<span class="fc" id="L150">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.TemporalNGramsAnnotator&quot;</span>
-<span class="fc" id="L151">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.interrogative.WhoAnnotator&quot;</span>
-<span class="fc" id="L152">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.interrogative.WhatAnnotator&quot;</span>
-<span class="fc" id="L153">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.interrogative.WhenAnnotator&quot;</span>
-<span class="fc" id="L154">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.interrogative.WhereAnnotator&quot;</span>
-<span class="fc" id="L155">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.interrogative.WhyAnnotator&quot;</span>
-<span class="fc" id="L156">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.interrogative.HowAnnotator&quot;</span>
-<span class="fc" id="L157">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.LocationsAnnotator&quot;</span>
-<span class="fc" id="L158">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.PeopleAnnotator&quot;</span>
-<span class="fc" id="L159">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.MyersBriggsAnnotator&quot;</span>
-<span class="fc" id="L160">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.DatesAnnotator&quot;</span>
-<span class="fc" id="L161">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.conditional.IfAnnotator&quot;</span>
-<span class="fc" id="L162">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.conditional.BecauseAnnotator&quot;</span>
-<span class="fc" id="L163">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.QuotesAnnotator&quot;</span>
-<span class="fc" id="L164">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.WordsAnnotator&quot;</span>
-<span class="fc" id="L165">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.FleschKincaidAnnotator&quot;</span>
-<span class="fc" id="L166">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.VerbHypernymsAnnotator&quot;</span>
-<span class="fc" id="L167">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.NounHypernymsAnnotator&quot;</span>
-<span class="fc" id="L168">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.WikipediaGlossAnnotator&quot;</span>
-<span class="fc" id="L169">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.WikipediaPageviewTopicsAnnotator&quot;</span>
-<span class="fc" id="L170">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.WikipediaCategoriesAnnotator&quot;</span>
-<span class="fc" id="L171">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.BiberDimensionsAnnotator&quot;</span>
-<span class="fc" id="L172">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.ActorsAnnotator&quot;</span>
-<span class="fc" id="L173">    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.SettingsAnnotator&quot;</span>
-<span class="fc" id="L174">	);</span>
+			&quot;io.outofprintmagazine.nlp.pipeline.annotators.BiberAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.CoreNlpParagraphAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.CoreNlpGenderAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.GenderAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.PronounAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.count.CharCountAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.count.ParagraphCountAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.count.SentenceCountAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.count.SyllableCountAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.count.TokenCountAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.count.WordCountAnnotator&quot;	    		
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.CoreNlpSentimentAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.VaderSentimentAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.VerbTenseAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.PunctuationMarkAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.AdjectivesAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.PointlessAdjectivesAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.AdjectiveCategoriesAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.AdverbsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.PointlessAdverbsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.AdverbCategoriesAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.PossessivesAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.PrepositionCategoriesAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.PrepositionsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.VerbsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.ActionlessVerbsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.NounsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.TopicsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.SVOAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.NonAffirmativeAnnotator&quot;	    		
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.simile.LikeAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.simile.AsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.ColorsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.FlavorsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.VerblessSentencesAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.WordlessWordsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.WordnetGlossAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.PerfecttenseAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.UncommonWordsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.CommonWordsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.FunctionWordsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.AngliciseAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.AmericanizeAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.VerbGroupsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.VerbnetGroupsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.NounGroupsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.TemporalNGramsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.interrogative.WhoAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.interrogative.WhatAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.interrogative.WhenAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.interrogative.WhereAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.interrogative.WhyAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.interrogative.HowAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.LocationsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.PeopleAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.MyersBriggsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.DatesAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.conditional.IfAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.conditional.BecauseAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.QuotesAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.WordsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.FleschKincaidAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.VerbHypernymsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.NounHypernymsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.WikipediaGlossAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.WikipediaPageviewTopicsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.WikipediaCategoriesAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.BiberDimensionsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.ActorsAnnotator&quot;
+    		, &quot;io.outofprintmagazine.nlp.pipeline.annotators.SettingsAnnotator&quot;
+	);
 		
 	private CoreDocument prepareDocument(Properties metadata, String text) {
 <span class="fc" id="L177">		CoreDocument document = new CoreDocument(text);</span>
 <span class="fc" id="L178">		document.annotation().set(</span>
-<span class="fc" id="L179">				CoreAnnotations.DocIDAnnotation.class, </span>
+				CoreAnnotations.DocIDAnnotation.class, 
 <span class="fc" id="L180">				metadata.getProperty(</span>
 <span class="fc" id="L181">						CoreAnnotations.DocIDAnnotation.class.getSimpleName(), </span>
-<span class="fc" id="L182">						&quot;LittleNaomi&quot;</span>
+						&quot;LittleNaomi&quot;
 						)
 				);
 <span class="fc" id="L185">		document.annotation().set(</span>
-<span class="fc" id="L186">				CoreAnnotations.DocTitleAnnotation.class, </span>
+				CoreAnnotations.DocTitleAnnotation.class, 
 <span class="fc" id="L187">				metadata.getProperty(</span>
 <span class="fc" id="L188">						CoreAnnotations.DocTitleAnnotation.class.getSimpleName(), </span>
-<span class="fc" id="L189">						&quot;story title&quot;</span>
+						&quot;story title&quot;
 						)
 				);
 <span class="fc" id="L192">		document.annotation().set(</span>
-<span class="fc" id="L193">				CoreAnnotations.DocTypeAnnotation.class, </span>
+				CoreAnnotations.DocTypeAnnotation.class, 
 <span class="fc" id="L194">				metadata.getProperty(</span>
 <span class="fc" id="L195">						CoreAnnotations.DocTypeAnnotation.class.getSimpleName(), </span>
-<span class="fc" id="L196">						&quot;Submissions&quot;</span>
+						&quot;Submissions&quot;
 						)
 				);
 <span class="fc" id="L199">		document.annotation().set(</span>
-<span class="fc" id="L200">				CoreAnnotations.DocSourceTypeAnnotation.class, </span>
+				CoreAnnotations.DocSourceTypeAnnotation.class, 
 <span class="fc" id="L201">				metadata.getProperty(</span>
 <span class="fc" id="L202">						CoreAnnotations.DocSourceTypeAnnotation.class.getSimpleName(), </span>
-<span class="fc" id="L203">						&quot;outofprintmagazine@gmail.com&quot;</span>
+						&quot;outofprintmagazine@gmail.com&quot;
 						)
 				);		
 <span class="fc" id="L206">		document.annotation().set(</span>
-<span class="fc" id="L207">				CoreAnnotations.AuthorAnnotation.class, </span>
+				CoreAnnotations.AuthorAnnotation.class, 
 <span class="fc" id="L208">				metadata.getProperty(</span>
 <span class="fc" id="L209">						CoreAnnotations.AuthorAnnotation.class.getSimpleName(), </span>
-<span class="fc" id="L210">						&quot;Author&quot;</span>
+						&quot;Author&quot;
 						)
 				);
 <span class="fc" id="L213">		document.annotation().set(</span>
-<span class="fc" id="L214">				CoreAnnotations.DocDateAnnotation.class, </span>
+				CoreAnnotations.DocDateAnnotation.class, 
 <span class="fc" id="L215">				metadata.getProperty(</span>
 <span class="fc" id="L216">						CoreAnnotations.DocDateAnnotation.class.getSimpleName(), </span>
-<span class="fc" id="L217">						&quot;9 January 2014 21:05&quot;</span>
+						&quot;9 January 2014 21:05&quot;
 						)
 				);
 <span class="fc" id="L220">		document.annotation().set(</span>
-<span class="fc" id="L221">				OOPThumbnailAnnotation.class, </span>
+				OOPThumbnailAnnotation.class, 
 <span class="fc" id="L222">				metadata.getProperty(</span>
 <span class="fc" id="L223">						OOPThumbnailAnnotation.class.getSimpleName(), </span>
-<span class="fc" id="L224">						&quot;blank.png&quot;</span>
+						&quot;blank.png&quot;
 						)
 				);
 <span class="fc" id="L227">		return document;</span>
@@ -234,7 +234,7 @@ public class Analyzer {
 	private void annotate(CoreDocument document) {
 <span class="fc" id="L235">		List&lt;RunnableOOPAnnotator&gt; threadedAnnotators = new ArrayList&lt;RunnableOOPAnnotator&gt;();</span>
 <span class="fc" id="L236">		List&lt;String&gt; threadableAnnotators = Arrays.asList(</span>
-<span class="fc" id="L237">				&quot;WordlessWordsAnnotator&quot;, &quot;WikipediaGlossAnnotator&quot;, &quot;WikipediaPageviewTopicsAnnotator&quot;, &quot;WikipediaCategoriesAnnotator&quot;, &quot;ActorsAnnotator&quot;, &quot;SettingsAnnotator&quot;</span>
+				&quot;WordlessWordsAnnotator&quot;, &quot;WikipediaGlossAnnotator&quot;, &quot;WikipediaPageviewTopicsAnnotator&quot;, &quot;WikipediaCategoriesAnnotator&quot;, &quot;ActorsAnnotator&quot;, &quot;SettingsAnnotator&quot;
 		);
 <span class="fc bfc" id="L239" title="All 2 branches covered.">		for (IOOPAnnotator annotator : customAnnotators) {</span>
 <span class="fc" id="L240">			long startTime = System.currentTimeMillis();</span>
@@ -247,41 +247,41 @@ public class Analyzer {
 <span class="fc" id="L247">				annotator.score(document);</span>
 <span class="fc" id="L248">				getLogger().info(String.format(&quot;%s %d ms&quot;, annotator.getClass().getSimpleName(), System.currentTimeMillis()-startTime));</span>
 			}
-		}
+<span class="fc" id="L250">		}</span>
 <span class="fc bfc" id="L251" title="All 2 branches covered.">		for (RunnableOOPAnnotator threadedAnnotator : threadedAnnotators) {</span>
 <span class="fc" id="L252">			threadedAnnotator.run();</span>
-		}
+<span class="fc" id="L253">		}</span>
 <span class="fc" id="L254">		long startTime = System.currentTimeMillis();</span>
 		try {
 <span class="fc bfc" id="L256" title="All 2 branches covered.">			for (RunnableOOPAnnotator threadedAnnotator : threadedAnnotators) {</span>
 <span class="fc" id="L257">				threadedAnnotator.join();</span>
 <span class="fc" id="L258">				getLogger().info(String.format(&quot;%s %d ms&quot;, threadedAnnotator.getAnnotator().getClass().getSimpleName(), System.currentTimeMillis()-startTime));</span>
-			}
-<span class="fc" id="L260">		}</span>
+<span class="fc" id="L259">			}</span>
+		}
 <span class="nc" id="L261">		catch (Exception e) {</span>
 <span class="nc" id="L262">			e.printStackTrace();</span>
 <span class="nc" id="L263">			getLogger().error(e);</span>
-		}
+<span class="fc" id="L264">		}</span>
 		
 <span class="fc" id="L266">	}</span>
 	
 	private void serialize(CoreDocument document, ObjectNode json)  {
 <span class="fc bfc" id="L269" title="All 2 branches covered.">		for (IOOPAnnotator annotator : customAnnotators) {</span>
 <span class="fc" id="L270">			annotator.serialize(document, json);</span>
-		}	
+<span class="fc" id="L271">		}	</span>
 <span class="fc" id="L272">	}</span>
 	
 	private void serializeAggregates(CoreDocument document, ObjectNode json) {
 <span class="fc bfc" id="L275" title="All 2 branches covered.">		for (IOOPAnnotator annotator : customAnnotators) {</span>
 <span class="fc" id="L276">			annotator.serializeAggregateDocument(document, json);</span>
-		}	
+<span class="fc" id="L277">		}	</span>
 <span class="fc" id="L278">	}</span>
 		
 	private void serializePipeline(ObjectNode json, long startTime, Properties properties) throws IOException {
 <span class="fc" id="L281">		ArrayNode annotatorList = json.putArray(&quot;annotations&quot;);</span>
 <span class="fc bfc" id="L282" title="All 2 branches covered.">		for (IOOPAnnotator annotator : customAnnotators) {</span>
 <span class="fc" id="L283">			annotatorList.addObject().put(annotator.getAnnotationClass().getSimpleName(), annotator.getDescription());</span>
-		}	
+<span class="fc" id="L284">		}	</span>
 
 <span class="fc" id="L286">		ArrayNode coreNlpProperties = json.putArray(&quot;coreNlpProperties&quot;);</span>
 <span class="fc" id="L287">		Properties defaultProps = CoreNlpUtils.getInstance(parameterStore).getPipelineProps();</span>
@@ -289,14 +289,14 @@ public class Analyzer {
 <span class="fc" id="L289">			ObjectNode property = coreNlpProperties.addObject();</span>
 <span class="fc" id="L290">			property.put(&quot;name&quot;, propertyName);</span>
 <span class="fc" id="L291">			property.put(&quot;value&quot;, defaultProps.getProperty(propertyName));</span>
-		}
+<span class="fc" id="L292">		}</span>
 		
 <span class="fc" id="L294">		ArrayNode customProperties = json.putArray(&quot;customProperties&quot;);</span>
 <span class="fc bfc" id="L295" title="All 2 branches covered.">		for (String propertyName : properties.stringPropertyNames()) {</span>
 <span class="fc" id="L296">			ObjectNode property = customProperties.addObject();</span>
 <span class="fc" id="L297">			property.put(&quot;name&quot;, propertyName);</span>
 <span class="fc" id="L298">			property.put(&quot;value&quot;, properties.getProperty(propertyName));</span>
-		}
+<span class="fc" id="L299">		}</span>
 
 <span class="fc" id="L301">		ArrayNode analysisList = json.putArray(&quot;analysis&quot;);</span>
 <span class="fc" id="L302">		SimpleDateFormat fmt = new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm:ss.SSSZ&quot;);</span>
@@ -307,9 +307,9 @@ public class Analyzer {
 <span class="fc" id="L307">		String ipAddr = &quot;localhost.localdomain/127.0.0.1&quot;;</span>
 		try {
 <span class="fc" id="L309">			ipAddr = InetAddress.getLocalHost().toString();</span>
-<span class="fc" id="L310">		}</span>
-<span class="nc" id="L311">		catch (UnknownHostException e) {</span>
 		}
+<span class="nc" id="L311">		catch (UnknownHostException e) {</span>
+<span class="fc" id="L312">		}</span>
 <span class="fc" id="L313">		analysisList.addObject().put(&quot;host&quot;, ipAddr);</span>
 <span class="fc" id="L314">	}</span>
 	
@@ -344,11 +344,11 @@ public class Analyzer {
 <span class="fc" id="L344">			serializePipeline(pipeline, startTime, metadata);</span>
 <span class="fc" id="L345">			retval.put(&quot;PIPELINE&quot;, pipeline);</span>
 			
-<span class="fc" id="L347">		}</span>
+		}
 <span class="nc" id="L348">		catch (Exception e) {</span>
 <span class="nc" id="L349">			logger.error(e);</span>
 <span class="nc" id="L350">			e.printStackTrace();</span>
-		}
+<span class="fc" id="L351">		}</span>
 <span class="fc" id="L352">		return retval;</span>
 	}
 	

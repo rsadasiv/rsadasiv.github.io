@@ -82,12 +82,12 @@ public abstract class MapScorer implements IScorer {
 <span class="fc bfc" id="L82" title="All 2 branches covered.">					if (token.containsKey(getAnnotationClass())) {</span>
 <span class="fc" id="L83">						rawScores.add((Map&lt;String, BigDecimal&gt;) token.get(getAnnotationClass()));</span>
 					}
-				}
+<span class="fc" id="L85">				}</span>
 <span class="fc bfc" id="L86" title="All 2 branches covered.">				if (rawScores.size() &gt; 0) {</span>
 <span class="fc" id="L87">					sentence.coreMap().set(getAnnotationClass(), aggregateScores(rawScores));</span>
 				}
 			}
-		}
+<span class="fc" id="L90">		}</span>
 <span class="fc" id="L91">	}</span>
 
 	public void scoreDocument(CoreDocument document) {
@@ -96,16 +96,16 @@ public abstract class MapScorer implements IScorer {
 <span class="fc bfc" id="L96" title="All 2 branches covered.">			for (CoreSentence sentence : document.sentences()) {</span>
 <span class="fc bfc" id="L97" title="All 2 branches covered.">				if (sentence.coreMap().containsKey(getAnnotationClass())) {</span>
 <span class="fc" id="L98">					rawScores.add((Map&lt;String, BigDecimal&gt;)sentence.coreMap().get(getAnnotationClass()));</span>
-<span class="fc" id="L99">				}</span>
+				}
 				else {
 <span class="fc bfc" id="L101" title="All 2 branches covered.">					for (CoreLabel token : sentence.tokens()) {</span>
 <span class="pc bpc" id="L102" title="1 of 2 branches missed.">						if (token.containsKey(getAnnotationClass())) {</span>
 <span class="nc" id="L103">							rawScores.add((Map&lt;String, BigDecimal&gt;) token.get(getAnnotationClass()));</span>
 						}
-					}
+<span class="fc" id="L105">					}</span>
 				}
 
-			}
+<span class="fc" id="L108">			}</span>
 <span class="fc" id="L109">			document.annotation().set(getAnnotationClass(), aggregateScores(rawScores));</span>
 		}
 <span class="fc" id="L111">	}</span>
@@ -144,13 +144,13 @@ public abstract class MapScorer implements IScorer {
 <span class="fc" id="L144">			AggregatedScore aggregatedScore = aggregatedScoresIter.next();</span>
 <span class="fc bfc" id="L145" title="All 2 branches covered.">			if (aggregatedScore.getScore().getNormalized().compareTo(new BigDecimal(0)) &gt; 0) {</span>
 <span class="fc" id="L146">				aggregatedScore.getAggregateScore().setPercentage(aggregatedScore.getScore().getNormalized().divide(retval.getScoreStats().getScore().getNormalized(), 10, RoundingMode.HALF_UP));</span>
-<span class="fc" id="L147">			}</span>
+			}
 			else {
 <span class="fc" id="L149">				aggregatedScore.getAggregateScore().setPercentage(new BigDecimal(0));</span>
 			}
 <span class="fc bfc" id="L151" title="All 2 branches covered.">			if (retval.getScoreStats().getStats().getStddev().compareTo(new BigDecimal(0)) != 0) {</span>
 <span class="fc" id="L152">				aggregatedScore.getAggregateScore().setZ(aggregatedScore.getScore().getNormalized().subtract(retval.getScoreStats().getStats().getMean()).divide(retval.getScoreStats().getStats().getStddev(), 10, RoundingMode.HALF_UP));</span>
-<span class="fc" id="L153">			}</span>
+			}
 			else {
 <span class="fc" id="L155">				aggregatedScore.getAggregateScore().setZ(new BigDecimal(0));</span>
 			}

@@ -58,13 +58,13 @@ public class BecauseAnnotator extends AbstractTreeAnnotator implements Annotator
 	@Override
 	public Set&lt;Class&lt;? extends CoreAnnotation&gt;&gt; requires() {
 <span class="nc" id="L60">		return Collections.unmodifiableSet(</span>
-<span class="nc" id="L61">			new ArraySet&lt;&gt;(</span>
+			new ArraySet&lt;&gt;(
 <span class="nc" id="L62">				Arrays.asList(</span>
-<span class="nc" id="L63">					CoreAnnotations.TextAnnotation.class, </span>
-<span class="nc" id="L64">					CoreAnnotations.TokensAnnotation.class,</span>
-<span class="nc" id="L65">					CoreAnnotations.SentencesAnnotation.class,</span>
-<span class="nc" id="L66">					TreeCoreAnnotations.TreeAnnotation.class,</span>
-<span class="nc" id="L67">					SemanticGraphCoreAnnotations.BasicDependenciesAnnotation.class</span>
+					CoreAnnotations.TextAnnotation.class, 
+					CoreAnnotations.TokensAnnotation.class,
+					CoreAnnotations.SentencesAnnotation.class,
+					TreeCoreAnnotations.TreeAnnotation.class,
+					SemanticGraphCoreAnnotations.BasicDependenciesAnnotation.class
 				)
 			)
 		);
@@ -93,11 +93,11 @@ public class BecauseAnnotator extends AbstractTreeAnnotator implements Annotator
 <span class="fc bfc" id="L93" title="All 2 branches covered.">				if (scoreMap.size() &gt; 0) {</span>
 <span class="fc" id="L94">					sentence.coreMap().set(getAnnotationClass(), scoreMap);</span>
 				}
-<span class="fc" id="L96">			}</span>
+			}
 <span class="nc" id="L97">			catch (Exception e) {</span>
 <span class="nc" id="L98">				logger.error(e);</span>
-			}
-		}
+<span class="fc" id="L99">			}</span>
+<span class="fc" id="L100">		}</span>
 <span class="fc" id="L101">	}</span>
 	
 	@Override

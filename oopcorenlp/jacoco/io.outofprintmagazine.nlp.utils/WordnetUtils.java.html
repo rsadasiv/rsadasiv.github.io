@@ -60,11 +60,11 @@ public class WordnetUtils {
 
 <span class="fc" id="L61">	private WordnetUtils(IParameterStore parameterStore) throws IOException {</span>
 <span class="fc" id="L62">		wordnet = new Dictionary(</span>
-<span class="fc" id="L63">				new URL(</span>
-<span class="fc" id="L64">						&quot;file&quot;, </span>
-<span class="fc" id="L65">						null, </span>
+				new URL(
+						&quot;file&quot;, 
+						null, 
 <span class="fc" id="L66">						parameterStore.getProperty(</span>
-<span class="fc" id="L67">								&quot;wordNet_location&quot;</span>
+								&quot;wordNet_location&quot;
 						)
 //						&quot;C:\\Users\\rsada\\eclipse-workspace\\oopcorenlp\\data\\wn3.1.dict\\dict&quot;
 				)
@@ -95,7 +95,7 @@ public class WordnetUtils {
 <span class="fc bfc" id="L95" title="All 2 branches covered.">			if (senses != null) {</span>
 <span class="fc bfc" id="L96" title="All 2 branches covered.">				for (String sense : senses) {</span>
 <span class="fc" id="L97">					retval.add(sense.split(&quot;-&quot;)[0]);</span>
-				}
+<span class="fc" id="L98">				}</span>
 			}
 		}
 <span class="fc" id="L101">		return retval;</span>
@@ -123,11 +123,11 @@ public class WordnetUtils {
 	
 	private void initVerbnet() throws IOException {
 <span class="fc" id="L125">		IVerbIndex index = new VerbIndex(</span>
-<span class="fc" id="L126">				new URL(</span>
-<span class="fc" id="L127">						&quot;file&quot;, </span>
-<span class="fc" id="L128">						null, </span>
+				new URL(
+						&quot;file&quot;, 
+						null, 
 <span class="fc" id="L129">						parameterStore.getProperty(</span>
-<span class="fc" id="L130">								&quot;verbNet_location&quot;</span>
+								&quot;verbNet_location&quot;
 						)
 //						&quot;C:\\Users\\rsada\\eclipse-workspace\\oopcorenlp\\data\\new_vn\\&quot;
 				)
@@ -145,26 +145,26 @@ public class WordnetUtils {
 <span class="fc" id="L145">					senseKeyList.add(verb.getID());</span>
 <span class="fc" id="L146">					verbnet.put(senseKey.toString(), senseKeyList);</span>
 					//logger.debug(&quot;loaded &quot; + senseKey.toString() + &quot; size &quot; + senseKeyList.size());
-				}
-			}
+<span class="fc" id="L148">				}</span>
+<span class="fc" id="L149">			}</span>
 			
-		}	
+<span class="fc" id="L151">		}	</span>
 <span class="fc" id="L152">	}</span>
 	
 	private POS tagToPOS(CoreLabel token) {
 <span class="fc" id="L155">		POS wnPos = null;</span>
 <span class="fc bfc" id="L156" title="All 2 branches covered.">		if (token.tag().startsWith(&quot;N&quot;)) {</span>
 <span class="fc" id="L157">			wnPos = POS.NOUN;</span>
-<span class="fc" id="L158">		}</span>
+		}
 <span class="fc bfc" id="L159" title="All 2 branches covered.">		else if (token.tag().startsWith(&quot;V&quot;)) {</span>
 <span class="fc" id="L160">			wnPos = POS.VERB;</span>
-<span class="fc" id="L161">		}</span>
+		}
 <span class="fc bfc" id="L162" title="All 2 branches covered.">		else if (token.tag().startsWith(&quot;J&quot;)) {</span>
 <span class="fc" id="L163">			wnPos = POS.ADJECTIVE;</span>
-<span class="fc" id="L164">		}</span>
+		}
 <span class="pc bpc" id="L165" title="1 of 2 branches missed.">		else if (token.tag().equals(&quot;DT&quot;)) {</span>
 <span class="nc" id="L166">			wnPos = POS.ADJECTIVE;</span>
-<span class="nc" id="L167">		}</span>
+		}
 <span class="fc bfc" id="L168" title="All 2 branches covered.">		else if (token.tag().startsWith(&quot;R&quot;)) {</span>
 <span class="fc" id="L169">			wnPos = POS.ADVERB;</span>
 		}
@@ -186,10 +186,10 @@ public class WordnetUtils {
 <span class="nc" id="L186">					IWord word = getWordnet().getWord(wordID);</span>
 <span class="nc" id="L187">					score = word.getSynset().getLexicalFile().getName();</span>
 				}
-<span class="nc" id="L189">			}</span>
+			}
 <span class="nc" id="L190">			catch (Exception e) {</span>
 <span class="nc" id="L191">				logger.error(token.toString(), e);</span>
-			}
+<span class="nc" id="L192">			}</span>
 
 
 <span class="nc" id="L195">		return score;</span>
@@ -212,12 +212,12 @@ public class WordnetUtils {
 <span class="fc" id="L212">							score = word.getSynset().getLexicalFile().getName();</span>
 <span class="fc" id="L213">							break;</span>
 						}
-					}
+<span class="fc" id="L215">					}</span>
 				}
-<span class="nc" id="L217">			}</span>
+			}
 <span class="nc" id="L218">			catch (Exception e) {</span>
 <span class="nc" id="L219">				logger.error(token.toString(), e);</span>
-			}
+<span class="fc" id="L220">			}</span>
 
 		
 <span class="fc" id="L223">		return score;</span>
@@ -290,28 +290,28 @@ public class WordnetUtils {
 <span class="fc bfc" id="L290" title="All 2 branches covered.">											if (tokensToMatch.containsKey(hyponymWord.getLemma())) {</span>
 <span class="fc" id="L291">												hypernymScore.add(tokensToMatch.get(hyponymWord.getLemma()));</span>
 											}
-										}
+<span class="fc" id="L293">										}</span>
 									}
 <span class="pc bpc" id="L295" title="1 of 2 branches missed.">									if (hypernymScore.compareTo(bestHypernymScore) &gt; 0) {</span>
 <span class="fc" id="L296">										bestHypernymWord = hypernymWord;</span>
 									}
-<span class="fc" id="L298">								}</span>
+								}
 <span class="nc" id="L299">								catch (Throwable t) {</span>
 <span class="nc" id="L300">									logger.debug(t);</span>
-								}
-							}
+<span class="fc" id="L301">								}</span>
+<span class="fc" id="L302">							}</span>
 						}
 <span class="fc bfc" id="L304" title="All 2 branches covered.">						if (bestHypernymWord != null) {</span>
 <span class="fc" id="L305">							retval.put(bestHypernymWord.getLemma(), new BigDecimal(1));</span>
 						}
-<span class="fc" id="L307">						break;</span>
+						break;
 					}
-				}
+<span class="fc" id="L309">				}</span>
 			}
-<span class="nc" id="L311">		}</span>
+		}
 <span class="nc" id="L312">		catch (Exception e) {</span>
 <span class="nc" id="L313">			logger.error(token.toString(), e);</span>
-		}
+<span class="fc" id="L314">		}</span>
 
 <span class="fc" id="L316">		return retval;</span>
 	}
@@ -333,12 +333,12 @@ public class WordnetUtils {
 <span class="fc" id="L333">							retval = word.getSynset().getGloss();</span>
 <span class="fc" id="L334">							break;</span>
 						}
-					}
+<span class="fc" id="L336">					}</span>
 				}
-<span class="nc" id="L338">			}</span>
+			}
 <span class="nc" id="L339">			catch (Exception e) {</span>
 <span class="nc" id="L340">				logger.error(token.toString(), e);</span>
-			}
+<span class="fc" id="L341">			}</span>
 
 <span class="fc" id="L343">		return retval;</span>
 	}
@@ -403,18 +403,18 @@ public class WordnetUtils {
 <span class="fc" id="L403">			ISynset synset = word.getSynset();</span>
 <span class="fc bfc" id="L404" title="All 2 branches covered.">	        for (IWord w : synset.getWords()) {</span>
 <span class="fc" id="L405">	            retval.add(w.getLemma());</span>
-	        }
+<span class="fc" id="L406">	        }</span>
 <span class="fc bfc" id="L407" title="All 2 branches covered.">	        for (ISynsetID relatedSynsetId : synset.getRelatedSynsets()) {</span>
 <span class="fc" id="L408">	        	ISynset relatedSynset = getWordnet().getSynset(relatedSynsetId);</span>
 <span class="fc bfc" id="L409" title="All 2 branches covered.">	        	for (IWord relatedSynsetWord : relatedSynset.getWords()) {</span>
 <span class="fc" id="L410">	        		retval.add(relatedSynsetWord.getLemma());</span>
-	        	}
-	        }
+<span class="fc" id="L411">	        	}</span>
+<span class="fc" id="L412">	        }</span>
 <span class="fc bfc" id="L413" title="All 2 branches covered.">	        for (IWordID relatedWordId : word.getRelatedWords()) {</span>
 <span class="fc" id="L414">	        	IWord relatedWord = getWordnet().getWord(relatedWordId);</span>
 <span class="fc" id="L415">	        	retval.add(relatedWord.getLemma());</span>
 	        	
-	        }
+<span class="fc" id="L417">	        }</span>
 
 <span class="fc" id="L419">        return retval;</span>
 	}
@@ -422,7 +422,7 @@ public class WordnetUtils {
 	private List&lt;String&gt; removeCommonWords(List&lt;String&gt; list) throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException {
 
 <span class="fc" id="L424">		Map&lt;String,String&gt; dict = ResourceUtils.getInstance(parameterStore).getDictionary(</span>
-<span class="fc" id="L425">				&quot;io/outofprintmagazine/nlp/models/COCA/en_100.txt&quot;</span>
+				&quot;io/outofprintmagazine/nlp/models/COCA/en_100.txt&quot;
 		);
 <span class="fc" id="L427">		Iterator&lt;String&gt; listIter = list.iterator();</span>
 <span class="fc bfc" id="L428" title="All 2 branches covered.">		while (listIter.hasNext()) {</span>
@@ -447,7 +447,7 @@ public class WordnetUtils {
 <span class="fc bfc" id="L447" title="All 2 branches covered.">		for (CoreLabel word : words ) {</span>
 <span class="fc" id="L448">			retval.add(word.lemma());</span>
 <span class="fc" id="L449">			retval.add(word.originalText().toLowerCase());</span>
-		}
+<span class="fc" id="L450">		}</span>
 <span class="fc" id="L451">		return retval;</span>
 	}
 	
@@ -492,7 +492,7 @@ public class WordnetUtils {
 				//	overlap+=(double) numerator/new Integer(wordFrequency).doubleValue();
 				//}
 			}
-		}
+<span class="fc" id="L495">		}</span>
 <span class="fc" id="L496">		return overlap;</span>
 	}
 		

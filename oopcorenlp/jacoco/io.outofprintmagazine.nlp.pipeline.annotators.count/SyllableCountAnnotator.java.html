@@ -73,11 +73,11 @@ public class SyllableCountAnnotator extends AbstractAnnotator implements Annotat
 	@Override
 	public Set&lt;Class&lt;? extends CoreAnnotation&gt;&gt; requires() {
 <span class="nc" id="L75">		return Collections.unmodifiableSet(</span>
-<span class="nc" id="L76">			new ArraySet&lt;&gt;(</span>
+			new ArraySet&lt;&gt;(
 <span class="nc" id="L77">				Arrays.asList(</span>
-<span class="nc" id="L78">					CoreAnnotations.TextAnnotation.class, </span>
-<span class="nc" id="L79">					CoreAnnotations.TokensAnnotation.class,</span>
-<span class="nc" id="L80">					CoreAnnotations.SentencesAnnotation.class</span>
+					CoreAnnotations.TextAnnotation.class, 
+					CoreAnnotations.TokensAnnotation.class,
+					CoreAnnotations.SentencesAnnotation.class
 				)
 			)
 		);
@@ -93,8 +93,8 @@ public class SyllableCountAnnotator extends AbstractAnnotator implements Annotat
 <span class="nc" id="L93">					syllables = 1;</span>
 				}
 <span class="fc" id="L95">				token.set(getAnnotationClass(), new BigDecimal(syllables));</span>
-			}
-		}
+<span class="fc" id="L96">			}</span>
+<span class="fc" id="L97">		}</span>
 <span class="fc" id="L98">	}</span>
 
 	@Override

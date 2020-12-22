@@ -71,13 +71,13 @@ public class SVOAnnotator extends AbstractPosAnnotator implements Annotator, IOO
 	@Override
 	public Set&lt;Class&lt;? extends CoreAnnotation&gt;&gt; requires() {
 <span class="nc" id="L73">		return Collections.unmodifiableSet(</span>
-<span class="nc" id="L74">			new ArraySet&lt;&gt;(</span>
+			new ArraySet&lt;&gt;(
 <span class="nc" id="L75">				Arrays.asList(</span>
-<span class="nc" id="L76">					CoreAnnotations.TextAnnotation.class, </span>
-<span class="nc" id="L77">					CoreAnnotations.TokensAnnotation.class,</span>
-<span class="nc" id="L78">					CoreAnnotations.LemmaAnnotation.class,</span>
-<span class="nc" id="L79">					CoreAnnotations.SentencesAnnotation.class,</span>
-<span class="nc" id="L80">					SemanticGraphCoreAnnotations.BasicDependenciesAnnotation.class</span>
+					CoreAnnotations.TextAnnotation.class, 
+					CoreAnnotations.TokensAnnotation.class,
+					CoreAnnotations.LemmaAnnotation.class,
+					CoreAnnotations.SentencesAnnotation.class,
+					SemanticGraphCoreAnnotations.BasicDependenciesAnnotation.class
 					
 				)
 			)
@@ -212,7 +212,7 @@ public class SVOAnnotator extends AbstractPosAnnotator implements Annotator, IOO
 <span class="fc bfc" id="L212" title="All 2 branches covered.">					if (rn.getShortName().equalsIgnoreCase(&quot;ROOT&quot;)) {</span>
 <span class="fc" id="L213">						verb = dependency.dep().backingLabel();</span>
 					}
-				}
+<span class="fc" id="L215">				}</span>
 <span class="fc bfc" id="L216" title="All 2 branches covered.">				for (TypedDependency dependency : vdeps) {</span>
 <span class="fc" id="L217">					GrammaticalRelation rn = dependency.reln();</span>
 <span class="fc bfc" id="L218" title="All 6 branches covered.">					if (subject == null &amp;&amp; rn.getShortName().equals(&quot;nsubj&quot;) &amp;&amp; dependency.gov().backingLabel().equals(verb)) {</span>
@@ -227,27 +227,27 @@ public class SVOAnnotator extends AbstractPosAnnotator implements Annotator, IOO
 <span class="fc bfc" id="L227" title="All 6 branches covered.">					if (indirectObject == null &amp;&amp; rn.getShortName().equals(&quot;obl&quot;) &amp;&amp; dependency.gov().backingLabel().equals(verb)) {</span>
 <span class="fc" id="L228">						indirectObject = dependency.dep().backingLabel();</span>
 					}
-				}
+<span class="fc" id="L230">				}</span>
 <span class="fc bfc" id="L231" title="All 2 branches covered.">				for (TypedDependency dependency : vdeps) {</span>
 <span class="fc" id="L232">					GrammaticalRelation rn = dependency.reln();</span>
 <span class="fc bfc" id="L233" title="All 4 branches covered.">					if (rn.getShortName().equals(&quot;aux&quot;) &amp;&amp; dependency.gov().backingLabel().equals(verb)) {</span>
 <span class="fc" id="L234">						auxVerbs.add(dependency.dep().backingLabel());</span>
-<span class="fc" id="L235">					}</span>
+					}
 <span class="pc bpc" id="L236" title="1 of 4 branches missed.">					else if (rn.getShortName().equals(&quot;cop&quot;) &amp;&amp; dependency.gov().backingLabel().equals(verb)) {</span>
 <span class="fc" id="L237">						auxVerbs.add(dependency.dep().backingLabel());</span>
-<span class="fc" id="L238">					}</span>
+					}
 <span class="fc bfc" id="L239" title="All 2 branches covered.">					else if (rn.getShortName().equals(&quot;conj&quot;)) {</span>
 <span class="fc bfc" id="L240" title="All 2 branches covered.">						if (dependency.gov().backingLabel().equals(subject)) {</span>
 <span class="fc" id="L241">							conjSubjects.add(dependency.dep().backingLabel());</span>
-<span class="fc" id="L242">						}</span>
+						}
 <span class="pc bpc" id="L243" title="1 of 2 branches missed.">						else if (dependency.gov().backingLabel().equals(directObject)) {</span>
 <span class="nc" id="L244">							conjObjects.add(dependency.dep().backingLabel());</span>
-<span class="nc" id="L245">						}</span>
+						}
 <span class="pc bpc" id="L246" title="1 of 2 branches missed.">						else if (dependency.gov().backingLabel().equals(indirectObject)) {</span>
 <span class="nc" id="L247">							conjiObjects.add(dependency.dep().backingLabel());</span>
 						}
 					}
-				}
+<span class="fc" id="L250">				}</span>
 <span class="pc bpc" id="L251" title="1 of 4 branches missed.">				if (verb != null &amp;&amp; subject != null) {</span>
 <span class="fc" id="L252">					Map&lt;String,BigDecimal&gt; verbScore = new HashMap&lt;String,BigDecimal&gt;();</span>
 <span class="fc" id="L253">					verbScore.put(&quot;verb&quot;, new BigDecimal(1));</span>
@@ -269,29 +269,29 @@ public class SVOAnnotator extends AbstractPosAnnotator implements Annotator, IOO
 <span class="fc" id="L269">						Map&lt;String,BigDecimal&gt; auxVerbScore = new HashMap&lt;String,BigDecimal&gt;();</span>
 <span class="fc" id="L270">						auxVerbScore.put(&quot;auxVerb&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L271">						auxVerb.set(getAnnotationClass(), auxVerbScore);						</span>
-					}
+<span class="fc" id="L272">					}</span>
 <span class="fc bfc" id="L273" title="All 2 branches covered.">					for (CoreLabel conjSubject : conjSubjects) {</span>
 <span class="fc" id="L274">						Map&lt;String,BigDecimal&gt; conjSubjectScore = new HashMap&lt;String,BigDecimal&gt;();</span>
 <span class="fc" id="L275">						conjSubjectScore.put(&quot;subject&quot;, new BigDecimal(1));</span>
 <span class="fc" id="L276">						conjSubject.set(getAnnotationClass(), conjSubjectScore);						</span>
-					}
+<span class="fc" id="L277">					}</span>
 <span class="pc bpc" id="L278" title="1 of 2 branches missed.">					for (CoreLabel conjObject : conjObjects) {</span>
 <span class="nc" id="L279">						Map&lt;String,BigDecimal&gt; conjObjectScore = new HashMap&lt;String,BigDecimal&gt;();</span>
 <span class="nc" id="L280">						conjObjectScore.put(&quot;object&quot;, new BigDecimal(1));</span>
 <span class="nc" id="L281">						conjObject.set(getAnnotationClass(), conjObjectScore);						</span>
-					}
+<span class="nc" id="L282">					}</span>
 <span class="pc bpc" id="L283" title="1 of 2 branches missed.">					for (CoreLabel conjiObject : conjiObjects) {</span>
 <span class="nc" id="L284">						Map&lt;String,BigDecimal&gt; conjiObjectScore = new HashMap&lt;String,BigDecimal&gt;();</span>
 <span class="nc" id="L285">						conjiObjectScore.put(&quot;indirectObject&quot;, new BigDecimal(1));</span>
 <span class="nc" id="L286">						conjiObject.set(getAnnotationClass(), conjiObjectScore);						</span>
-					}
+<span class="nc" id="L287">					}</span>
 				}
-<span class="fc" id="L289">			}</span>
+			}
 
 <span class="nc" id="L291">			catch (Exception e) {</span>
 <span class="nc" id="L292">				logger.error(e);</span>
-			}
-		}
+<span class="fc" id="L293">			}</span>
+<span class="fc" id="L294">		}</span>
 <span class="fc" id="L295">	}</span>
 
 

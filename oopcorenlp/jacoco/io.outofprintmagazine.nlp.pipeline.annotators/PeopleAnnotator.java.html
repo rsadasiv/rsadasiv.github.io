@@ -75,17 +75,17 @@ public class PeopleAnnotator extends AbstractPosAnnotator implements IOOPAnnotat
 	@Override
 	public Set&lt;Class&lt;? extends CoreAnnotation&gt;&gt; requires() {
 <span class="nc" id="L77">		return Collections.unmodifiableSet(</span>
-<span class="nc" id="L78">			new ArraySet&lt;&gt;(</span>
+			new ArraySet&lt;&gt;(
 <span class="nc" id="L79">				Arrays.asList(</span>
-<span class="nc" id="L80">					CoreAnnotations.TextAnnotation.class, </span>
-<span class="nc" id="L81">					CoreAnnotations.TokensAnnotation.class,</span>
-<span class="nc" id="L82">					CoreAnnotations.SentencesAnnotation.class,</span>
-<span class="nc" id="L83">					CoreAnnotations.PartOfSpeechAnnotation.class,</span>
-<span class="nc" id="L84">					CoreAnnotations.LemmaAnnotation.class,</span>
-<span class="nc" id="L85">					CoreAnnotations.NamedEntityTagAnnotation.class, </span>
-<span class="nc" id="L86">					CoreAnnotations.NormalizedNamedEntityTagAnnotation.class,</span>
-<span class="nc" id="L87">					CoreAnnotations.CanonicalEntityMentionIndexAnnotation.class,</span>
-<span class="nc" id="L88">					CorefCoreAnnotations.CorefChainAnnotation.class</span>
+					CoreAnnotations.TextAnnotation.class, 
+					CoreAnnotations.TokensAnnotation.class,
+					CoreAnnotations.SentencesAnnotation.class,
+					CoreAnnotations.PartOfSpeechAnnotation.class,
+					CoreAnnotations.LemmaAnnotation.class,
+					CoreAnnotations.NamedEntityTagAnnotation.class, 
+					CoreAnnotations.NormalizedNamedEntityTagAnnotation.class,
+					CoreAnnotations.CanonicalEntityMentionIndexAnnotation.class,
+					CorefCoreAnnotations.CorefChainAnnotation.class
 				)
 			)
 		);
@@ -101,10 +101,10 @@ public class PeopleAnnotator extends AbstractPosAnnotator implements IOOPAnnotat
 <span class="fc" id="L101">		annotatePerson(document);</span>
 		try {
 <span class="fc" id="L103">			annotateCoref(document);</span>
-<span class="fc" id="L104">		}</span>
+		}
 <span class="nc" id="L105">		catch (Exception e) {</span>
 <span class="nc" id="L106">			logger.error(e);</span>
-		}
+<span class="fc" id="L107">		}</span>
 <span class="fc" id="L108">		annotateNarrator(document);</span>
 <span class="fc" id="L109">	}</span>
 	
@@ -121,19 +121,19 @@ public class PeopleAnnotator extends AbstractPosAnnotator implements IOOPAnnotat
 <span class="fc" id="L121">								isPronoun = true;</span>
 <span class="fc" id="L122">								break;</span>
 							}
-						}
-<span class="fc" id="L125">					} </span>
+<span class="fc" id="L124">						}</span>
+					} 
 <span class="nc" id="L126">					catch (Exception e) {</span>
 <span class="nc" id="L127">						logger.error(e);</span>
-					}
+<span class="fc" id="L128">					}</span>
 <span class="fc bfc" id="L129" title="All 2 branches covered.">					if (!isPronoun) {</span>
 <span class="pc bpc" id="L130" title="1 of 2 branches missed.">						if (mention.entityType().equals(&quot;PERSON&quot;)) {</span>
 <span class="fc" id="L131">							retval.add(mention);</span>
 						}
 					}
 				}
-			}
-		}
+<span class="fc" id="L135">			}</span>
+<span class="fc" id="L136">		}</span>
 <span class="fc" id="L137">		return retval;</span>
 	}
 	
@@ -141,7 +141,7 @@ public class PeopleAnnotator extends AbstractPosAnnotator implements IOOPAnnotat
 <span class="fc" id="L141">		String personName = &quot;Kirby&quot;;</span>
 <span class="pc bpc" id="L142" title="1 of 2 branches missed.">		if (entityMention.canonicalEntityMention().isPresent()) {</span>
 <span class="fc" id="L143">			personName = entityMention.canonicalEntityMention().get().toString();</span>
-<span class="fc" id="L144">		}</span>
+		}
 		else {
 <span class="nc" id="L146">			personName = entityMention.entity().toString();</span>
 		}
@@ -153,7 +153,7 @@ public class PeopleAnnotator extends AbstractPosAnnotator implements IOOPAnnotat
 <span class="fc" id="L153">		Map&lt;String, String&gt; entityAliases = new HashMap&lt;String,String&gt;();</span>
 <span class="fc bfc" id="L154" title="All 2 branches covered.">		for (CoreEntityMention entityMention : allEntityMentions) {</span>
 <span class="fc" id="L155">			String personName = getEntityNameFromEntityMention(entityMention);</span>
-			if (
+<span class="fc" id="L156">			if (</span>
 <span class="pc bpc" id="L157" title="1 of 2 branches missed.">					!personName.equalsIgnoreCase(&quot;he&quot;) </span>
 <span class="pc bpc" id="L158" title="1 of 2 branches missed.">					&amp;&amp; !personName.equalsIgnoreCase(&quot;his&quot;) </span>
 <span class="pc bpc" id="L159" title="1 of 2 branches missed.">					&amp;&amp; !personName.equalsIgnoreCase(&quot;she&quot;) </span>
@@ -162,16 +162,16 @@ public class PeopleAnnotator extends AbstractPosAnnotator implements IOOPAnnotat
 <span class="fc" id="L162">				entityAliases.put(personName.toLowerCase(), personName);</span>
 			}			
 			
-		}
+<span class="fc" id="L165">		}</span>
 <span class="fc bfc" id="L166" title="All 2 branches covered.">		for (String entityName : entityAliases.keySet()) {</span>
 <span class="fc bfc" id="L167" title="All 2 branches covered.">			if (entityName.contains(&quot; &quot;)) {</span>
 <span class="fc bfc" id="L168" title="All 2 branches covered.">				for (String shortEntityName : entityAliases.keySet()) {</span>
 <span class="fc bfc" id="L169" title="All 2 branches covered.">					if (entityName.contains(shortEntityName)) {</span>
 <span class="fc" id="L170">						entityAliases.put(shortEntityName, entityAliases.get(entityName));</span>
 					}
-				}
+<span class="fc" id="L172">				}</span>
 			}
-		}
+<span class="fc" id="L174">		}</span>
 
 <span class="fc" id="L176">		return entityAliases;</span>
 		
@@ -183,7 +183,7 @@ public class PeopleAnnotator extends AbstractPosAnnotator implements IOOPAnnotat
 <span class="pc bpc" id="L183" title="1 of 2 branches missed.">			if (entityName.contains(nnpName.toLowerCase())) {</span>
 <span class="nc" id="L184">				retval = entityAliases.get(entityName);</span>
 			}
-		}
+<span class="fc" id="L186">		}</span>
 <span class="fc" id="L187">		return retval;</span>
 	}
 	
@@ -192,7 +192,7 @@ public class PeopleAnnotator extends AbstractPosAnnotator implements IOOPAnnotat
 <span class="fc" id="L192">		Map&lt;String, String&gt; allEntityAliases = getEntityNameAliases(allEntityMentions);</span>
 <span class="fc bfc" id="L193" title="All 2 branches covered.">		for (CoreEntityMention entityMention : allEntityMentions) {</span>
 <span class="fc" id="L194">			String personName = getEntityNameFromEntityMention(entityMention);</span>
-			if (
+<span class="fc" id="L195">			if (</span>
 <span class="pc bpc" id="L196" title="1 of 2 branches missed.">					!personName.equalsIgnoreCase(&quot;he&quot;) </span>
 <span class="pc bpc" id="L197" title="1 of 2 branches missed.">					&amp;&amp; !personName.equalsIgnoreCase(&quot;his&quot;) </span>
 <span class="pc bpc" id="L198" title="1 of 2 branches missed.">					&amp;&amp; !personName.equalsIgnoreCase(&quot;she&quot;) </span>
@@ -214,9 +214,9 @@ public class PeopleAnnotator extends AbstractPosAnnotator implements IOOPAnnotat
 <span class="fc" id="L214">						addToScoreList(scoreList, new PhraseAnnotation(entityName, new BigDecimal(1)));</span>
 <span class="fc" id="L215">						token.set(getAnnotationClass(), scoreList);</span>
 					}
-				}
+<span class="fc" id="L217">				}</span>
 			}
-		}
+<span class="fc" id="L219">		}</span>
 <span class="fc" id="L220">	}</span>
 	
 	private void annotateNNP(CoreDocument document) {
@@ -247,8 +247,8 @@ public class PeopleAnnotator extends AbstractPosAnnotator implements IOOPAnnotat
 					}
 
 				}
-			}
-		}
+<span class="fc" id="L250">			}</span>
+<span class="fc" id="L251">		}</span>
 <span class="fc" id="L252">	}</span>
 	
 	//I must have this method somewhere already
@@ -285,12 +285,12 @@ public class PeopleAnnotator extends AbstractPosAnnotator implements IOOPAnnotat
 <span class="fc" id="L285">									existingScore = new BigDecimal(0);</span>
 								}
 <span class="fc" id="L287">								corefPeople.put(personScore.getName(), existingScore.add(personScore.getValue()));</span>
-							}
+<span class="fc" id="L288">							}</span>
 						}
 						
-					}
-				}
-			}
+<span class="fc" id="L291">					}</span>
+<span class="fc" id="L292">				}</span>
+<span class="fc" id="L293">			}</span>
 <span class="fc bfc" id="L294" title="All 2 branches covered.">			if (corefPeople.size() &gt; 0) {</span>
 				
 <span class="fc" id="L296">				String corefPersonName = sortMapByValueDescending(corefPeople).get(0).getKey();</span>
@@ -313,12 +313,12 @@ public class PeopleAnnotator extends AbstractPosAnnotator implements IOOPAnnotat
 <span class="fc" id="L313">									addToScoreList(scoreList, new PhraseAnnotation(corefPersonName, new BigDecimal(1)));</span>
 <span class="fc" id="L314">									token.set(getAnnotationClass(), scoreList);</span>
 								}
-							}
-						}
+<span class="fc" id="L316">							}</span>
+<span class="fc" id="L317">						}</span>
 					//}
-				}
+<span class="fc" id="L319">				}</span>
 			}
-		}
+<span class="fc" id="L321">		}</span>
 <span class="fc" id="L322">	}</span>
 	
 	public void annotateNarrator(CoreDocument document) {
@@ -330,14 +330,14 @@ public class PeopleAnnotator extends AbstractPosAnnotator implements IOOPAnnotat
 <span class="fc bfc" id="L330" title="All 2 branches covered.">				if (token.lemma().equals(&quot;I&quot;)) {</span>
 <span class="fc" id="L331">					boolean shouldScore = true;</span>
 <span class="fc bfc" id="L332" title="All 2 branches covered.">					for (CoreQuote quote : document.quotes()) {</span>
-						if (
+<span class="fc" id="L333">						if (</span>
 <span class="fc bfc" id="L334" title="All 2 branches covered.">							token.beginPosition() &gt;= quote.quoteCharOffsets().first.intValue() </span>
 <span class="fc bfc" id="L335" title="All 2 branches covered.">							&amp;&amp; token.endPosition() &lt;= quote.quoteCharOffsets().second.intValue() </span>
 						) {
 <span class="fc" id="L337">							shouldScore = false;</span>
 <span class="fc" id="L338">							break;</span>
 						}
-					}
+<span class="fc" id="L340">					}</span>
 <span class="fc bfc" id="L341" title="All 2 branches covered.">					if (shouldScore) {</span>
 <span class="fc" id="L342">						List&lt;PhraseAnnotation&gt; scoreList = new ArrayList&lt;PhraseAnnotation&gt;();</span>
 <span class="fc" id="L343">						addToScoreList(scoreList, new PhraseAnnotation(token.lemma(), new BigDecimal(1)));</span>

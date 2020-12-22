@@ -26,6 +26,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import edu.stanford.nlp.ling.CoreAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.ling.CoreLabel;
@@ -38,38 +40,39 @@ import io.outofprintmagazine.nlp.pipeline.scorers.BigDecimalAvg;
 import io.outofprintmagazine.nlp.pipeline.scorers.IScorer;
 import io.outofprintmagazine.nlp.pipeline.serializers.BigDecimalSerializer;
 import io.outofprintmagazine.nlp.pipeline.serializers.ISerializer;
+import io.outofprintmagazine.util.DocumentAggregateScore;
 
 public class FleschKincaidAnnotator extends AbstractPosAnnotator implements Annotator, IOOPAnnotator {
 
 	@SuppressWarnings(&quot;unused&quot;)
-<span class="fc" id="L45">	private static final Logger logger = LogManager.getLogger(FleschKincaidAnnotator.class);</span>
+<span class="fc" id="L48">	private static final Logger logger = LogManager.getLogger(FleschKincaidAnnotator.class);</span>
 	
 	@SuppressWarnings(&quot;unused&quot;)
 	private Logger getLogger() {
-<span class="nc" id="L49">		return logger;</span>
+<span class="nc" id="L52">		return logger;</span>
 	}
 	
 	public FleschKincaidAnnotator() {
-<span class="fc" id="L53">		super();</span>
-<span class="fc" id="L54">		this.setTags(Arrays.asList(&quot;NNP&quot;, &quot;NNPS&quot;, &quot;FW&quot;));</span>
-<span class="fc" id="L55">		this.setScorer((IScorer)new BigDecimalAvg(this.getAnnotationClass()));</span>
-<span class="fc" id="L56">		this.setSerializer((ISerializer)new BigDecimalSerializer(this.getAnnotationClass()));</span>
-<span class="fc" id="L57">	}</span>
+<span class="fc" id="L56">		super();</span>
+<span class="fc" id="L57">		this.setTags(Arrays.asList(&quot;NNP&quot;, &quot;NNPS&quot;, &quot;FW&quot;));</span>
+<span class="fc" id="L58">		this.setScorer((IScorer)new BigDecimalAvg(this.getAnnotationClass()));</span>
+<span class="fc" id="L59">		this.setSerializer((ISerializer)new BigDecimalSerializer(this.getAnnotationClass()));</span>
+<span class="fc" id="L60">	}</span>
 	
 	@Override
 	public Class getAnnotationClass() {
-<span class="fc" id="L61">		return io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPFleschKincaidAnnotation.class;</span>
+<span class="fc" id="L64">		return io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPFleschKincaidAnnotation.class;</span>
 	}
 	
 	@Override
 	public Set&lt;Class&lt;? extends CoreAnnotation&gt;&gt; requires() {
-<span class="nc" id="L66">		return Collections.unmodifiableSet(</span>
-<span class="nc" id="L67">			new ArraySet&lt;&gt;(</span>
-<span class="nc" id="L68">				Arrays.asList(</span>
-<span class="nc" id="L69">					CoreAnnotations.TextAnnotation.class, </span>
-<span class="nc" id="L70">					CoreAnnotations.TokensAnnotation.class,</span>
-<span class="nc" id="L71">					CoreAnnotations.SentencesAnnotation.class,</span>
-<span class="nc" id="L72">					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPSyllableCountAnnotation.class</span>
+<span class="nc" id="L69">		return Collections.unmodifiableSet(</span>
+			new ArraySet&lt;&gt;(
+<span class="nc" id="L71">				Arrays.asList(</span>
+					CoreAnnotations.TextAnnotation.class, 
+					CoreAnnotations.TokensAnnotation.class,
+					CoreAnnotations.SentencesAnnotation.class,
+					io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPSyllableCountAnnotation.class
 				)
 			)
 		);
@@ -78,49 +81,54 @@ public class FleschKincaidAnnotator extends AbstractPosAnnotator implements Anno
 	
 	@Override
 	public void annotate(Annotation annotation) {
-<span class="fc" id="L81">		CoreDocument document = new CoreDocument(annotation);</span>
-<span class="fc" id="L82">		int wordCount = 0;</span>
-<span class="fc" id="L83">		int syllableCount = 0;</span>
-<span class="fc" id="L84">		int sentenceCount = 0;</span>
-<span class="fc bfc" id="L85" title="All 2 branches covered.">		for (CoreSentence sentence : document.sentences()) {</span>
-<span class="fc" id="L86">			int sentenceWordCount = 0;</span>
-<span class="fc" id="L87">			int sentenceSyllableCount = 0;</span>
-<span class="fc" id="L88">			List&lt;CoreLabel&gt; tokens = sentence.tokens();</span>
-<span class="fc" id="L89">			boolean hasSyllable = false;</span>
-<span class="fc bfc" id="L90" title="All 2 branches covered.">			for (int i = 0; i &lt; tokens.size(); i++) {</span>
-<span class="fc" id="L91">				CoreLabel token = tokens.get(i);</span>
-<span class="fc bfc" id="L92" title="All 2 branches covered.">				if (isDictionaryWord(token)) {</span>
-<span class="pc bpc" id="L93" title="1 of 2 branches missed.">					if (token.containsKey(io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPSyllableCountAnnotation.class)) {</span>
-<span class="fc" id="L94">						wordCount++;</span>
-<span class="fc" id="L95">						wordCount+=StringUtils.countMatches(token.lemma(), &quot;-&quot;);</span>
-<span class="fc" id="L96">						sentenceWordCount++;</span>
-<span class="fc" id="L97">						sentenceWordCount+=StringUtils.countMatches(token.lemma(), &quot;-&quot;);</span>
-<span class="fc" id="L98">						BigDecimal rawScore = (BigDecimal) token.get(io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPSyllableCountAnnotation.class);</span>
-<span class="fc" id="L99">						syllableCount += rawScore.intValue();</span>
-<span class="fc" id="L100">						sentenceSyllableCount += rawScore.intValue();</span>
-<span class="fc" id="L101">						hasSyllable = true;</span>
+<span class="fc" id="L84">		CoreDocument document = new CoreDocument(annotation);</span>
+<span class="fc" id="L85">		int wordCount = 0;</span>
+<span class="fc" id="L86">		int syllableCount = 0;</span>
+<span class="fc" id="L87">		int sentenceCount = 0;</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">		for (CoreSentence sentence : document.sentences()) {</span>
+<span class="fc" id="L89">			int sentenceWordCount = 0;</span>
+<span class="fc" id="L90">			int sentenceSyllableCount = 0;</span>
+<span class="fc" id="L91">			List&lt;CoreLabel&gt; tokens = sentence.tokens();</span>
+<span class="fc" id="L92">			boolean hasSyllable = false;</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">			for (int i = 0; i &lt; tokens.size(); i++) {</span>
+<span class="fc" id="L94">				CoreLabel token = tokens.get(i);</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">				if (isDictionaryWord(token)) {</span>
+<span class="pc bpc" id="L96" title="1 of 2 branches missed.">					if (token.containsKey(io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPSyllableCountAnnotation.class)) {</span>
+<span class="fc" id="L97">						wordCount++;</span>
+<span class="fc" id="L98">						wordCount+=StringUtils.countMatches(token.lemma(), &quot;-&quot;);</span>
+<span class="fc" id="L99">						sentenceWordCount++;</span>
+<span class="fc" id="L100">						sentenceWordCount+=StringUtils.countMatches(token.lemma(), &quot;-&quot;);</span>
+<span class="fc" id="L101">						BigDecimal rawScore = (BigDecimal) token.get(io.outofprintmagazine.nlp.pipeline.OOPAnnotations.OOPSyllableCountAnnotation.class);</span>
+<span class="fc" id="L102">						syllableCount += rawScore.intValue();</span>
+<span class="fc" id="L103">						sentenceSyllableCount += rawScore.intValue();</span>
+<span class="fc" id="L104">						hasSyllable = true;</span>
 					}
 				}
 			}
-<span class="fc bfc" id="L105" title="All 2 branches covered.">			if (hasSyllable) {</span>
-<span class="fc" id="L106">				sentenceCount++;</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">			if (hasSyllable) {</span>
+<span class="fc" id="L109">				sentenceCount++;</span>
 			}
-<span class="fc" id="L108">			double fk = (206.835 - (1.015*sentenceWordCount) - (84.6*sentenceSyllableCount/sentenceWordCount))/100;</span>
-			try {
-<span class="fc" id="L110">				sentence.coreMap().set(getAnnotationClass(), new BigDecimal(fk));</span>
-<span class="fc" id="L111">			}</span>
-<span class="fc" id="L112">			catch (NumberFormatException nfe) {</span>
-<span class="fc" id="L113">				sentence.coreMap().set(getAnnotationClass(), new BigDecimal(0));</span>
+<span class="fc" id="L111">			double fk = (206.835 - (1.015*sentenceWordCount) - (84.6*sentenceSyllableCount/sentenceWordCount))/100;</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">			if (fk &gt; 0) {</span>
+				try {
+<span class="fc" id="L114">					sentence.coreMap().set(getAnnotationClass(), new BigDecimal(fk));</span>
+				}
+<span class="nc" id="L116">				catch (NumberFormatException nfe) {</span>
+<span class="nc" id="L117">					sentence.coreMap().set(getAnnotationClass(), new BigDecimal(0));</span>
+<span class="pc" id="L118">				}</span>
 			}
-		}
+			else {
+<span class="fc" id="L121">				sentence.coreMap().set(getAnnotationClass(), new BigDecimal(0));</span>
+			}
+<span class="fc" id="L123">		}</span>
 
-<span class="fc" id="L117">		double fk = (206.835 - (1.015*wordCount/sentenceCount) - (84.6*syllableCount/wordCount))/100;</span>
-<span class="fc" id="L118">        document.annotation().set(getAnnotationClass(), new BigDecimal(fk));</span>
-<span class="fc" id="L119">	}</span>
+<span class="fc" id="L125">		double fk = (206.835 - (1.015*wordCount/sentenceCount) - (84.6*syllableCount/wordCount))/100;</span>
+<span class="fc" id="L126">        document.annotation().set(getAnnotationClass(), new BigDecimal(fk));</span>
+<span class="fc" id="L127">	}</span>
 
 	@Override
 	public String getDescription() {
-<span class="fc" id="L123">		return &quot;(206.835 - (1.015*wordCount/sentenceCount) - (84.6*syllableCount/wordCount))/100&quot;;</span>
+<span class="fc" id="L131">		return &quot;(206.835 - (1.015*wordCount/sentenceCount) - (84.6*syllableCount/wordCount))/100&quot;;</span>
 	}
 	
 	/*
@@ -133,5 +141,13 @@ public class FleschKincaidAnnotator extends AbstractPosAnnotator implements Anno
 	 * 50.0–30.0	College	Difficult to read.
 	 * 30.0–0.0		College graduate	Very difficult to read. Best understood by university graduates.
 	 */
+
+	@Override
+	public void serializeAggregateDocument(CoreDocument document, ObjectNode json) {
+<span class="fc" id="L147">		DocumentAggregateScore retval = (DocumentAggregateScore) getScorer().aggregateDocument(document);</span>
+<span class="fc" id="L148">		retval.getScoreStats().getScore().setRaw((BigDecimal)document.annotation().get(getAnnotationClass()));</span>
+<span class="fc" id="L149">		getSerializer().serializeAggregate(retval, json);</span>
+<span class="fc" id="L150">	}</span>
+	
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

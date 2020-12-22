@@ -70,12 +70,12 @@ public class VaderSentimentAnnotator extends AbstractPosAnnotator implements Ann
 <span class="pc bpc" id="L70" title="1 of 2 branches missed.">					if (token.containsKey(getAnnotationClass())) {</span>
 <span class="nc" id="L71">						token.set(getAnnotationClass(), score);</span>
 					}
-				}
-<span class="fc" id="L74">			}</span>
+<span class="fc" id="L73">				}</span>
+			}
 <span class="nc" id="L75">			catch (Exception e) {</span>
 <span class="nc" id="L76">				logger.error(&quot;bad vader&quot;, e);</span>
 <span class="nc" id="L77">				sentence.coreMap().set(getAnnotationClass(), score );</span>
-			}
+<span class="fc" id="L78">			}</span>
         }
 <span class="fc" id="L80">	}</span>
 	
@@ -87,11 +87,11 @@ public class VaderSentimentAnnotator extends AbstractPosAnnotator implements Ann
 	@Override
 	public Set&lt;Class&lt;? extends CoreAnnotation&gt;&gt; requires() {
 <span class="nc" id="L89">		return Collections.unmodifiableSet(</span>
-<span class="nc" id="L90">			new ArraySet&lt;&gt;(</span>
+			new ArraySet&lt;&gt;(
 <span class="nc" id="L91">				Arrays.asList(</span>
-<span class="nc" id="L92">					CoreAnnotations.TextAnnotation.class, </span>
-<span class="nc" id="L93">					CoreAnnotations.TokensAnnotation.class,</span>
-<span class="nc" id="L94">					CoreAnnotations.SentencesAnnotation.class</span>
+					CoreAnnotations.TextAnnotation.class, 
+					CoreAnnotations.TokensAnnotation.class,
+					CoreAnnotations.SentencesAnnotation.class
 				)
 			)
 		);
