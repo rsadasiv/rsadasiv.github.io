@@ -1,5 +1,5 @@
 # Live demo
-### [beta](https://beta.outofprintmagazine.io/oopcorenlp_web)
+### [beta.outofprintmagazine.io](https://beta.outofprintmagazine.io/oopcorenlp_web)
 
 # OOP documentation
 
