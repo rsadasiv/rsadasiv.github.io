@@ -1,3 +1,6 @@
+# Live demo
+### [beta](https://beta.outofprintmagazine.io/oopcorenlp_web)
+
 # OOP documentation
 
 ## NLP (natural language processing) feature generation
